@@ -20,11 +20,6 @@ model = genai.GenerativeModel('gemini-pro')
 def index():
     return "Server is Running..."
 
-@app.route('/sidd')
-def siddTest():
-    return "This is Sidd..."
-
-
 @app.route('/tree', methods=["POST", "GET"])
 def tree():
     if request.method == 'POST':
@@ -128,6 +123,5 @@ def interview():
             print(data)
             return "Success"
 
-
-# if __name__ == '__main__':
-#     app.run(debug=True)
+if __name__ == '__main__':
+    app.run(debug=True)
