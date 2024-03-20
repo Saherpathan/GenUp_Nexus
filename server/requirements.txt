@@ -1,0 +1,15 @@
+gradio==4.22.0
+opencv-python==4.9.0.80
+transformers==4.38.2
+pydub==0.25.1
+faster_whisper==1.0.1
+joblib==1.3.2
+mediapipe==0.10.11
+numpy==1.26.4
+pandas==2.2.1
+moviepy==1.0.3
+flask==3.0.2
+Werkzeug==3.0.1
+Flask-Cors==4.0.0
+google-generativeai==0.4.1
+python-dotenv==1.0.1
