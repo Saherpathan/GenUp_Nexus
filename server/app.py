@@ -5,6 +5,10 @@ from pymongo.server_api import ServerApi
 import google.generativeai as genai
 import urllib.parse
 from models import UserSchema
+from flask_bcrypt import Bcrypt
+from flask_jwt_extended import JWTManager, create_access_token
+from middleware.authUser import auth_user
+from datetime import timedelta 
 
 from dotenv import load_dotenv
 import os
@@ -15,6 +19,11 @@ app = Flask(__name__)
 
 CORS(app)
 
+bcrypt = Bcrypt(app)
+jwt = JWTManager(app)
+
+app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET')
+
 # MongoDB configuration
 username = urllib.parse.quote_plus(os.getenv('MONGO_USERNAME'))
 password = urllib.parse.quote_plus(os.getenv('MONGO_PASSWORD'))
@@ -24,6 +33,7 @@ uri = f'mongodb+srv://{username}:{password}{restUri}'
 
 client = MongoClient(uri, server_api=ServerApi('1'))
 db = client.GenUpNexus
+users_collection = db["users"]
 
 # Send a ping to confirm a successful connection
 try:
@@ -144,18 +154,76 @@ def interview():
             print(data)
             return "Success"
 
-@app.route('/add_user', methods=['POST'])
-def create_user():
-    try:
-        # Validate user data using Marshmallow schema
-        schema = UserSchema()
-        data = schema.load(request.get_json())
 
-        # Insert validated data into the database
-        db.users.insert_one(data)
-        return jsonify({"message": "User added successfully!"})
+# User Routes
+@app.route('/user/signup', methods=['POST'])
+def signup():
+    data = request.json
+    name = data.get('name')
+    email = data.get('email')
+    password = data.get('password')
+
+    if not email:
+        return jsonify({"error": "Invalid email"}), 400
+
+    existing_user = users_collection.find_one({"email": email})
+
+    if existing_user:
+        return jsonify({"message": "User already exists"}), 404
+
+    hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+
+    result = users_collection.insert_one({
+        "name": name,
+        "email": email,
+        "password": hashed_password
+    })
+
+    print(result);
+
+    expires = timedelta(days=7)
+    access_token = create_access_token(identity={"email": email, "id": str(result.inserted_id)}, expires_delta=expires)
+
+    res = {"name": name, "email": email}
+    
+    return jsonify({"result": res, "token": access_token}), 201
+
+@app.route('/user/signin', methods=['POST'])
+def signin():
+    data = request.json
+    email = data.get('email')
+    password = data.get('password')
+
+    user = users_collection.find_one({"email": email})
+
+    if not user:
+        return jsonify({"message": "User doesn't exist"}), 404
+
+    if not bcrypt.check_password_hash(user['password'], password):
+        return jsonify({"message": "Invalid Credentials"}), 404
+
+    expires = timedelta(days=7)
+    access_token = create_access_token(identity={"email": user['email'], "id": str(user['_id'])}, expires_delta=expires)
+
+    res = {"name": user['name'], "email": user['email']}
+
+    return jsonify({"result": res, "token": access_token}), 200
+
+#protected route wiht auth_user middleware
+@app.route('/user/delete', methods=['POST'])
+@auth_user
+def delete_account():
+    email = request.email
+    print(email)
+    try:
+        result = users_collection.delete_one({"email": email})
+        if result.deleted_count == 1:
+            return jsonify({"result": True}), 200
+        else:
+            return jsonify({"result": False, "message": "User not found"}), 404
     except Exception as e:
-        return jsonify({"message": str(e)}), 400
+        print(e)
+        return jsonify({"message": "Something went wrong"}), 500
 
 
 if __name__ == '__main__':
