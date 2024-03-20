@@ -1,6 +1,11 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+from pymongo.mongo_client import MongoClient
+from pymongo.server_api import ServerApi
 import google.generativeai as genai
+import urllib.parse
+from models import UserSchema
+
 from dotenv import load_dotenv
 import os
 
@@ -10,11 +15,28 @@ app = Flask(__name__)
 
 CORS(app)
 
+# MongoDB configuration
+username = urllib.parse.quote_plus(os.getenv('MONGO_USERNAME'))
+password = urllib.parse.quote_plus(os.getenv('MONGO_PASSWORD'))
+restUri = os.getenv('REST_URI');
+
+uri = f'mongodb+srv://{username}:{password}{restUri}'
+
+client = MongoClient(uri, server_api=ServerApi('1'))
+db = client.GenUpNexus
+
+# Send a ping to confirm a successful connection
+try:
+    client.admin.command('ping')
+    print("Pinged your deployment. You successfully connected to MongoDB!")
+except Exception as e:
+    print(e)
+
+
 GOOGLE_API_KEY=os.getenv('GOOGLE_API_KEY')
 
 genai.configure(api_key=GOOGLE_API_KEY)
 model = genai.GenerativeModel('gemini-pro')
-
 
 @app.route('/')
 def index():
@@ -112,7 +134,6 @@ def tree():
         return jsonify({'success': True, 'data': response.text})
         # return temp 
 
-
 @app.route('/interview', methods=["POST", "GET"])
 def interview():
     if request.method == 'POST':
@@ -122,6 +143,20 @@ def interview():
         elif data.get('from') == 'gradio':
             print(data)
             return "Success"
+
+@app.route('/add_user', methods=['POST'])
+def create_user():
+    try:
+        # Validate user data using Marshmallow schema
+        schema = UserSchema()
+        data = schema.load(request.get_json())
+
+        # Insert validated data into the database
+        db.users.insert_one(data)
+        return jsonify({"message": "User added successfully!"})
+    except Exception as e:
+        return jsonify({"message": str(e)}), 400
+
 
 if __name__ == '__main__':
     app.run(debug=True)
