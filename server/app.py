@@ -20,6 +20,10 @@ model = genai.GenerativeModel('gemini-pro')
 def index():
     return "Server is Running..."
 
+@app.route('/sidd')
+def siddTest():
+    return "This is Sidd..."
+
 
 @app.route('/tree', methods=["POST", "GET"])
 def tree():
