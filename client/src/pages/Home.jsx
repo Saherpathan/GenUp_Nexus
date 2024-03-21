@@ -1,9 +1,9 @@
-import { useNavigate } from "react-router-dom";
 import { useGlobalContext } from "../contexts/GlobalContext";
 import { useEffect, useState } from "react";
 
 import { RiLogoutCircleLine } from "react-icons/ri";
 import { MdDeleteOutline } from "react-icons/md";
+import { Link, useNavigate } from "react-router-dom";
 
 import Loader from "../components/Loader";
 import axios from "../axios";
@@ -106,6 +106,21 @@ const Home = () => {
           </Button>
         </div>
       </div>
+      <Link to="/mindmap" className="p-2 m-2 text-primary">
+        <Button className="flex m-2" color="primary" variant="shadow">
+          Mindmap
+        </Button>
+      </Link>
+      <Link to="/interview" className="p-2 m-2 text-primary">
+        <Button className="flex m-2" color="secondary" variant="shadow">
+          Interview
+        </Button>
+      </Link>
+      <Link to="/roadmap" className="p-2 m-2 text-primary">
+        <Button className="flex m-2" color="danger" variant="shadow">
+          Roadmap
+        </Button>
+      </Link>
     </div>
   );
 };
