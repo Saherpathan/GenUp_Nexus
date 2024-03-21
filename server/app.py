@@ -9,6 +9,7 @@ from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager, create_access_token
 from middleware.authUser import auth_user
 from datetime import timedelta 
+from controllers.demo import get_initial_data
 
 from dotenv import load_dotenv
 import os
@@ -17,7 +18,7 @@ load_dotenv()
 
 app = Flask(__name__)
 
-CORS(app)
+
 
 bcrypt = Bcrypt(app)
 jwt = JWTManager(app)
@@ -33,7 +34,7 @@ uri = f'mongodb+srv://{username}:{password}{restUri}'
 
 client = MongoClient(uri, server_api=ServerApi('1'))
 db = client.GenUpNexus
-users_collection = db["users"]
+users_collection = db["users3"]
 
 # Send a ping to confirm a successful connection
 try:
@@ -57,6 +58,7 @@ def tree():
     if request.method == 'POST':
         data = request.get_json()
         query = data.get('query')
+        print(query)
         response = model.generate_content('''I will give you a topic and you have to generate an explanation of the topic in points in hierarchical tree structure and respond with JSON structure as follows:
         {
             "name": "Java",
@@ -225,6 +227,16 @@ def delete_account():
         print(e)
         return jsonify({"message": "Something went wrong"}), 500
 
+@app.route('/mindmap/demo', methods=['POST'])
+def mindmapDemo():
+    data = request.json
+    print(data);
+    return get_initial_data(), 200
+
+
+
+
+CORS(app)
 
 if __name__ == '__main__':
     app.run(debug=True)

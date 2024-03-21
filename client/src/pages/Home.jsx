@@ -53,7 +53,7 @@ const Home = () => {
   };
 
   return (
-    <div className="bg-white">
+    <div className="">
       {isLoading ? <Loader width="500px" height="250px" /> : null}
       <div className="flex justify-between m-2">
         <div className="m-2 text-2xl text-center">Home</div>
@@ -67,7 +67,7 @@ const Home = () => {
           }}
         />
         <div className="flex justify-between">
-          {/* <Switch
+          <Switch
             defaultSelected
             size="lg"
             color="primary"
@@ -85,7 +85,7 @@ const Home = () => {
                 setTheme("light");
               }
             }}
-          /> */}
+          />
           <Button
             onClick={logout}
             className="flex m-2"

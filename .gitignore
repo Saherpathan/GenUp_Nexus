@@ -4,3 +4,4 @@
 /server/__pycache__/
 .venv/
 /server/middleware/__pycache__/
+/server/controllers/__pycache__/

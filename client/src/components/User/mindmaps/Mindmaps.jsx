@@ -1,101 +1,178 @@
-import React, { useRef, useState } from 'react';
-// import Builder from './Builder';
-import * as d3 from 'd3';
-import './mindmaps.css';
-// import parentFunction from './main';
+import React, { useRef, useState } from "react";
+import Loader from "../../../components/Loader";
+import { useTheme } from "next-themes";
+import { Switch, Input, Button } from "@nextui-org/react";
+import { MoonIcon } from "../../../components/MoonIcon";
+import { SunIcon } from "../../../components/SunIcon";
+import ReactFlow, {
+  addEdge,
+  MiniMap,
+  Controls,
+  Background,
+  useNodesState,
+  useEdgesState,
+} from "reactflow";
+import "reactflow/dist/style.css";
+import axios from "../../../axios.js";
+
+const initialForm = {
+  query: "",
+};
 
 const Mindmaps = () => {
-  const [query, setQuery] = useState(null);
-  const [display, setDisplay] = useState(false);
-  const [json, setJson] = useState(null);
-  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const { theme, setTheme } = useTheme();
+  const [form, setForm] = useState(initialForm);
+  const [initialEdges, setInitialEdges] = useState([]);
+  const [initialNodes, setInitialNodes] = useState([]);
 
-  const ref = useRef();
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
-  const chartBuilder = (data) => {
-    const svg = d3.select(document.querySelector("svg"));
-    const width = window.screen.width;
-    const height = window.screen.height*3;
+  const handleSumbmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
 
-    const margin = { top: 0, right: 50, bottom: 0, left: 75};
-    const innerWidth = width - margin.left - margin.right;
-    const innerHeight = height - margin.top - margin.bottom;
-
-    const treeLayout = d3.tree().size([innerHeight, innerWidth]);
-
-    const zoomG = svg
-        .attr('width', width+150)
-        .attr('height', height)
-        .style('padding', 50)
-    .append('g');
-
-    const g = zoomG.append('g')
-        .attr('transform', `translate(${margin.left},${margin.top})`);
-
-    // svg.call(d3.zoom().on('zoom', () => {
-    //     zoomG.attr('transform', event.transform);
-    // }));
-
-    const root = d3.hierarchy(data);
-    const links = treeLayout(root).links();
-    const linkPathGenerator = d3.linkHorizontal()
-    .x(d => d.y)
-    .y(d => d.x);
-
-    g.selectAll('path').data(links)
-    .enter().append('path')
-        .attr('d', linkPathGenerator);
-
-    g.selectAll('text').data(root.descendants())
-    .enter().append('text')
-        .attr('x', d => d.y)
-        .attr('y', d => d.x)
-        .attr('dy', '0.32em')
-        .attr('text-anchor', d => d.children ? 'middle' : 'start')
-        .attr('font-size', d => 3.25 - d.depth + 'em')
-        .text(d => d.data.name);
-  }
-
-  const handleQuery = async () => {
-    // if (query) {
-      try {
-        const response = await fetch( 'http://127.0.0.1:5000/tree', {
-          method: 'POST',
-          headers: {
-          'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ "query": query }),
-        });
-
-        if (response.ok) {
-            const data = await response.json();
-            if (data.success) {
-                console.log(JSON.parse(data.data));
-                chartBuilder(JSON.parse(data.data));
-                // parentFunction(JSON.parse(data.data));
-                setJson(data.data);
-                setDisplay(true);
-            } else {
-                setError(data.error);
-            }
-        } else {
-            setError('Cannot connect to server right now !!');
-        }
-      } catch (error) {
-          setError('We are experiencing heavy traffic !!');
-      }
+    try {
+      const res = await axios.post("/mindmap/demo", form);
+      const result = res.data;
+      console.log(result);
+      setInitialNodes(result.initialNodes);
+      setInitialEdges(result.initialEdges);
+      setIsLoading(false);
+    } catch (error) {
+      setIsLoading(false);
     }
-//   }
+  };
+
+  // const initialNodes = [
+  //   {
+  //     id: "data-input",
+  //     position: { x: 0, y: 0 },
+  //     data: { label: "Data Input" },
+  //   },
+  //   {
+  //     id: "data-preprocessing",
+  //     position: { x: 200, y: 0 },
+  //     data: { label: "Data Preprocessing" },
+  //   },
+  //   {
+  //     id: "model-training",
+  //     position: { x: 400, y: 0 },
+  //     data: { label: "Model Training" },
+  //   },
+  //   {
+  //     id: "model-evaluation",
+  //     position: { x: 0, y: 200 },
+  //     data: { label: "Model Evaluation" },
+  //   },
+  //   {
+  //     id: "prediction",
+  //     position: { x: 200, y: 200 },
+  //     data: { label: "Prediction" },
+  //   },
+  //   {
+  //     id: "data-visualization",
+  //     position: { x: 400, y: 200 },
+  //     data: { label: "Data Visualization" },
+  //   },
+  // ];
+
+  // const initialEdges = [
+  //   {
+  //     id: "data-input-to-preprocessing",
+  //     source: "data-input",
+  //     target: "data-preprocessing",
+  //   },
+  //   {
+  //     id: "preprocessing-to-training",
+  //     source: "data-preprocessing",
+  //     target: "model-training",
+  //   },
+  //   {
+  //     id: "training-to-evaluation",
+  //     source: "model-training",
+  //     target: "model-evaluation",
+  //   },
+  //   {
+  //     id: "training-to-prediction",
+  //     source: "model-training",
+  //     target: "prediction",
+  //   },
+  //   {
+  //     id: "evaluation-to-visualization",
+  //     source: "model-evaluation",
+  //     target: "data-visualization",
+  //   },
+  //   {
+  //     id: "prediction-to-visualization",
+  //     source: "prediction",
+  //     target: "data-visualization",
+  //   },
+  // ];
+
+  const minimapStyle = {
+    height: 120,
+  };
 
   return (
-    <div>Mindmaps
-      <input type="text" name="query" id="query" onChange={(e)=>setQuery(e.target.value)}   />
-      <button onClick={handleQuery}>Get</button>
-      <div id="chart">
-        <svg style={{'background': 'white', 'color': 'black'}} ref={ref}></svg>
-    </div>
-    </div>
-  )
-}
+    <div>
+      {isLoading ? <Loader width="500px" height="250px" /> : null}
+      <div className="flex justify-between m-5 text-2xl text-center">
+        Mindmaps
+        <Switch
+          defaultSelected
+          size="lg"
+          color="primary"
+          thumbIcon={({ isSelected, className }) =>
+            !isSelected ? (
+              <SunIcon className={className} />
+            ) : (
+              <MoonIcon className={className} />
+            )
+          }
+          onClick={() => {
+            if (theme === "light") {
+              setTheme("dark");
+            } else if (theme === "dark") {
+              setTheme("light");
+            }
+          }}
+        />
+      </div>
+      <Input
+        type="text"
+        label="What you want to learn ?"
+        name="query"
+        id="query"
+        value={form.query}
+        onChange={handleChange}
+        isRequired
+        className="m-3 w-[300px]"
+      />
 
-export default Mindmaps
+      <Button
+        onClick={handleSumbmit}
+        className="flex m-2"
+        color="primary"
+        variant="shadow"
+        isLoading={isLoading}
+      >
+        Get
+      </Button>
+
+      {initialNodes && (
+        <div style={{ width: "98vw", height: "75vh" }}>
+          <ReactFlow nodes={initialNodes} edges={initialEdges} fitView>
+            <MiniMap style={minimapStyle} zoomable pannable />
+            <Controls />
+            <Background color="#aaa" gap={16} />
+          </ReactFlow>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default Mindmaps;
