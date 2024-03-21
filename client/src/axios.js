@@ -1,8 +1,13 @@
 import axios from "axios";
 
+const debug = localStorage.getItem("debug");
+
+const url = (debug === "true") ? "http://127.0.0.1:5000" : "";
+
+console.log(url);
+
 const instance = axios.create({
-  // baseURL: "",
-  baseURL: "http://127.0.0.1:5000", //! For using local Development, use this URL to connect to your local server.
+  baseURL: url, //! For using local Development, use this URL to connect to your local server.
 });
 
 instance.interceptors.request.use((req) => {
@@ -10,7 +15,7 @@ instance.interceptors.request.use((req) => {
     req.headers.Authorization = `Bearer ${
       JSON.parse(localStorage.getItem("user")).token
     }`;
-  } 
+  }
 
   return req;
 });

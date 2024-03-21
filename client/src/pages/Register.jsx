@@ -93,11 +93,11 @@ const Register = () => {
     }
 
   return (
-    <div className="bg-white">
+    <div className="">
       {isLoading ? <Loader width="500px" height="250px" /> : null}
       <div className="flex justify-between m-5 text-2xl text-center">
         Register
-        {/* <Switch
+        <Switch
           defaultSelected
           size="lg"
           color="primary"
@@ -115,7 +115,7 @@ const Register = () => {
               setTheme("light");
             }
           }}
-        /> */}
+        />
       </div>
       <form onSubmit={handleSumbmit}>
         <Input

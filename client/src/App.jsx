@@ -14,8 +14,10 @@ import Roadmaps from "./components/User/roadmaps/Roadmaps";
 // import { Excalidraw } from "@excalidraw/excalidraw";
 
 function App() {
+  localStorage.setItem("debug", true);
+
   return (
-    <NextThemesProvider attribute="class" defaultTheme="light">
+    <NextThemesProvider attribute="class" defaultTheme="dark">
       <Routes>
         <Route element={<ProtectedRoute />}>
           <Route path="/" element={<Home />} />
