@@ -26,6 +26,7 @@ function App() {
           <Route path="/interview" element={<Interview />} />
           <Route path="/roadmap" element={<Roadmaps />} />
         </Route>
+        
         {/* <Route path="/" element={<Landing />} /> */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useCallback } from "react";
 import Loader from "../../../components/Loader";
 import { useTheme } from "next-themes";
 import { Switch, Input, Button } from "@nextui-org/react";
@@ -11,20 +11,41 @@ import ReactFlow, {
   Background,
   useNodesState,
   useEdgesState,
+  MarkerType,
+  Position,
 } from "reactflow";
 import "reactflow/dist/style.css";
 import axios from "../../../axios.js";
+
+import {
+  nodes as initialNodes,
+  edges as initialEdges,
+} from "../../initial-elements.jsx";
+import CustomNode from "../../CustomNode";
+
+import "../../overview.css";
 
 const initialForm = {
   query: "",
 };
 
+const minimapStyle = {
+  height: 120,
+};
+
+const nodeTypes = {
+  custom: CustomNode,
+};
+
+const onInit = (reactFlowInstance) =>
+  console.log("flow loaded:", reactFlowInstance);
+
 const Mindmaps = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { theme, setTheme } = useTheme();
   const [form, setForm] = useState(initialForm);
-  const [initialEdges, setInitialEdges] = useState([]);
-  const [initialNodes, setInitialNodes] = useState([]);
+  // const [initialEdges, setInitialEdges] = useState([]);
+  // const [initialNodes, setInitialNodes] = useState([]);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -35,7 +56,7 @@ const Mindmaps = () => {
     setIsLoading(true);
 
     try {
-      const res = await axios.post("/mindmap/demo", form);
+      const res = await axios.post("/tree", form);
       const result = res.data;
       console.log(result);
       setInitialNodes(result.initialNodes);
@@ -46,79 +67,34 @@ const Mindmaps = () => {
     }
   };
 
-  // const initialNodes = [
-  //   {
-  //     id: "data-input",
-  //     position: { x: 0, y: 0 },
-  //     data: { label: "Data Input" },
-  //   },
-  //   {
-  //     id: "data-preprocessing",
-  //     position: { x: 200, y: 0 },
-  //     data: { label: "Data Preprocessing" },
-  //   },
-  //   {
-  //     id: "model-training",
-  //     position: { x: 400, y: 0 },
-  //     data: { label: "Model Training" },
-  //   },
-  //   {
-  //     id: "model-evaluation",
-  //     position: { x: 0, y: 200 },
-  //     data: { label: "Model Evaluation" },
-  //   },
-  //   {
-  //     id: "prediction",
-  //     position: { x: 200, y: 200 },
-  //     data: { label: "Prediction" },
-  //   },
-  //   {
-  //     id: "data-visualization",
-  //     position: { x: 400, y: 200 },
-  //     data: { label: "Data Visualization" },
-  //   },
-  // ];
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const onConnect = useCallback(
+    (params) => setEdges((eds) => addEdge(params, eds)),
+    []
+  );
 
-  // const initialEdges = [
-  //   {
-  //     id: "data-input-to-preprocessing",
-  //     source: "data-input",
-  //     target: "data-preprocessing",
-  //   },
-  //   {
-  //     id: "preprocessing-to-training",
-  //     source: "data-preprocessing",
-  //     target: "model-training",
-  //   },
-  //   {
-  //     id: "training-to-evaluation",
-  //     source: "model-training",
-  //     target: "model-evaluation",
-  //   },
-  //   {
-  //     id: "training-to-prediction",
-  //     source: "model-training",
-  //     target: "prediction",
-  //   },
-  //   {
-  //     id: "evaluation-to-visualization",
-  //     source: "model-evaluation",
-  //     target: "data-visualization",
-  //   },
-  //   {
-  //     id: "prediction-to-visualization",
-  //     source: "prediction",
-  //     target: "data-visualization",
-  //   },
-  // ];
+  // we are using a bit of a shortcut here to adjust the edge type
+  // this could also be done with a custom edge for example
+  const edgesWithUpdatedTypes = edges.map((edge) => {
+    if (edge.sourceHandle) {
+      const edgeType = nodes.find((node) => node.type === "custom").data
+        .selects[edge.sourceHandle];
+      edge.type = edgeType;
+    }
 
-  const minimapStyle = {
-    height: 120,
-  };
+    return edge;
+  });
 
   return (
     <div>
-      {isLoading ? <Loader width="500px" height="250px" /> : null}
+      {isLoading ? (
+        <Loader
+          json="https://lottie.host/2639b394-c2db-4afd-a6ad-00e8dde8a240/OAhwCbq88U.json"
+          width="500px"
+          height="250px"
+        />
+      ) : null}
       <div className="flex justify-between m-5 text-2xl text-center">
         Mindmaps
         <Switch
@@ -164,7 +140,17 @@ const Mindmaps = () => {
 
       {initialNodes && (
         <div style={{ width: "98vw", height: "75vh" }}>
-          <ReactFlow nodes={initialNodes} edges={initialEdges} fitView>
+          <ReactFlow
+            nodes={nodes}
+            edges={edgesWithUpdatedTypes}
+            // onNodesChange={onNodesChange}
+            // onEdgesChange={onEdgesChange}
+            onConnect={onConnect}
+            onInit={onInit}
+            fitView
+            attributionPosition="bottom-right"
+            nodeTypes={nodeTypes}
+          >
             <MiniMap style={minimapStyle} zoomable pannable />
             <Controls />
             <Background color="#aaa" gap={16} />
