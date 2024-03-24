@@ -45,7 +45,7 @@ const Mindmaps = () => {
   const { theme, setTheme } = useTheme();
   const [form, setForm] = useState(initialForm);
   const [initialEdges, setInitialEdges] = useState([]);
-  const [initialNodes, setInitialNodes] = useState([]);
+  const [initialNodes, setInitialNodes] = useState(null);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
