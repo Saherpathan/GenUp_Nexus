@@ -146,6 +146,138 @@ def tree():
         return jsonify({'success': True, 'data': response.text})
         # return temp 
 
+
+@app.route('/tree/demo', methods=["POST"])
+def treeDemo():
+    if request.method == 'POST':
+        data = request.get_json()
+        query = data.get('query')
+        print(query)
+        response = model.generate_content('''I will give you a topic and you have to generate an explanation of the topic and respond with JSON structure as follows as i want to use this json are Nodes & Edges and visualise this using ReactFlow library, the json structure will be :
+        nodes = [
+            {
+                id: "1",
+                type: "input",
+                data: {
+                label: "Input Node",
+                },
+                position: { x: 250, y: 0 },
+            },
+            {
+                id: "2",
+                data: {
+                label: "Default Node",
+                },
+                position: { x: 100, y: 100 },
+            },
+            {
+                id: "3",
+                type: "output",
+                data: {
+                label: "Output Node",
+                },
+                position: { x: 400, y: 100 },
+            },
+            {
+                id: "4",
+                type: "custom",
+                position: { x: 100, y: 200 },
+                data: {
+                selects: {
+                    "handle-0": "smoothstep",
+                    "handle-1": "smoothstep",
+                },
+                },
+            },
+            {
+                id: "5",
+                type: "output",
+                data: {
+                label: "custom style",
+                },
+                className: "circle",
+                style: {
+                background: "#2B6CB0",
+                color: "white",
+                },
+                position: { x: 400, y: 200 },
+                sourcePosition: Position.Right,
+                targetPosition: Position.Left,
+            },
+            {
+                id: "6",
+                type: "output",
+                style: {
+                background: "#63B3ED",
+                color: "white",
+                width: 100,
+                },
+                data: {
+                label: "Node",
+                },
+                position: { x: 400, y: 325 },
+                sourcePosition: Position.Right,
+                targetPosition: Position.Left,
+            },
+            {
+                id: "7",
+                type: "default",
+                className: "annotation",
+                data: {
+                label: (
+                    <>
+                    On the bottom left you see the <strong>Controls</strong> and the
+                    bottom right the <strong>MiniMap</strong>. This is also just a node 🥳
+                    </>
+                ),
+                },
+                draggable: false,
+                selectable: false,
+                position: { x: 150, y: 400 },
+            },
+            ];
+
+            edges = [
+                { id: "e1-2", source: "1", target: "2", label: "this is an edge label" },
+                { id: "e1-3", source: "1", target: "3", animated: true },
+                {
+                    id: "e4-5",
+                    source: "4",
+                    target: "5",
+                    type: "smoothstep",
+                    sourceHandle: "handle-0",
+                    data: {
+                    selectIndex: 0,
+                    },
+                    markerEnd: {
+                    type: MarkerType.ArrowClosed,
+                    },
+                },
+                {
+                    id: "e4-6",
+                    source: "4",
+                    target: "6",
+                    type: "smoothstep",
+                    sourceHandle: "handle-1",
+                    data: {
+                    selectIndex: 1,
+                    },
+                    markerEnd: {
+                    type: MarkerType.ArrowClosed,
+                    },
+                },
+            ];
+
+            Topic is: ''' + query)
+        
+        # response.text(8,)
+        print(response.text)
+        json_data = response.text
+        modified_json_data = json_data[8:-3]
+        return jsonify({'success': True, 'data': modified_json_data})
+        # return temp 
+
+
 @app.route('/interview', methods=["POST", "GET"])
 def interview():
     if request.method == 'POST':

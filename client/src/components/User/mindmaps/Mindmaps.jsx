@@ -17,11 +17,11 @@ import ReactFlow, {
 import "reactflow/dist/style.css";
 import axios from "../../../axios.js";
 
-import {
-  nodes as initialNodes,
-  edges as initialEdges,
-} from "../../initial-elements.jsx";
-import CustomNode from "../../CustomNode";
+// import {
+//   // nodes as initialNodes,
+//   edges as initialEdges,
+// } from "../../initial-elements.jsx";
+// import CustomNode from "../../CustomNode";
 
 import "../../overview.css";
 
@@ -33,9 +33,9 @@ const minimapStyle = {
   height: 120,
 };
 
-const nodeTypes = {
-  custom: CustomNode,
-};
+// const nodeTypes = {
+//   custom: CustomNode,
+// };
 
 const onInit = (reactFlowInstance) =>
   console.log("flow loaded:", reactFlowInstance);
@@ -44,8 +44,8 @@ const Mindmaps = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { theme, setTheme } = useTheme();
   const [form, setForm] = useState(initialForm);
-  // const [initialEdges, setInitialEdges] = useState([]);
-  // const [initialNodes, setInitialNodes] = useState([]);
+  const [initialEdges, setInitialEdges] = useState([]);
+  const [initialNodes, setInitialNodes] = useState([]);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -56,35 +56,24 @@ const Mindmaps = () => {
     setIsLoading(true);
 
     try {
-      const res = await axios.post("/tree", form);
+      const res = await axios.post("/tree/demo", form);
       const result = res.data;
-      console.log(result);
-      setInitialNodes(result.initialNodes);
-      setInitialEdges(result.initialEdges);
+      console.log(JSON.parse(result.data));
+      const datas = JSON.parse(result.data) 
+      const nodes = datas.nodes;
+      const edges = datas.edges;
+      setInitialNodes(nodes);
+      setInitialEdges(edges);
+
+      console.log(initialNodes);
+
+      console.log(initialEdges);
+      // console.log(initialEdges);
       setIsLoading(false);
     } catch (error) {
       setIsLoading(false);
     }
   };
-
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-  const onConnect = useCallback(
-    (params) => setEdges((eds) => addEdge(params, eds)),
-    []
-  );
-
-  // we are using a bit of a shortcut here to adjust the edge type
-  // this could also be done with a custom edge for example
-  const edgesWithUpdatedTypes = edges.map((edge) => {
-    if (edge.sourceHandle) {
-      const edgeType = nodes.find((node) => node.type === "custom").data
-        .selects[edge.sourceHandle];
-      edge.type = edgeType;
-    }
-
-    return edge;
-  });
 
   return (
     <div>
@@ -141,15 +130,11 @@ const Mindmaps = () => {
       {initialNodes && (
         <div style={{ width: "98vw", height: "75vh" }}>
           <ReactFlow
-            nodes={nodes}
-            edges={edgesWithUpdatedTypes}
-            // onNodesChange={onNodesChange}
-            // onEdgesChange={onEdgesChange}
-            onConnect={onConnect}
+            nodes={initialNodes}
+            edges={initialEdges}
             onInit={onInit}
             fitView
             attributionPosition="bottom-right"
-            nodeTypes={nodeTypes}
           >
             <MiniMap style={minimapStyle} zoomable pannable />
             <Controls />
