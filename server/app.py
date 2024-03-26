@@ -159,25 +159,19 @@ def treeDemo():
 
 **Structure:**
 
-- Top-level node: Represent the user's query (e.g., "Artificial Intelligence").
+- Top-level node: Represent the user's query.
 - Sub-nodes branching out based on the query's relevance:
     - Leverage external knowledge sources (e.g., Wikipedia, knowledge graphs, domain-specific APIs) to identify relevant sub-concepts, related entities, and potential relationships.
 - Consider including different categories of sub-nodes:
-    - **Concepts:** Core ideas or principles related to the query (e.g., "Machine Learning" for "Artificial Intelligence").
-    - **Subfields:** Specialized areas within the main topic (e.g., "Natural Language Processing" for "Artificial Intelligence").
-    - **Applications:** Practical uses of the concept or subfield (e.g., "Computer Vision" for "Artificial Intelligence").
-    - **Tools and Technologies:** Software or platforms used to implement the concepts (e.g., "TensorFlow" for "Machine Learning").
-    - **Examples:** Illustrative instances or use cases (e.g., "Self-driving Cars" for "Artificial Intelligence").
-    - **Historical Context:** Milestones or key figures in the topic's development (e.g., "Alan Turing" for "Artificial Intelligence").
-    - **See Also:** Links to broader concepts or related areas for further exploration.
-    - **Controversies or Ethical Considerations:** If relevant, include information on ethical concerns associated with the topic.
-- Edges connect nodes to represent relationships like:
-    - **Is-A:** Indicates a hierarchical relationship (e.g., "Machine Learning" is-a subfield of "Artificial Intelligence").
-    - **Has-A:** Connects a concept to its components or aspects (e.g., "Artificial Intelligence" has-a "Machine Learning" component).
-    - **Used For:** Links a concept or subfield to its applications (e.g., "Machine Learning" used-for "Computer Vision").
-    - **Influences:** Represents a cause-and-effect relationship (e.g., "Alan Turing" influenced the development of "Artificial Intelligence").
-    - **Related To:** Represents a broader association (e.g., "Artificial Intelligence" related-to "Robotics").
-
+    - **Concepts:** Core ideas or principles related to the query.
+    - **Subfields:** Specialized areas within the main topic.
+    - **Applications:** Practical uses of the concept or subfield.
+    - **Tools and Technologies:** Software or platforms used to implement the concepts.
+    - **Examples:** Illustrative instances or use cases.
+    - **Historical Context:** Milestones or key figures in the topic's development.
+    - **See Also:** Links to broader concepts or related areas for the further exploration.
+    
+                                          
 **Content:**
 
 - Each node should have a label describing the concept, entity, or tool.
@@ -188,15 +182,10 @@ def treeDemo():
 
 - JSON structure compatible with ReactFlow:
     - nodes (list): Nodes with data (label, optional description, optional icon, optional category) and position.
-    - edges (list): Edges connecting nodes with source and target IDs, and an optional label describing the relationship type.
+    - edges (list): Edges connecting nodes with source and target IDs, and an optional label.
 
-**Accuracy Measures:**
 
-- Leverage external knowledge sources to increase the accuracy of identified concepts, relationships, and category assignments.
-- Consider implementing confidence scores for generated nodes and edges to indicate the model's certainty about the information.
-- Employ techniques like entity linking to disambiguate entities and ensure proper connections in the knowledge map (e.g., distinguishing between "Machine Learning" the subfield and specific machine learning algorithms).
-
-**Example:** (Provide a simplified JSON example demonstrating the structure with nodes, edges, and categories based on a sample user query.)
+**Example:** (Providing you a simplified JSON example demonstrating the structure with nodes, edges.
         nodes = [
             {
                 id: "1",
@@ -205,6 +194,7 @@ def treeDemo():
                 label: "Input Node",
                 },
                 position: { x: 250, y: 0 },
+                animated: true,
             },
             {
                 id: "2",
@@ -212,6 +202,7 @@ def treeDemo():
                 label: "Default Node",
                 },
                 position: { x: 100, y: 100 },
+                animated: true,
             },
             {
                 id: "3",
@@ -220,6 +211,7 @@ def treeDemo():
                 label: "Output Node",
                 },
                 position: { x: 400, y: 100 },
+                animated: true,
             },
             {
                 id: "4",
@@ -230,6 +222,7 @@ def treeDemo():
                     "handle-0": "smoothstep",
                     "handle-1": "smoothstep",
                 },
+                animated: true,
                 },
             },
             {
@@ -238,6 +231,7 @@ def treeDemo():
                 data: {
                 label: "custom style",
                 },
+                animated: true,
                 className: "circle",
                 style: {
                 background: "#2B6CB0",
@@ -259,6 +253,7 @@ def treeDemo():
                 label: "Node",
                 },
                 position: { x: 400, y: 325 },
+                animated: true,
                 sourcePosition: Position.Right,
                 targetPosition: Position.Left,
             },
@@ -269,13 +264,13 @@ def treeDemo():
                 data: {
                 label: (
                     <>
-                    On the bottom left you see the <strong>Controls</strong> and the
-                    bottom right the <strong>MiniMap</strong>. This is also just a node 🥳
+                    Your mindmap! 🥳
                     </>
                 ),
                 },
+                animated: true,
                 draggable: false,
-                selectable: false,
+                selectable: true,
                 position: { x: 150, y: 400 },
             },
             ];
