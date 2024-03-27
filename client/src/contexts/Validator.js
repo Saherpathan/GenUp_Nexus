@@ -22,6 +22,10 @@ const Validator = (form) => {
     errors.confirmPassword = "Please make sure your passwords match";
   }
 
+  if (form.password && form.name && form.password.includes(form.name)) {
+    errors.password = "Password cannot contain your username";
+  }
+
   return errors;
 };
 

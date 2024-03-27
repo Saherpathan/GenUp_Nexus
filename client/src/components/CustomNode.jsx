@@ -1,74 +1,69 @@
-import React, { memo } from 'react';
-import { Handle, useReactFlow, useStoreApi, Position } from 'reactflow';
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Button,
+  useDisclosure,
+  Tooltip,
+} from "@nextui-org/react";
+import React, { memo } from "react";
+import { Handle, useReactFlow, useStoreApi, Position } from "reactflow";
+import { SunIcon } from "./SunIcon";
 
-const options = [
-  {
-    value: 'smoothstep',
-    label: 'Smoothstep',
-  },
-  {
-    value: 'step',
-    label: 'Step',
-  },
-  {
-    value: 'default',
-    label: 'Bezier (default)',
-  },
-  {
-    value: 'straight',
-    label: 'Straight',
-  },
-];
+function CustomNode({ data, isConnectable }) {
+  function handleClick() {
+    console.log("clicked");
+  }
 
-function Select({ value, handleId, nodeId }) {
-  const { setNodes } = useReactFlow();
-  const store = useStoreApi();
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
-  const onChange = (evt) => {
-    const { nodeInternals } = store.getState();
-    setNodes(
-      Array.from(nodeInternals.values()).map((node) => {
-        if (node.id === nodeId) {
-          node.data = {
-            ...node.data,
-            selects: {
-              ...node.data.selects,
-              [handleId]: evt.target.value,
-            },
-          };
-        }
-
-        return node;
-      })
-    );
-  };
-
-  return (
-    <div className="custom-node__select">
-      <div>Edge Type</div>
-      <select className="nodrag" onChange={onChange} value={value}>
-        {options.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
-      <Handle type="source" position={Position.Right} id={handleId} />
-    </div>
-  );
-}
-
-function CustomNode({ id, data }) {
   return (
     <>
-      <div className="custom-node__header">
-        This is a <strong>custom node</strong>
+      <Handle
+        type="target"
+        position={Position.Top}
+        isConnectable={isConnectable}
+      />
+      <div className="">
+        {/* <div className="text-xl text-yellow-700">{data.label}</div> */}
+        <Tooltip content={data?.description}>
+          <Button variant="none" className="">
+            {data?.label}
+          </Button>
+        </Tooltip>
+        <Button onPress={onOpen}>
+          <SunIcon />
+        </Button>
       </div>
-      <div className="custom-node__body">
-        {Object.keys(data.selects).map((handleId) => (
-          <Select key={handleId} nodeId={id} value={data.selects[handleId]} handleId={handleId} />
-        ))}
-      </div>
+
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">
+                {data?.label}
+              </ModalHeader>
+              <ModalBody>{data?.description}</ModalBody>
+              <ModalFooter>
+                <Button color="danger" variant="light" onPress={onClose}>
+                  Close
+                </Button>
+                <Button color="primary" onPress={onClose}>
+                  Action
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+
+      <Handle
+        type="source"
+        position={Position.Right}
+        isConnectable={isConnectable}
+      />
     </>
   );
 }
