@@ -16,6 +16,7 @@ import ReactFlow, {
 } from "reactflow";
 import "reactflow/dist/style.css";
 import axios from "../../../axios.js";
+import { toast } from "react-hot-toast";
 
 // import {
 //   // nodes as initialNodes,
@@ -54,6 +55,7 @@ const Mindmaps = () => {
   const handleSumbmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+    // toast.loading("Generating...");
 
     try {
       const res = await axios.post("/tree/demo", form);
@@ -68,9 +70,11 @@ const Mindmaps = () => {
       console.log(initialNodes);
       console.log(initialEdges);
       setIsLoading(false);
+      toast.success("Mindmap Created Successfully!");
     } catch (error) {
       console.log(error);
       setIsLoading(false);
+      toast.error("Server error please try again later");
     }
   };
 

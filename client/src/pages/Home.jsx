@@ -21,6 +21,7 @@ import {
 } from "@nextui-org/react";
 import { MoonIcon } from "../components/MoonIcon";
 import { SunIcon } from "../components/SunIcon";
+import {toast} from "react-hot-toast";
 
 const Home = () => {
   const { theme, setTheme } = useTheme();
@@ -34,6 +35,7 @@ const Home = () => {
 
   const logout = () => {
     localStorage.removeItem("user");
+    toast.success("Logout successful!");
     navigateTo("/");
     setUser(null);
   };
@@ -45,9 +47,11 @@ const Home = () => {
     try {
       const res = await axios.post("/user/delete");
       setIsLoading(false);
+      toast.success("Account deleted successfully!");
       logout();
     } catch (error) {
       setIsLoading(false);
+      toast.error("Account deletion failed!");
       console.log(error);
     }
   };

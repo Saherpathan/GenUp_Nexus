@@ -10,6 +10,7 @@ import { Switch, Input, Button } from "@nextui-org/react";
 import { MoonIcon } from "../components/MoonIcon";
 import { SunIcon } from "../components/SunIcon";
 import { ImGoogle } from "react-icons/im";
+import { toast } from "react-hot-toast";
 
 const initialForm = {
   name: "",
@@ -53,7 +54,7 @@ const Register = () => {
         const result = res.data;
         localStorage.setItem("user", JSON.stringify({ ...result }));
         setUser(JSON.parse(localStorage.getItem("user")));
-
+        toast.success("Registration successful!");
         setIsLoading(false);
         navigateTo("/");
       } catch (error) {
@@ -61,6 +62,7 @@ const Register = () => {
         setServerMsg(
           error.response.data.message || "Server error please try again later"
         );
+        toast.error("Server error please try again later");
       }
     } else {
       setErrors(validationErrors);
