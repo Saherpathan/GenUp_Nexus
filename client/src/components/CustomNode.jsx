@@ -6,9 +6,11 @@ import {
   ModalFooter,
   Button,
   useDisclosure,
+  Tooltip,
 } from "@nextui-org/react";
 import React, { memo } from "react";
 import { Handle, useReactFlow, useStoreApi, Position } from "reactflow";
+import { SunIcon } from "./SunIcon";
 
 function CustomNode({ data, isConnectable }) {
   function handleClick() {
@@ -24,39 +26,26 @@ function CustomNode({ data, isConnectable }) {
         position={Position.Top}
         isConnectable={isConnectable}
       />
-      <div className="text-md">
-        <div className="text-xl text-yellow-700">{data.label}</div>
-        <div className="">
-          {data.description}
-          {data.icon}
-        </div>
-        <Button onPress={onOpen}>Details</Button>
+      <div className="">
+        {/* <div className="text-xl text-yellow-700">{data.label}</div> */}
+        <Tooltip content={data?.description}>
+          <Button variant="none" className="">
+            {data?.label}
+          </Button>
+        </Tooltip>
+        <Button onPress={onOpen}>
+          <SunIcon />
+        </Button>
       </div>
 
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="flex flex-col gap-1">{data.label}</ModalHeader>
-              <ModalBody>
-                <p> 
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                  Nullam pulvinar risus non risus hendrerit venenatis.
-                  Pellentesque sit amet hendrerit risus, sed porttitor quam.
-                </p>
-                <p>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                  Nullam pulvinar risus non risus hendrerit venenatis.
-                  Pellentesque sit amet hendrerit risus, sed porttitor quam.
-                </p>
-                <p>
-                  Magna exercitation reprehenderit magna aute tempor cupidatat consequat elit
-                  dolor adipisicing. Mollit dolor eiusmod sunt ex incididunt cillum quis. 
-                  Velit duis sit officia eiusmod Lorem aliqua enim laboris do dolor eiusmod. 
-                  Et mollit incididunt nisi consectetur esse laborum eiusmod pariatur 
-                  proident Lorem eiusmod et. Culpa deserunt nostrud ad veniam.
-                </p>
-              </ModalBody>
+              <ModalHeader className="flex flex-col gap-1">
+                {data?.label}
+              </ModalHeader>
+              <ModalBody>{data?.description}</ModalBody>
               <ModalFooter>
                 <Button color="danger" variant="light" onPress={onClose}>
                   Close
