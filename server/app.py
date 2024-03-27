@@ -159,159 +159,40 @@ def treeDemo():
 
 **Structure:**
 
-- Top-level node: Represent the user's query (e.g., "Artificial Intelligence").
+- Top-level node: Represent the user's query.
 - Sub-nodes branching out based on the query's relevance:
     - Leverage external knowledge sources (e.g., Wikipedia, knowledge graphs, domain-specific APIs) to identify relevant sub-concepts, related entities, and potential relationships.
 - Consider including different categories of sub-nodes:
-    - **Concepts:** Core ideas or principles related to the query (e.g., "Machine Learning" for "Artificial Intelligence").
-    - **Subfields:** Specialized areas within the main topic (e.g., "Natural Language Processing" for "Artificial Intelligence").
-    - **Applications:** Practical uses of the concept or subfield (e.g., "Computer Vision" for "Artificial Intelligence").
-    - **Tools and Technologies:** Software or platforms used to implement the concepts (e.g., "TensorFlow" for "Machine Learning").
-    - **Examples:** Illustrative instances or use cases (e.g., "Self-driving Cars" for "Artificial Intelligence").
-    - **Historical Context:** Milestones or key figures in the topic's development (e.g., "Alan Turing" for "Artificial Intelligence").
-    - **See Also:** Links to broader concepts or related areas for further exploration.
-    - **Controversies or Ethical Considerations:** If relevant, include information on ethical concerns associated with the topic.
-- Edges connect nodes to represent relationships like:
-    - **Is-A:** Indicates a hierarchical relationship (e.g., "Machine Learning" is-a subfield of "Artificial Intelligence").
-    - **Has-A:** Connects a concept to its components or aspects (e.g., "Artificial Intelligence" has-a "Machine Learning" component).
-    - **Used For:** Links a concept or subfield to its applications (e.g., "Machine Learning" used-for "Computer Vision").
-    - **Influences:** Represents a cause-and-effect relationship (e.g., "Alan Turing" influenced the development of "Artificial Intelligence").
-    - **Related To:** Represents a broader association (e.g., "Artificial Intelligence" related-to "Robotics").
-
+    - **Concepts:** Core ideas or principles related to the query.
+    - **Subfields:** Specialized areas within the main topic.
+    - **Applications:** Practical uses of the concept or subfield.
+    - **Tools and Technologies:** Software or platforms used to implement the concepts.
+    - **Examples:** Illustrative instances or use cases.
+    - **Historical Context:** Milestones or key figures in the topic's development.
+    - **See Also:** Links to broader concepts or related areas for the further exploration.
+    
+                                          
 **Content:**
 
 - Each node should have a label describing the concept, entity, or tool.
 - Optionally, include brief descriptions, definitions, or key points within the nodes or as tooltips.
 - Consider using icons to visually represent different categories of nodes (e.g., light bulb for concepts, gear for tools, calendar for historical context, puzzle piece for subfields).
+- there should be atmax 10 nodes in the knowledge map.
+- Also follow the n-ary tree structure for better visualization.
+- Ensure the knowledge map is visually appealing, well-organized, and easy to navigate.
 
 **Desired Format:**
 
 - JSON structure compatible with ReactFlow:
-    - nodes (list): Nodes with data (label, optional description, optional icon, optional category) and position.
-    - edges (list): Edges connecting nodes with source and target IDs, and an optional label describing the relationship type.
-
-**Accuracy Measures:**
-
-- Leverage external knowledge sources to increase the accuracy of identified concepts, relationships, and category assignments.
-- Consider implementing confidence scores for generated nodes and edges to indicate the model's certainty about the information.
-- Employ techniques like entity linking to disambiguate entities and ensure proper connections in the knowledge map (e.g., distinguishing between "Machine Learning" the subfield and specific machine learning algorithms).
-
-**Example:** (Provide a simplified JSON example demonstrating the structure with nodes, edges, and categories based on a sample user query.)
-        nodes = [
-            {
-                id: "1",
-                type: "input",
-                data: {
-                label: "Input Node",
-                },
-                position: { x: 250, y: 0 },
-            },
-            {
-                id: "2",
-                data: {
-                label: "Default Node",
-                },
-                position: { x: 100, y: 100 },
-            },
-            {
-                id: "3",
-                type: "output",
-                data: {
-                label: "Output Node",
-                },
-                position: { x: 400, y: 100 },
-            },
-            {
-                id: "4",
-                type: "custom",
-                position: { x: 100, y: 200 },
-                data: {
-                selects: {
-                    "handle-0": "smoothstep",
-                    "handle-1": "smoothstep",
-                },
-                },
-            },
-            {
-                id: "5",
-                type: "output",
-                data: {
-                label: "custom style",
-                },
-                className: "circle",
-                style: {
-                background: "#2B6CB0",
-                color: "white",
-                },
-                position: { x: 400, y: 200 },
-                sourcePosition: Position.Right,
-                targetPosition: Position.Left,
-            },
-            {
-                id: "6",
-                type: "output",
-                style: {
-                background: "#63B3ED",
-                color: "white",
-                width: 100,
-                },
-                data: {
-                label: "Node",
-                },
-                position: { x: 400, y: 325 },
-                sourcePosition: Position.Right,
-                targetPosition: Position.Left,
-            },
-            {
-                id: "7",
-                type: "default",
-                className: "annotation",
-                data: {
-                label: (
-                    <>
-                    On the bottom left you see the <strong>Controls</strong> and the
-                    bottom right the <strong>MiniMap</strong>. This is also just a node 🥳
-                    </>
-                ),
-                },
-                draggable: false,
-                selectable: false,
-                position: { x: 150, y: 400 },
-            },
-            ];
-
-            edges = [
-                { id: "e1-2", source: "1", target: "2", label: "this is an edge label" },
-                { id: "e1-3", source: "1", target: "3", animated: true },
-                {
-                    id: "e4-5",
-                    source: "4",
-                    target: "5",
-                    type: "smoothstep",
-                    sourceHandle: "handle-0",
-                    data: {
-                    selectIndex: 0,
-                    },
-                    markerEnd: {
-                    type: MarkerType.ArrowClosed,
-                    },
-                },
-                {
-                    id: "e4-6",
-                    source: "4",
-                    target: "6",
-                    type: "smoothstep",
-                    sourceHandle: "handle-1",
-                    data: {
-                    selectIndex: 1,
-                    },
-                    markerEnd: {
-                    type: MarkerType.ArrowClosed,
-                    },
-                },
-            ];
-
-            Topic is: ''' + query)
+    - nodes (list): Nodes with data (label, optional description, optional icon, optional category) and position, type(input or output).
+    - edges (list): Edges connecting nodes with source and target IDs, an optional label, an optional animated.
+- keep the position of nodes spaced out for better visualization.
+- always keep the top-level node at the center of the visualization.
+- keep atleast 2 edges "animated":true.
+- Strictly keep the first node with "style":{"background":"#0FFFF0", "color": "blue"}.
+- Strictly keep the second node with "type":"custom".
+                                   
+Topic is: ''' + query)
         
         # response.text(8,)
         print(response.text)

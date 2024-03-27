@@ -21,7 +21,7 @@ import axios from "../../../axios.js";
 //   // nodes as initialNodes,
 //   edges as initialEdges,
 // } from "../../initial-elements.jsx";
-// import CustomNode from "../../CustomNode";
+import CustomNode from "../../CustomNode";
 
 import "../../overview.css";
 
@@ -33,9 +33,9 @@ const minimapStyle = {
   height: 120,
 };
 
-// const nodeTypes = {
-//   custom: CustomNode,
-// };
+const nodeTypes = {
+  custom: CustomNode,
+};
 
 const onInit = (reactFlowInstance) =>
   console.log("flow loaded:", reactFlowInstance);
@@ -45,7 +45,7 @@ const Mindmaps = () => {
   const { theme, setTheme } = useTheme();
   const [form, setForm] = useState(initialForm);
   const [initialEdges, setInitialEdges] = useState([]);
-  const [initialNodes, setInitialNodes] = useState([]);
+  const [initialNodes, setInitialNodes] = useState(null);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -57,20 +57,19 @@ const Mindmaps = () => {
 
     try {
       const res = await axios.post("/tree/demo", form);
+      console.log(res);
       const result = res.data;
       console.log(JSON.parse(result.data));
-      const datas = JSON.parse(result.data) 
+      const datas = JSON.parse(result.data);
       const nodes = datas.nodes;
       const edges = datas.edges;
       setInitialNodes(nodes);
       setInitialEdges(edges);
-
       console.log(initialNodes);
-
       console.log(initialEdges);
-      // console.log(initialEdges);
       setIsLoading(false);
     } catch (error) {
+      console.log(error);
       setIsLoading(false);
     }
   };
@@ -135,6 +134,7 @@ const Mindmaps = () => {
             onInit={onInit}
             fitView
             attributionPosition="bottom-right"
+            nodeTypes={nodeTypes}
           >
             <MiniMap style={minimapStyle} zoomable pannable />
             <Controls />
