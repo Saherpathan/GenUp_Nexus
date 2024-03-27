@@ -2,7 +2,7 @@ import axios from "axios";
 
 const debug = localStorage.getItem("debug");
 
-const url = "http://127.0.0.1:5000";
+const url = "http://192.168.29.59:5000";
 
 console.log(url);
 
