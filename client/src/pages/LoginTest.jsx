@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "../../axios.js";
 import validate from "../../common/validation";
 import AuthErrorMessage from "../AuthError";
+import Background from "../components/Background/Background.jsx";
 
 const initialForm = {
   name: "",
@@ -110,6 +111,7 @@ const CustomerAuth = () => {
 
   return (
     <div className="flex justify-between overflow-hidden bg-gray-800">
+      <Background />
       {/* Loading Animations */}
       {isLoading ? (
         <div className="relative">

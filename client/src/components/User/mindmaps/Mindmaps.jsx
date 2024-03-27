@@ -25,6 +25,7 @@ import { toast } from "react-hot-toast";
 import CustomNode from "../../CustomNode";
 
 import "../../overview.css";
+import Background2 from "../../Background/Background.jsx";
 
 const initialForm = {
   query: "",
@@ -80,6 +81,8 @@ const Mindmaps = () => {
 
   return (
     <div>
+      <Background2 />
+
       {isLoading ? (
         <Loader
           json="https://lottie.host/2639b394-c2db-4afd-a6ad-00e8dde8a240/OAhwCbq88U.json"
@@ -87,12 +90,13 @@ const Mindmaps = () => {
           height="250px"
         />
       ) : null}
-      <div className="flex justify-between m-5 text-2xl text-center">
+      <div className="z-10 flex justify-between m-5 text-2xl text-center">
         Mindmaps
         <Switch
           defaultSelected
           size="lg"
           color="primary"
+          style={{zIndex: '5'}}
           thumbIcon={({ isSelected, className }) =>
             !isSelected ? (
               <SunIcon className={className} />
@@ -109,32 +113,36 @@ const Mindmaps = () => {
           }}
         />
       </div>
-      <Input
-        type="text"
-        label="What you want to learn ?"
-        name="query"
-        id="query"
-        value={form.query}
-        onChange={handleChange}
-        isRequired
-        className="m-3 w-[300px]"
-      />
+      
+      <div className="z-10 sticky">
+        <Input
+          type="text"
+          label="What you want to learn ?"
+          name="query"
+          id="query"
+          value={form.query}
+          onChange={handleChange}
+          isRequired
+          className="m-3 w-[300px]"
+        />
 
-      <Button
-        onClick={handleSumbmit}
-        className="flex m-2"
-        color="primary"
-        variant="shadow"
-        isLoading={isLoading}
-      >
-        Get
-      </Button>
-
+        <Button
+          onClick={handleSumbmit}
+          className="flex m-2"
+          color="primary"
+          variant="shadow"
+          isLoading={isLoading}
+        >
+          Get
+        </Button>
+      </div>
+      
       {initialNodes && (
-        <div style={{ width: "98vw", height: "75vh" }}>
+        <div style={{ width: "100dvw", height: "100dvh", position: 'absolute', top: '0', zIndex: '1' }}>
           <ReactFlow
-            nodes={initialNodes}
-            edges={initialEdges}
+            nodes={nodes}
+            edges={edgesWithUpdatedTypes}
+            onConnect={onConnect}
             onInit={onInit}
             fitView
             attributionPosition="bottom-right"

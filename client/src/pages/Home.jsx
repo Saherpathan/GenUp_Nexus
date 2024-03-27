@@ -22,6 +22,7 @@ import {
 import { MoonIcon } from "../components/MoonIcon";
 import { SunIcon } from "../components/SunIcon";
 import {toast} from "react-hot-toast";
+import Background from "../components/Background/Background";
 
 const Home = () => {
   const { theme, setTheme } = useTheme();
@@ -58,6 +59,7 @@ const Home = () => {
 
   return (
     <div className="">
+      <Background />
       {isLoading ? <Loader width="500px" height="250px" /> : null}
       <div className="flex justify-between m-2">
         <div className="m-2 text-2xl text-center">Home</div>
