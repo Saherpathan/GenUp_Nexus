@@ -1,8 +1,8 @@
-flask==3.0.2
-Werkzeug==3.0.1
-Flask-Cors==4.0.0
-google-generativeai==0.4.1
-python-dotenv==1.0.1
+flask
+Werkzeug
+Flask-Cors
+google-generativeai
+python-dotenv
 pymongo[srv]
 marshmallow
 flask_bcrypt 
