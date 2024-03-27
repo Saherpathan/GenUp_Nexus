@@ -12,7 +12,7 @@ import React, { memo } from "react";
 import { Handle, useReactFlow, useStoreApi, Position } from "reactflow";
 import { SunIcon } from "./SunIcon";
 
-function CustomNode({ data, isConnectable }) {
+function CustomNode({ data }) {
   function handleClick() {
     console.log("clicked");
   }
@@ -21,11 +21,6 @@ function CustomNode({ data, isConnectable }) {
 
   return (
     <>
-      <Handle
-        type="target"
-        position={Position.Top}
-        isConnectable={isConnectable}
-      />
       <div className="">
         {/* <div className="text-xl text-yellow-700">{data.label}</div> */}
         <Tooltip content={data?.description}>
@@ -58,12 +53,9 @@ function CustomNode({ data, isConnectable }) {
           )}
         </ModalContent>
       </Modal>
-
-      <Handle
-        type="source"
-        position={Position.Right}
-        isConnectable={isConnectable}
-      />
+      
+      <Handle type="target" position={Position.Top} />
+      <Handle type="source" position={Position.Right} />
     </>
   );
 }
