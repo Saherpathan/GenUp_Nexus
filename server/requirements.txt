@@ -1,5 +1,5 @@
-Flask==2.0.1
-Werkzeug==2.2.2
+Flask==3.0.0
+Werkzeug
 Flask-Cors
 google-generativeai
 python-dotenv
