@@ -38,7 +38,7 @@ function CustomNode({ data }) {
           {(onClose) => (
             <>
               <ModalHeader className="flex flex-col gap-1">
-                {data?.label}
+                {data.label}
               </ModalHeader>
               <ModalBody>{data?.description}</ModalBody>
               <ModalFooter>

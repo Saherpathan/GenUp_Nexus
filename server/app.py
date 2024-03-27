@@ -10,6 +10,7 @@ from flask_jwt_extended import JWTManager, create_access_token
 from middleware.authUser import auth_user
 from datetime import timedelta 
 from controllers.demo import get_initial_data
+from controllers.mindmap import saveMindmap, getMindmap, deleteMindmap, getMindmapByid
 
 from dotenv import load_dotenv
 import os
@@ -34,7 +35,8 @@ uri = f'mongodb+srv://{username}:{password}{restUri}'
 
 client = MongoClient(uri, server_api=ServerApi('1'))
 db = client.GenUpNexus
-users_collection = db["users3"]
+users_collection = db["users"]
+savedMindmap = db["savedMindmap"]
 
 # Send a ping to confirm a successful connection
 try:
@@ -184,15 +186,15 @@ def treeDemo():
 **Desired Format:**
 
 - JSON structure compatible with ReactFlow:
-    - nodes (list): Nodes with data (optional description, optional icon, optional category), label and position, type(input or output).
-    - edges (list): Edges connecting nodes with source and target IDs, an optional label, an optional animated.
+    - nodes (list): id, position, data (label, description, icon(if required), category), type(input, output or custom), style (background, color).
+    - edges (list): id, source, target, label(if required), animated (true or false), style (stroke).
 - keep the position of nodes spaced out for better visualization.
 - always keep the top-level node at the center of the visualization.
 - keep atleast 2 edges "animated":true.
-- Strictly keep the first node with "style":{"background":"#0FFFF0", "color": "blue"}.
-- Strictly keep the second node with "type":"custom".
+- Strictly keep the first node with style having color property with value blue and background property with value #0FFFF0.
+- Strictly keep the second node with type property value as custom.
 - You can style the nodes with different colors and edges with different colors. 
-- to edit edges add "style":{"stroke": "<hex code of color>"}.
+- to edit edges add style with stroke property and a hexcode value to it.
                                    
 Topic is: ''' + query)
         
@@ -285,13 +287,39 @@ def delete_account():
         print(e)
         return jsonify({"message": "Something went wrong"}), 500
 
+# mindmap routes
+@app.route('/mindmap/save', methods=['POST'])
+@auth_user
+def mindmapSave():
+    userId = request.userId
+    data = request.json
+    return saveMindmap(data, userId, savedMindmap)
+
+@app.route('/mindmap/get', methods=['GET'])
+@auth_user
+def mindmapGet():
+    userId = request.userId
+    return getMindmap(userId, savedMindmap)
+
+@app.route('/mindmap/get/<id>', methods=['GET'])
+@auth_user
+def mindmapGetById(id):
+    userId = request.userId
+    return getMindmapByid(userId, id, savedMindmap)
+
+@app.route('/mindmap/delete', methods=['POST'])
+@auth_user
+def mindmapDelete():
+    userId = request.userId
+    data = request.json
+    return deleteMindmap(userId, data, savedMindmap)
+
+
 @app.route('/mindmap/demo', methods=['POST'])
 def mindmapDemo():
     data = request.json
     print(data);
     return get_initial_data(), 200
-
-
 
 
 CORS(app)

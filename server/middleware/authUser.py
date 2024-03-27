@@ -16,7 +16,7 @@ def auth_user(next_function):
             if token and is_custom_auth:
                 secret_key = os.getenv('JWT_SECRET')
                 decoded_data = jwt.decode(token, secret_key, algorithms=["HS256"])
-                print(decoded_data)
+                # print(decoded_data)
                 dat = decoded_data.get('sub')
                 request.email = dat.get('email')
                 request.userId = dat.get('id')
@@ -31,5 +31,6 @@ def auth_user(next_function):
         except Exception as e:
             print(e)  # Log the error if needed
             return jsonify({"error": "Unauthorized"}), 401
-
+        
+    middleware_function.__name__ = next_function.__name__
     return middleware_function
