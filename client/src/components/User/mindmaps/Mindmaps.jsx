@@ -57,6 +57,7 @@ const Mindmaps = () => {
 
     try {
       const res = await axios.post("/tree/demo", form);
+      console.log(res);
       const result = res.data;
       console.log(JSON.parse(result.data));
       const datas = JSON.parse(result.data);
@@ -64,13 +65,11 @@ const Mindmaps = () => {
       const edges = datas.edges;
       setInitialNodes(nodes);
       setInitialEdges(edges);
-
       console.log(initialNodes);
-
       console.log(initialEdges);
-      // console.log(initialEdges);
       setIsLoading(false);
     } catch (error) {
+      console.log(error);
       setIsLoading(false);
     }
   };
