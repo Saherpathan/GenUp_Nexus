@@ -1,5 +1,4 @@
 Flask==2.2.5
-Werkzeug==2.2.2
 Gunicorn
 Flask-Cors
 google-generativeai
