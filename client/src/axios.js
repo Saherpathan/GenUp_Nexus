@@ -2,7 +2,7 @@ import axios from "axios";
 
 const debug = localStorage.getItem("debug");
 
-const url = "https://gen-up-nexus-hhs3.vercel.app"; 
+const url = "https://genup-nexus.onrender.com"; 
 //! For using local Development, use this URL to connect to your local server.
 
 console.log(url);
