@@ -55,6 +55,10 @@ model = genai.GenerativeModel('gemini-pro')
 def index():
     return "Server is Running..."
 
+@app.route('/index')
+def index2():
+    return "routes checking..."
+
 @app.route('/tree', methods=["POST", "GET"])
 def tree():
     if request.method == 'POST':

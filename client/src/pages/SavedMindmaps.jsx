@@ -24,7 +24,7 @@ const SavedMindmaps = () => {
         setIsLoading(false);
       } catch (err) {
         console.error(err);
-        toast.error("Server error please try again later");
+        toast.error( "Server error please try again later");
         setIsLoading(false);
       } finally {
         setIsLoading(false);
