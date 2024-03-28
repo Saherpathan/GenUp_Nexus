@@ -1,7 +1,7 @@
 import React, { useRef, useState, useCallback } from "react";
 import Loader from "../../../components/Loader";
 import { useTheme } from "next-themes";
-import { Switch, Input, Button } from "@nextui-org/react";
+import { Switch, Input, Button, Card, CardBody, CardFooter } from "@nextui-org/react";
 import { MoonIcon } from "../../../components/MoonIcon";
 import { SunIcon } from "../../../components/SunIcon";
 import ReactFlow, {
@@ -25,7 +25,7 @@ import { Layout } from "../../../components/Layout";
 //   edges as initialEdges,
 // } from "../../initial-elements.jsx";
 import CustomNode from "../../CustomNode";
-
+import Background2 from "../../Background/Background";
 import "../../overview.css";
 
 const initialForm = {
@@ -101,8 +101,14 @@ const Mindmaps = () => {
     }
   };
 
+  const removeAttr = () => {
+    let temp = document.getElementsByClassName("react-flow__attribution");
+    temp[0].parentNode.removeChild(temp[0]);
+  };
+
   return (
     <div>
+      <Background2 />
       <Layout>
         {isLoading ? (
           <Loader
@@ -114,46 +120,46 @@ const Mindmaps = () => {
         <div className="flex justify-between m-5 text-2xl text-center">
           Mindmaps
         </div>
-        <Input
-          type="text"
-          label="What you want to learn ?"
-          name="query"
-          id="query"
-          value={form.query}
-          onChange={handleChange}
-          isRequired
-          className="m-3 w-[300px]"
-        />
-
-        <div className="flex justify-between">
-          <Button
-            onClick={handleSumbmit}
-            className="flex mx-3 my-2"
-            color="primary"
-            variant="shadow"
-            isLoading={isLoading}
-            isDisabled={form.query === ""}
-          >
-            Get
-          </Button>
-
-          {initialNodes && (
-            <div>
+        <Card className="z-10 w-1/5 m-3">
+          <CardBody className="w-full">
+            <Input
+              type="text"
+              label="What you want to learn ?"
+              name="query"
+              id="query"
+              value={form.query}
+              onChange={handleChange}
+              isRequired
+              className="p-3 w-full"
+            />
+            </CardBody>
+            <CardFooter className="justify-center">
               <Button
-                isIconOnly
-                onClick={handleSave}
-                className="flex m-2"
-                color="secondary"
+                onClick={handleSumbmit}
+                className="flex mx-3 my-2"
+                color="primary"
                 variant="shadow"
-                isLoading={isButtonLoading}
-                startContent={<IoSaveOutline />}
-              ></Button>
-            </div>
-          )}
-        </div>
+                isLoading={isLoading}
+                isDisabled={form.query === ""}
+              >
+                Get
+              </Button>
+              {initialNodes && (
+                <Button
+                  isIconOnly
+                  onClick={handleSave}
+                  className="flex m-2"
+                  color="secondary"
+                  variant="shadow"
+                  isLoading={isButtonLoading}
+                  startContent={<IoSaveOutline />}
+                ></Button>
+              )}
+            </CardFooter>
+          </Card>
 
         {initialNodes && (
-          <div style={{ width: "98vw", height: "65vh" }}>
+          <div style={{ width: "100dvw", height: "100dvh", position: 'absolute', top: '0', zIndex: '1' }}>
             <ReactFlow
               nodes={initialNodes}
               edges={initialEdges}

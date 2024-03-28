@@ -7,6 +7,7 @@ import { toast } from "react-hot-toast";
 import { IoSaveOutline } from "react-icons/io5";
 import { IoOpenOutline } from "react-icons/io5";
 import { Link } from "react-router-dom";
+import Background from "../components/Background/Background.jsx";
 
 const SavedMindmaps = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -36,6 +37,7 @@ const SavedMindmaps = () => {
 
   return (
     <>
+    <Background />
       {isLoading ? <Loader width="500px" height="250px" /> : null}
       <Layout>
         <div className="flex justify-between m-5 text-2xl text-center">

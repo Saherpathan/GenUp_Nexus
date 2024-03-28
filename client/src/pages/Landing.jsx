@@ -1,9 +1,13 @@
 import React from 'react'
+import Background from "../components/Background/Background";
 
 const Landing = () => {
   return (
-    <div>Landing</div>
+    <div>
+      <Background />
+      Landing
+    </div>
   )
 }
 
-export default Landing
+export default Landing;

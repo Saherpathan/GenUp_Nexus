@@ -65,7 +65,7 @@ export default function NavBar() {
       maxWidth="2xl"
       height="80px"
       isBordered
-      className=" sticky top-[0vh] "
+      className="z-10 sticky top-[0vh] "
     >
       <NavbarBrand className="mr-4 space-x-3">
         <Link to="/">

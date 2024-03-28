@@ -11,6 +11,7 @@ import { MoonIcon } from "../components/MoonIcon";
 import { SunIcon } from "../components/SunIcon";
 import { ImGoogle } from "react-icons/im";
 import { toast } from "react-hot-toast";
+import Background from "../components/Background/Background.jsx";
 
 const initialForm = {
   name: "",
@@ -96,6 +97,7 @@ const Register = () => {
 
   return (
     <div className="">
+      <Background />
       {isLoading ? <Loader width="500px" height="250px" /> : null}
       <div className="flex justify-between m-5 text-2xl text-center">
         Register
