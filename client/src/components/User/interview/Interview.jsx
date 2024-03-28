@@ -71,7 +71,7 @@ const Interview = () => {
 
     const getInterviewHistory = async () => {
         try {
-            const response = await fetch( 'http://127.0.0.1:5000/result', {
+            const response = await fetch( 'https://parthcodes-test-flask-deploy.hf.space/result', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -111,7 +111,7 @@ const Interview = () => {
 
     const startInterview = async () => {
         try {
-        const response = await fetch( 'http://127.0.0.1:5000/interview', {
+        const response = await fetch( 'https://parthcodes-test-flask-deploy.hf.space/interview', {
             method: 'POST',
             headers: {
             'Content-Type': 'application/json',
@@ -153,7 +153,7 @@ const Interview = () => {
 
     const nextQuestion = async () => {
         try {
-          const response = await fetch( 'http://127.0.0.1:5000/interview', {
+          const response = await fetch( 'https://parthcodes-test-flask-deploy.hf.space/interview', {
                 method: 'POST',
                 headers: {
                 'Content-Type': 'application/json',

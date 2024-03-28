@@ -32,7 +32,7 @@ const Results = () => {
         setCodeTheme(`vs-${theme}`);
         const getResults = async() => {
             try {
-                const response = await fetch( 'http://127.0.0.1:5000/result', {
+                const response = await fetch( 'https://parthcodes-test-flask-deploy.hf.space/result', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
