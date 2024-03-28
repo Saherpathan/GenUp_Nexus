@@ -1,6 +1,6 @@
 Flask
 Gunicorn
-Werkzeug
+Werkzeug==2.2.2
 Flask-Cors
 google-generativeai
 python-dotenv
