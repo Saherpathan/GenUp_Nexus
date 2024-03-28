@@ -58,7 +58,7 @@ const Home = () => {
               Roadmap
             </Button>
           </Link>
-          <Link to="/savedmindmaps" className="p-2 m-2 text-primary">
+          <Link to="/mindmap/personal" className="p-2 m-2 text-primary">
             <Button className="flex m-2" color="warning" variant="shadow">
               Saved Mindmaps
             </Button>

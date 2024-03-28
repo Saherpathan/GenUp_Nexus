@@ -68,7 +68,7 @@ export default function NavBar() {
       className="z-10 sticky top-[0vh] "
     >
       <NavbarBrand className="mr-4 space-x-3">
-        <Link to="/">
+        <Link to="/user">
           <p className="font-bold sm:block text-inherit ">GenUpNexus</p>
         </Link>
       </NavbarBrand>

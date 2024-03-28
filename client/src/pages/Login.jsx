@@ -55,7 +55,7 @@ const Login = () => {
         setUser(JSON.parse(localStorage.getItem("user")));
         toast.success("Login successful!");
         setIsLoading(false);
-        navigateTo("/");
+        navigateTo("/user");
       } catch (error) {
         setIsLoading(false);
         setServerMsg(
@@ -90,7 +90,7 @@ const Login = () => {
       setUser(JSON.parse(localStorage.getItem("user")));
 
       setIsLoading(false);
-      navigateTo("/");
+      navigateTo("/user");
     }, []);
   }
 

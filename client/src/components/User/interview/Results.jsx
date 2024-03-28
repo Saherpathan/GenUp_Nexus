@@ -11,7 +11,7 @@ import { useGlobalContext } from "../../../contexts/GlobalContext";
 import { companyNames } from "./data";
 import { Icon } from '@iconify/react';
 import Background from '../../Background/Background';
-import ReactStoreIndicator from 'react-score-indicator'
+// import ReactStoreIndicator from 'react-score-indicator';
 import {Divider} from "@nextui-org/react";
 import Editor from "@monaco-editor/react";
 import {ScrollShadow} from "@nextui-org/react";
@@ -153,11 +153,11 @@ const Results = () => {
                                 <CardBody className="overflow-visible p-0">
                                     <div className="max-w-[500px] w-full flex items-center gap-3 p-3 justify-center">
                                         <div className='pt-4 pb-5'>
-                                            <ReactStoreIndicator
+                                            {/* <ReactStoreIndicator
                                                 width={200}
                                                 value={resultData.interview_score}
                                                 maxValue={10}
-                                            />
+                                            /> */}
                                         </div>
                                     </div>
                                 </CardBody>

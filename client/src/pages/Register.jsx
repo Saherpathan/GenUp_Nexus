@@ -57,7 +57,7 @@ const Register = () => {
         setUser(JSON.parse(localStorage.getItem("user")));
         toast.success("Registration successful!");
         setIsLoading(false);
-        navigateTo("/");
+        navigateTo("/user");
       } catch (error) {
         setIsLoading(false);
         setServerMsg(
@@ -91,7 +91,7 @@ const Register = () => {
         setUser(JSON.parse(localStorage.getItem("user")));
         
         setIsLoading(false);
-        navigateTo("/");
+        navigateTo("/user");
       }, []);
     }
 
