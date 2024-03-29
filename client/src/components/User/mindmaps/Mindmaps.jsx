@@ -19,8 +19,6 @@ import ReactFlow, {
   ReactFlowProvider,
 } from "reactflow";
 import "reactflow/dist/style.css";
-import "../../overview.css";
-import CustomNode from "../../CustomNode";
 import axios from "../../../axios.js";
 import { toast } from "react-hot-toast";
 import { IoSaveOutline } from "react-icons/io5";

@@ -13,6 +13,7 @@ import Roadmaps from "./components/User/roadmaps/Roadmaps";
 import SavedMindmaps from "./components/User/mindmaps/SavedMindmaps";
 import MindmapOpener from "./components/User/mindmaps/MindmapOpener";
 import Results from "./components/User/interview/Results";
+import { ReactFlowProvider } from "reactflow";
 
 function App() {
   localStorage.setItem("debug", true);
