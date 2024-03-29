@@ -184,13 +184,15 @@ def treeDemo():
 - Include brief descriptions, definitions, or key points within the nodes or as tooltips.
 - Consider using icons to visually represent different categories of nodes (e.g.💡 for concepts, ⚙️ for tools, 📅 for historical context, 🧩 for subfields).
 - Also follow the n-ary tree structure for better visualization.
+- There should be atmax 10 nodes.
 - Ensure the knowledge map is visually appealing, well-organized, and easy to navigate.
 
 **Desired Format:**
 
 - JSON structure compatible with ReactFlow:
-    - nodes (list): id, position, data (label, description, icon, category), type(custom), style (background, color).
+    - nodes (list): id, position, data (label, description, icon, category), type(custom).
     - edges (list): id, source, target, label(if required), animated (true or false), style (stroke).
+- Keep the top level node centered and highlighted. 
 - keep the position of nodes spaced out for better visualization.
 - keep atleast 2 edges "animated":true.
 - Strictly keep the all the nodes with type property value as custom. 
@@ -246,7 +248,7 @@ def signup():
     expires = timedelta(days=7)
     access_token = create_access_token(identity={"email": email, "id": str(result.inserted_id)}, expires_delta=expires)
 
-    res = {"name": name, "email": email}
+    res = {"name": name, "email": email, "userId": str(result.inserted_id)}
     
     return jsonify({"result": res, "token": access_token}), 201
 
@@ -267,7 +269,7 @@ def signin():
     expires = timedelta(days=7)
     access_token = create_access_token(identity={"email": user['email'], "id": str(user['_id'])}, expires_delta=expires)
 
-    res = {"name": user['name'], "email": user['email']}
+    res = {"name": user['name'], "email": user['email'], "userId": str(user['_id'])}
 
     return jsonify({"result": res, "token": access_token}), 200
 
@@ -303,8 +305,7 @@ def mindmapGet():
 
 @app.route('/mindmap/get/<id>', methods=['GET'])
 def mindmapGetById(id):
-    userId = request.userId
-    return getMindmapByid(userId, id, savedMindmap)
+    return getMindmapByid(id, savedMindmap)
 
 @app.route('/mindmap/delete', methods=['POST'])
 @auth_user

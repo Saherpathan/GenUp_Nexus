@@ -28,7 +28,7 @@ def getMindmap(userId, savedMindmap):
         print(e)  
         return jsonify({"error": "An error occurred"}), 500
     
-def getMindmapByid(userId, id, savedMindmap):
+def getMindmapByid(id, savedMindmap):
     try:
         object_id = ObjectId(id)
         result = savedMindmap.find_one({"_id": object_id})
