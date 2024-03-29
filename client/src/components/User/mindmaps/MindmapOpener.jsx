@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Loader from "./Loader";
+import Loader from "../../Loader";
 import ReactFlow, {
   addEdge,
   MiniMap,
@@ -11,13 +11,12 @@ import ReactFlow, {
   Position,
 } from "reactflow";
 import "reactflow/dist/style.css";
-import axios from "../axios.js";
+import axios from "../../../axios.js";
 import { toast } from "react-hot-toast";
-import { Layout } from "./Layout";
+import { Layout } from "../../Layout";
 import { Button } from "@nextui-org/react";
 import { MdDeleteOutline } from "react-icons/md";
 import { Link, useNavigate } from "react-router-dom";
-
 import CustomNode from "./CustomNode";
 import "./overview.css";
 

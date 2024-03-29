@@ -6,6 +6,7 @@ import { Button, Chip, Image } from '@nextui-org/react';
 import { Link } from 'react-router-dom';
 import { IoOpenOutline } from 'react-icons/io5';
 import './ThreeDCard.css';
+
 export function ThreeDCard({item, index}) {
   
   function shortenString(string) {
@@ -51,7 +52,7 @@ export function ThreeDCard({item, index}) {
   return (
     <MouseEnterProvider>
       <CardContainer className="inter-var">
-        <CardBody className="bg-gray-50 relative group/card  dark:hover:shadow-2xl dark:hover:shadow-emerald-500/[0.1] dark:bg-black dark:border-white/[0.2] border-black/[0.1] w-auto sm:w-[20rem] h-[24rem] rounded-xl p-6 border  ">
+        <CardBody className="bg-gray-50 relative group/card  dark:hover:shadow-2xl dark:hover:shadow-emerald-500/[0.1] dark:bg-black dark:border-white/[0.2] border-black/[0.1] w-[90dvw] sm:w-[20rem] h-[24rem] rounded-xl p-6 border  ">
           <CardItem
             translateZ="50"
             className="text-xl font-bold text-neutral-600 dark:text-white"

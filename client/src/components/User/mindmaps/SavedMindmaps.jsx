@@ -54,7 +54,7 @@ const SavedMindmaps = () => {
           </div>
         )}
 
-        <div className="flex flex-wrap gap-3 m-4 justify-center">
+        <div className="flex flex-wrap gap-3 m-3 justify-center">
           {mindmaps?.data?.map((item, index) => {
             console.log(item);
             return (

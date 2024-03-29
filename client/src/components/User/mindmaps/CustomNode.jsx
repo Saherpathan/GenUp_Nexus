@@ -10,7 +10,7 @@ import {
 } from "@nextui-org/react";
 import React, { memo } from "react";
 import { Handle, useReactFlow, useStoreApi, Position } from "reactflow";
-import { SunIcon } from "./SunIcon";
+import { SunIcon } from "../../SunIcon";
 
 function CustomNode({ data }) {
   function handleClick() {

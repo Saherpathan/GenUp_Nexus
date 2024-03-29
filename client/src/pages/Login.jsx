@@ -12,6 +12,7 @@ import { SunIcon } from "../components/SunIcon";
 import { ImGoogle } from "react-icons/im";
 import { toast } from "react-hot-toast";
 import Background from "../components/Background/Background.jsx";
+import { Layout } from "../components/Layout.jsx";
 
 const initialForm = {
   email: "",

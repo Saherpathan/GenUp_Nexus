@@ -24,9 +24,9 @@ import { Layout } from "../../../components/Layout";
 //   // nodes as initialNodes,
 //   edges as initialEdges,
 // } from "../../initial-elements.jsx";
-import CustomNode from "../../CustomNode";
+import CustomNode from "./CustomNode";
 import Background2 from "../../Background/Background";
-import "../../overview.css";
+import "./overview.css";
 
 const initialForm = {
   query: "",
