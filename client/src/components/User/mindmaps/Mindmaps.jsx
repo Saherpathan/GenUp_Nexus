@@ -15,33 +15,16 @@ import ReactFlow, {
   Position,
 } from "reactflow";
 import "reactflow/dist/style.css";
+import "../../overview.css";
+import CustomNode from "../../CustomNode";
 import axios from "../../../axios.js";
 import { toast } from "react-hot-toast";
 import { IoSaveOutline } from "react-icons/io5";
 import { Layout } from "../../../components/Layout";
 
-// import {
-//   // nodes as initialNodes,
-//   edges as initialEdges,
-// } from "../../initial-elements.jsx";
-import CustomNode from "../../CustomNode";
-
-import "../../overview.css";
-
 const initialForm = {
   query: "",
 };
-
-const minimapStyle = {
-  height: 120,
-};
-
-const nodeTypes = {
-  custom: CustomNode,
-};
-
-const onInit = (reactFlowInstance) =>
-  console.log("flow loaded:", reactFlowInstance);
 
 const Mindmaps = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -50,6 +33,21 @@ const Mindmaps = () => {
   const [form, setForm] = useState(initialForm);
   const [initialEdges, setInitialEdges] = useState([]);
   const [initialNodes, setInitialNodes] = useState(null);
+
+  const minimapStyle = {
+    height: 120,
+  };
+  
+  const nodeTypes = {
+    custom: CustomNode,
+  };
+  
+  const defaultEdgeOptions = {
+    markerEnd: "edge-circle",
+  };
+  
+  const onInit = (reactFlowInstance) =>
+    console.log("flow loaded:", reactFlowInstance);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -161,10 +159,39 @@ const Mindmaps = () => {
               fitView
               attributionPosition="bottom-right"
               nodeTypes={nodeTypes}
+              defaultEdgeOptions={defaultEdgeOptions}
             >
               <MiniMap style={minimapStyle} zoomable pannable />
               <Controls />
               <Background color="#aaa" gap={16} />
+
+              <svg>
+                <defs>
+                  <linearGradient id="edge-gradient">
+                    <stop offset="0%" stopColor="#ae53ba" />
+                    <stop offset="100%" stopColor="#2a8af6" />
+                  </linearGradient>
+
+                  <marker
+                    id="edge-circle"
+                    viewBox="-5 -5 10 10"
+                    refX="0"
+                    refY="0"
+                    markerUnits="strokeWidth"
+                    markerWidth="10"
+                    markerHeight="10"
+                    orient="auto"
+                  >
+                    <circle
+                      stroke="#2a8af6"
+                      strokeOpacity="0.75"
+                      r="2"
+                      cx="0"
+                      cy="0"
+                    />
+                  </marker>
+                </defs>
+              </svg>
             </ReactFlow>
           </div>
         )}

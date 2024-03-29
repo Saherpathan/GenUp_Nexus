@@ -11,27 +11,33 @@ import {
 import React, { memo } from "react";
 import { Handle, useReactFlow, useStoreApi, Position } from "reactflow";
 import { SunIcon } from "./SunIcon";
+import { TbBulb } from "react-icons/tb";
+import "./overview.css";
 
 function CustomNode({ data }) {
-  function handleClick() {
-    console.log("clicked");
-  }
-
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   return (
     <>
-      <div className="">
-        {/* <div className="text-xl text-yellow-700">{data.label}</div> */}
-        <Tooltip content={data?.description}>
-          <Button variant="none" className="">
-            {data?.label}
-          </Button>
-        </Tooltip>
-        <Button onPress={onOpen}>
-          <SunIcon />
-        </Button>
-      </div>
+      <Tooltip content={data?.description}>
+        <div>
+          <div className="cloud gradient">
+            <div className="text-yellow-300 ">{data?.icon}</div>
+          </div>
+          <div onClick={onOpen} className="wrapper gradient">
+            <div className="inner">
+              <div className="body">
+                <div>
+                  <div className="text-white title">{data?.label}</div>
+                  <div className="subline">{data?.category}</div>
+                </div>
+                <Handle type="target" position={Position.Left} />
+                <Handle type="source" position={Position.Bottom} />
+              </div>
+            </div>
+          </div>
+        </div>
+      </Tooltip>
 
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
         <ModalContent>
@@ -42,20 +48,17 @@ function CustomNode({ data }) {
               </ModalHeader>
               <ModalBody>{data?.description}</ModalBody>
               <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
+                {/* <Button color="danger" variant="light" onPress={onClose}>
                   Close
                 </Button>
                 <Button color="primary" onPress={onClose}>
                   Action
-                </Button>
+                </Button> */}
               </ModalFooter>
             </>
           )}
         </ModalContent>
       </Modal>
-      
-      <Handle type="target" position={Position.Top} />
-      <Handle type="source" position={Position.Right} />
     </>
   );
 }

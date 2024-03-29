@@ -11,15 +11,14 @@ import ReactFlow, {
   Position,
 } from "reactflow";
 import "reactflow/dist/style.css";
+import "./overview.css";
+import CustomNode from "./CustomNode";
 import axios from "../axios.js";
 import { toast } from "react-hot-toast";
 import { Layout } from "./Layout";
 import { Button } from "@nextui-org/react";
 import { MdDeleteOutline } from "react-icons/md";
 import { Link, useNavigate } from "react-router-dom";
-
-import CustomNode from "./CustomNode";
-import "./overview.css";
 
 const MindmapOpener = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -35,6 +34,10 @@ const MindmapOpener = () => {
 
   const nodeTypes = {
     custom: CustomNode,
+  };
+
+  const defaultEdgeOptions = {
+    markerEnd: "edge-circle",
   };
 
   const onInit = (reactFlowInstance) =>
@@ -97,7 +100,10 @@ const MindmapOpener = () => {
         ) : null}
 
         <div className="flex justify-between">
-          <div className="m-5 text-2xl">Mindmap {initialNodes && (<span>: {initialNodes[0].data.label}</span>)}</div>
+          <div className="m-5 text-2xl">
+            Mindmap{" "}
+            {initialNodes && <span>: {initialNodes[0].data.label}</span>}
+          </div>
           {initialNodes && (
             <div>
               <Button
@@ -123,10 +129,39 @@ const MindmapOpener = () => {
               fitView
               attributionPosition="bottom-right"
               nodeTypes={nodeTypes}
+              defaultEdgeOptions={defaultEdgeOptions}
             >
               <MiniMap style={minimapStyle} zoomable pannable />
               <Controls />
               <Background color="#aaa" gap={16} />
+
+              <svg>
+                <defs>
+                  <linearGradient id="edge-gradient">
+                    <stop offset="0%" stopColor="#ae53ba" />
+                    <stop offset="100%" stopColor="#2a8af6" />
+                  </linearGradient>
+
+                  <marker
+                    id="edge-circle"
+                    viewBox="-5 -5 10 10"
+                    refX="0"
+                    refY="0"
+                    markerUnits="strokeWidth"
+                    markerWidth="10"
+                    markerHeight="10"
+                    orient="auto"
+                  >
+                    <circle
+                      stroke="#2a8af6"
+                      strokeOpacity="0.75"
+                      r="2"
+                      cx="0"
+                      cy="0"
+                    />
+                  </marker>
+                </defs>
+              </svg>
             </ReactFlow>
           </div>
         )}
