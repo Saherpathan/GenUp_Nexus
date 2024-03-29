@@ -23,7 +23,14 @@ function App() {
         <Route element={<ProtectedRoute />}>
           <Route path="/user" element={<Home />} />
           <Route path="/test" element={<Test />} />
-          <Route path="/mindmap" element={<Mindmaps />} />
+          <Route
+            path="/mindmap"
+            element={
+              <ReactFlowProvider>
+                <Mindmaps />
+              </ReactFlowProvider>
+            }
+          />
           <Route path="/interview" element={<Interview />} />
           <Route path="/interview/results/:id" element={<Results />} />
           <Route path="/roadmap" element={<Roadmaps />} />
@@ -34,6 +41,14 @@ function App() {
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route
+          path="/mindmap/save/:id"
+          element={
+            <ReactFlowProvider>
+              <MindmapOpener />
+            </ReactFlowProvider>
+          }
+        />
       </Routes>
     </NextThemesProvider>
   );

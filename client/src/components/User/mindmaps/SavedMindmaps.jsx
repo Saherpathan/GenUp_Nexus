@@ -45,7 +45,7 @@ const SavedMindmaps = () => {
           Saved Mindmaps
         </div>
 
-        {!mindmaps && (
+        {!mindmaps && !isLoading && (
           <div className="flex justify-center gap-2 mt-[8vh] text-2xl text-yellow-200">
             <span>Opps!! No Mindmaps Saved</span>
             <div className="p-1">

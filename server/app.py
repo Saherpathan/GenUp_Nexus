@@ -487,7 +487,7 @@ def signup():
     expires = timedelta(days=7)
     access_token = create_access_token(identity={"email": email, "id": str(result.inserted_id)}, expires_delta=expires)
 
-    res = {"name": name, "email": email}
+    res = {"name": name, "email": email, "userId": str(result.inserted_id)}
     
     return jsonify({"result": res, "token": access_token}), 201
 
@@ -543,10 +543,8 @@ def mindmapGet():
     return getMindmap(userId, savedMindmap)
 
 @app.route('/mindmap/get/<id>', methods=['GET'])
-@auth_user
 def mindmapGetById(id):
-    userId = request.userId
-    return getMindmapByid(userId, id, savedMindmap)
+    return getMindmapByid(id, savedMindmap)
 
 @app.route('/mindmap/delete', methods=['POST'])
 @auth_user
