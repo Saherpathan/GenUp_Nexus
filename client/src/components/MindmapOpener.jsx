@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Loader from "./Loader";
 import ReactFlow, {
-  addEdge,
   MiniMap,
   Controls,
   Background,
@@ -10,9 +9,8 @@ import ReactFlow, {
   MarkerType,
   Position,
   useReactFlow,
-  getRectOfNodes,
-  getTransformForBounds,
-  ReactFlowProvider,
+  getNodesBounds,
+  getViewportForBounds,
 } from "reactflow";
 import "reactflow/dist/style.css";
 import "./overview.css";
@@ -35,6 +33,21 @@ const imageHeight = 768;
 
 const snapGrid = [25, 25];
 
+const minimapStyle = {
+  height: 120,
+};
+
+const nodeTypes = {
+  custom: CustomNode,
+};
+
+const defaultEdgeOptions = {
+  markerEnd: "edge-circle",
+};
+
+const onInit = (reactFlowInstance) =>
+  console.log("flow loaded:", reactFlowInstance);
+
 const MindmapOpener = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isButtonLoading, setIsButtonLoading] = useState(false);
@@ -47,23 +60,8 @@ const MindmapOpener = () => {
   const { theme } = useTheme();
   const { user } = useGlobalContext();
   const navigateTo = useNavigate();
-
-  // const user = JSON.parse(localStorage.getItem("user"));
-
-  const minimapStyle = {
-    height: 120,
-  };
-
-  const nodeTypes = {
-    custom: CustomNode,
-  };
-
-  const defaultEdgeOptions = {
-    markerEnd: "edge-circle",
-  };
-
-  const onInit = (reactFlowInstance) =>
-    console.log("flow loaded:", reactFlowInstance);
+  // const [nodes, setNodes,onNodesChange] = useNodesState(initialNodes);
+  // const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -78,8 +76,6 @@ const MindmapOpener = () => {
         console.log(mindmaps);
         setInitialEdges(res.data.data.data.initialEdges);
         setInitialNodes(res.data.data.data.initialNodes);
-        console.log(mindmaps?.data?.userId);
-        console.log(user?.userId);
         console.log(initialNodes);
         console.log(initialNodes);
         // toast.success("Mindmap fetched!");
@@ -133,6 +129,16 @@ const MindmapOpener = () => {
     }
   };
 
+  // const edgesWithUpdatedTypes = edges.map((edge) => {
+  //   if (edge.sourceHandle) {
+  //     const edgeType = nodes.find((node) => node.type === "custom").data
+  //       .selects[edge.sourceHandle];
+  //     edge.type = edgeType;
+  //   }
+
+  //   return edge;
+  // });
+
   function downloadImage(dataUrl) {
     const a = document.createElement("a");
 
@@ -142,13 +148,14 @@ const MindmapOpener = () => {
     a.setAttribute("download", downloadName);
     a.setAttribute("href", dataUrl);
     a.click();
+    setIsDownLoad(false);
     toast.success("Mindmap Downloaded!");
   }
 
   const { getNodes } = useReactFlow();
   const handleDownload = () => {
-    const nodesBounds = getRectOfNodes(getNodes());
-    const transform = getTransformForBounds(
+    const nodesBounds = getNodesBounds(getNodes());
+    const transform = getViewportForBounds(
       nodesBounds,
       imageWidth,
       imageHeight,
@@ -165,7 +172,7 @@ const MindmapOpener = () => {
       style: {
         width: imageWidth,
         height: imageHeight,
-        transform: `translate(${transform[0]}px, ${transform[1]}px) scale(${transform[2]})`,
+        transform: `translate(${transform.x}px, ${transform.y}px) scale(${transform.zoom})`,
       },
     }).then(downloadImage);
   };
@@ -241,12 +248,14 @@ const MindmapOpener = () => {
             </div>
           )}
         </div>
-
+        {}
         {initialNodes && (
           <div style={{ width: "98vw", height: "80vh" }}>
             <ReactFlow
               nodes={initialNodes}
               edges={initialEdges}
+              // onNodesChange={onNodesChange}
+              // onEdgesChange={onEdgesChange}
               onInit={onInit}
               snapToGrid={true}
               snapGrid={snapGrid}

@@ -190,13 +190,13 @@ def treeDemo():
 **Desired Format:**
 
 - JSON structure compatible with ReactFlow:
-    - nodes (list): id, position, data (label, description, icon, category), type(custom).
-    - edges (list): id, source, target, label(if required), animated (true or false), style (stroke).
+    - nodes (list): id, position, type(custom), data(label, description, icon, category).
+    - edges (list): id, source, target, label(if required), animated (true or false), style(stroke).
 - Keep the top level node centered and highlighted. 
-- keep the position of nodes spaced out for better visualization.
+- The nodes should not overlap and have enough spacing for readability, therefore adjust it position accordingly.
 - keep atleast 2 edges "animated":true.
 - Strictly keep the all the nodes with type property value as custom. 
-- to edit edges add style with stroke property and a hexcode value to it.
+- to edit edges add style with stroke property and a hexcode value to it(Only use this color: #e92a67, #a853ba, #2a8af6, #e92a67).
                                    
 Topic is: ''' + query)
         

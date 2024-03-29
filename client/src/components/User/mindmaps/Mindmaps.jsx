@@ -14,9 +14,8 @@ import ReactFlow, {
   MarkerType,
   Position,
   useReactFlow,
-  getRectOfNodes,
-  getTransformForBounds,
-  ReactFlowProvider,
+  getNodesBounds,
+  getViewportForBounds,
 } from "reactflow";
 import "reactflow/dist/style.css";
 import "../../overview.css";
@@ -38,6 +37,21 @@ const imageHeight = 768;
 
 const snapGrid = [25, 25];
 
+const minimapStyle = {
+  height: 120,
+};
+
+const nodeTypes = {
+  custom: CustomNode,
+};
+
+const defaultEdgeOptions = {
+  markerEnd: "edge-circle",
+};
+
+const onInit = (reactFlowInstance) =>
+  console.log("flow loaded:", reactFlowInstance);
+
 const Mindmaps = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSaveLoad, setIsSaveLoad] = useState(false);
@@ -47,21 +61,6 @@ const Mindmaps = () => {
   const [form, setForm] = useState(initialForm);
   const [initialEdges, setInitialEdges] = useState([]);
   const [initialNodes, setInitialNodes] = useState(null);
-
-  const minimapStyle = {
-    height: 120,
-  };
-
-  const nodeTypes = {
-    custom: CustomNode,
-  };
-
-  const defaultEdgeOptions = {
-    markerEnd: "edge-circle",
-  };
-
-  const onInit = (reactFlowInstance) =>
-    console.log("flow loaded:", reactFlowInstance);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -129,8 +128,8 @@ const Mindmaps = () => {
   const { getNodes } = useReactFlow();
   const handleDownload = () => {
     setIsDownLoad(true);
-    const nodesBounds = getRectOfNodes(getNodes());
-    const transform = getTransformForBounds(
+    const nodesBounds = getNodesBounds(getNodes());
+    const transform = getViewportForBounds(
       nodesBounds,
       imageWidth,
       imageHeight,
@@ -147,7 +146,7 @@ const Mindmaps = () => {
       style: {
         width: imageWidth,
         height: imageHeight,
-        transform: `translate(${transform[0]}px, ${transform[1]}px) scale(${transform[2]})`,
+        transform: `translate(${transform.x}px, ${transform.y}px) scale(${transform.zoom})`,
       },
     }).then(downloadImage);
   };
