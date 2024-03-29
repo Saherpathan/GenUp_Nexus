@@ -8,7 +8,7 @@ const Loader = ({
 }) => {
   return (
     <div className="">
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-opacity-75 bg-black-600 backdrop-blur-sm">
+      <div className="fixed inset-0 z-50 flex items-center justify-center">
         <Player
           src={json}
           background="transparent"

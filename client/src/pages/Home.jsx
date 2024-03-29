@@ -22,6 +22,7 @@ import {
 import { toast } from "react-hot-toast";
 import { Layout } from "../components/Layout";
 import { IoSaveOutline } from "react-icons/io5";
+import Background from "../components/Background/Background";
 
 const Home = () => {
   const { theme, setTheme } = useTheme();
@@ -35,6 +36,7 @@ const Home = () => {
 
   return (
     <>
+      <Background />
       <Layout>
         <div className="">
           {isLoading ? <Loader width="500px" height="250px" /> : null}
@@ -56,7 +58,7 @@ const Home = () => {
               Roadmap
             </Button>
           </Link>
-          <Link to="/savedmindmaps" className="p-2 m-2 text-primary">
+          <Link to="/mindmap/personal" className="p-2 m-2 text-primary">
             <Button className="flex m-2" color="warning" variant="shadow">
               Saved Mindmaps
             </Button>

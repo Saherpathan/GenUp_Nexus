@@ -1,0 +1,57 @@
+  .shapes {
+    position: relative;
+    height: 100dvh;
+    width: 100dvw;
+    overflow: hidden;
+  }
+  
+  .shape {
+    will-change: transform;
+    position: absolute;
+    border-radius: 50%;
+  }
+  .shape.shape-1 {
+    background: rgba(0, 95, 254, 0.2) ;
+    filter: blur(4rem);
+    width: 650px;
+    height: 650px;
+    margin: -100px 0 0 -400px;
+    transition: all ease-in-out;
+  }
+  .shape.shape-2 {
+    background: rgb(255, 0, 225, 0.3);
+    filter: blur(4rem);
+    width: 440px;
+    height: 440px;
+    margin: -10px 0 0 150px;
+    transition: all ease-in-out;
+  }
+  .shape.shape-3 {
+    background: rgba(246, 255, 0, 0.25);
+    filter: blur(4rem);
+    width: 270px;
+    height: 270px;
+    margin: -300px 0 0 -200px;
+    transition: all ease-in-out;
+  }
+  .shape.shape-4 {
+    background: rgba(0, 255, 0, 0.2);
+    filter: blur(4rem);
+    width: 440px;
+    height: 440px;
+    margin: -300px 0 0 -50px;
+    transition: all ease-in-out;
+  }
+  
+  .content {
+    position: fixed;
+    z-index:-1;
+    top: 0;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100dvh;
+    width: 100dvw;
+    mix-blend-mode: screen;
+  }

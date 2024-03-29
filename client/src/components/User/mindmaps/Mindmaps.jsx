@@ -1,7 +1,7 @@
 import React, { useRef, useState, useCallback } from "react";
 import Loader from "../../../components/Loader";
 import { useTheme } from "next-themes";
-import { Switch, Input, Button, Tooltip } from "@nextui-org/react";
+import { Switch, Input, Button, Card, CardBody, CardFooter, Tooltip } from "@nextui-org/react";
 import { MoonIcon } from "../../../components/MoonIcon";
 import { SunIcon } from "../../../components/SunIcon";
 import ReactFlow, {
@@ -19,8 +19,6 @@ import ReactFlow, {
   ReactFlowProvider,
 } from "reactflow";
 import "reactflow/dist/style.css";
-import "../../overview.css";
-import CustomNode from "../../CustomNode";
 import axios from "../../../axios.js";
 import { toast } from "react-hot-toast";
 import { IoSaveOutline } from "react-icons/io5";
@@ -28,6 +26,9 @@ import { FiDownload } from "react-icons/fi";
 import { HiOutlineShare } from "react-icons/hi2";
 import { Layout } from "../../../components/Layout";
 import { toPng } from "html-to-image";
+import CustomNode from "./CustomNode";
+import Background2 from "../../Background/Background";
+import "./overview.css";
 
 const initialForm = {
   query: "",
@@ -113,6 +114,11 @@ const Mindmaps = () => {
     }
   };
 
+  const removeAttr = () => {
+    let temp = document.getElementsByClassName("react-flow__attribution");
+    temp[0].parentNode.removeChild(temp[0]);
+  };
+
   function downloadImage(dataUrl) {
     const a = document.createElement("a");
 
@@ -154,6 +160,7 @@ const Mindmaps = () => {
 
   return (
     <div>
+      <Background2 />
       <Layout>
         {isLoading ? (
           <Loader
@@ -230,7 +237,7 @@ const Mindmaps = () => {
         </div>
 
         {initialNodes && (
-          <div style={{ width: "98vw", height: "65vh" }}>
+          <div style={{ width: "100dvw", height: "100dvh", position: 'absolute', top: '0', zIndex: '1' }}>
             <ReactFlow
               nodes={initialNodes}
               edges={initialEdges}
