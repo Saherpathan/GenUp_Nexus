@@ -36,7 +36,6 @@ function App() {
           <Route path="/interview/results/:id" element={<Results />} />
           <Route path="/roadmap" element={<Roadmaps />} />
           <Route path="/mindmap/personal" element={<SavedMindmaps />} />
-          <Route path="/mindmap/save/:id" element={<MindmapOpener />} />
         </Route>
         
         <Route path="/" element={<Landing />} />

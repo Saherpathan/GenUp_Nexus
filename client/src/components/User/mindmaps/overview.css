@@ -151,11 +151,16 @@
 
 .react-flow__edge-textbg {
   opacity: 1;
-  /* fill: none; */
+}
+
+.react-flow__edge .react-flow__edge.animated {
+  stroke: blueviolet;
+  stroke-width: 2;
+  stroke-opacity: 0.75;
 }
 
 .react-flow__edge .react-flow__edge-path {
-  stroke: url(#edge-gradient);
+  stroke: violet;
   stroke-width: 2;
   stroke-opacity: 0.75;
 }

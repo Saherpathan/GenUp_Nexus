@@ -1,11 +1,18 @@
 import React, { useRef, useState, useCallback } from "react";
 import Loader from "../../../components/Loader";
 import { useTheme } from "next-themes";
-import { Switch, Input, Button, Card, CardBody, CardFooter, Tooltip } from "@nextui-org/react";
+import {
+  Switch,
+  Input,
+  Button,
+  Card,
+  CardBody,
+  CardFooter,
+  Tooltip,
+} from "@nextui-org/react";
 import { MoonIcon } from "../../../components/MoonIcon";
 import { SunIcon } from "../../../components/SunIcon";
 import ReactFlow, {
-  addEdge,
   MiniMap,
   Controls,
   Background,
@@ -14,9 +21,8 @@ import ReactFlow, {
   MarkerType,
   Position,
   useReactFlow,
-  getRectOfNodes,
-  getTransformForBounds,
-  ReactFlowProvider,
+  getNodesBounds,
+  getViewportForBounds,
 } from "reactflow";
 import "reactflow/dist/style.css";
 import axios from "../../../axios.js";
@@ -39,6 +45,21 @@ const imageHeight = 768;
 
 const snapGrid = [25, 25];
 
+const minimapStyle = {
+  height: 120,
+};
+
+const nodeTypes = {
+  custom: CustomNode,
+};
+
+const defaultEdgeOptions = {
+  markerEnd: "edge-circle",
+};
+
+const onInit = (reactFlowInstance) =>
+  console.log("flow loaded:", reactFlowInstance);
+
 const Mindmaps = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSaveLoad, setIsSaveLoad] = useState(false);
@@ -48,21 +69,6 @@ const Mindmaps = () => {
   const [form, setForm] = useState(initialForm);
   const [initialEdges, setInitialEdges] = useState([]);
   const [initialNodes, setInitialNodes] = useState(null);
-
-  const minimapStyle = {
-    height: 120,
-  };
-
-  const nodeTypes = {
-    custom: CustomNode,
-  };
-
-  const defaultEdgeOptions = {
-    markerEnd: "edge-circle",
-  };
-
-  const onInit = (reactFlowInstance) =>
-    console.log("flow loaded:", reactFlowInstance);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -135,8 +141,8 @@ const Mindmaps = () => {
   const { getNodes } = useReactFlow();
   const handleDownload = () => {
     setIsDownLoad(true);
-    const nodesBounds = getRectOfNodes(getNodes());
-    const transform = getTransformForBounds(
+    const nodesBounds = getNodesBounds(getNodes());
+    const transform = getViewportForBounds(
       nodesBounds,
       imageWidth,
       imageHeight,
@@ -153,7 +159,7 @@ const Mindmaps = () => {
       style: {
         width: imageWidth,
         height: imageHeight,
-        transform: `translate(${transform[0]}px, ${transform[1]}px) scale(${transform[2]})`,
+        transform: `translate(${transform.x}px, ${transform.y}px) scale(${transform.zoom})`,
       },
     }).then(downloadImage);
   };
@@ -230,14 +236,16 @@ const Mindmaps = () => {
                   color="primary"
                   variant="shadow"
                   isLoading={isShareLoad}
-                ><HiOutlineShare /></Button>
+                >
+                  <HiOutlineShare />
+                </Button>
               </Tooltip>
             </div>
           )}
         </div>
 
         {initialNodes && (
-          <div style={{ width: "100dvw", height: "100dvh", position: 'absolute', top: '0', zIndex: '1' }}>
+          <div style={{ width: "98vw", height: "73vh" }}>
             <ReactFlow
               nodes={initialNodes}
               edges={initialEdges}
