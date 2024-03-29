@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import Loader from "./Loader";
+import Loader from "../../Loader";
 import ReactFlow, {
   MiniMap,
   Controls,
@@ -15,13 +15,13 @@ import ReactFlow, {
 import "reactflow/dist/style.css";
 import "./overview.css";
 import CustomNode from "./CustomNode";
-import axios from "../axios.js";
+import axios from "../../../axios.js";
 import { toast } from "react-hot-toast";
-import { Layout } from "./Layout";
+import { Layout } from "../../Layout";
 import { Button, Tooltip } from "@nextui-org/react";
 import { MdDeleteOutline } from "react-icons/md";
 import { Link, useNavigate } from "react-router-dom";
-import { useGlobalContext } from "../contexts/GlobalContext";
+import { useGlobalContext } from "../../../contexts/GlobalContext";
 import { toPng } from "html-to-image";
 import { IoSaveOutline } from "react-icons/io5";
 import { FiDownload } from "react-icons/fi";
@@ -138,6 +138,10 @@ const MindmapOpener = () => {
 
   //   return edge;
   // });
+  // const removeAttr = () => {
+  //   let temp = document.getElementsByClassName("react-flow__attribution");
+  //   temp[0].parentNode.removeChild(temp[0]);
+  // };
 
   function downloadImage(dataUrl) {
     const a = document.createElement("a");
@@ -231,7 +235,7 @@ const MindmapOpener = () => {
                   startContent={<HiOutlineShare />}
                 ></Button>
               </Tooltip>
-              {user && (
+              {mindmaps?.data?.userId === user?.result?.userId && (
                 <Tooltip content="Delete">
                   <Button
                     isIconOnly
@@ -250,7 +254,7 @@ const MindmapOpener = () => {
         </div>
         {}
         {initialNodes && (
-          <div style={{ width: "98vw", height: "80vh" }}>
+          <div style={{ width: "98vw", height: "86vh" }}>
             <ReactFlow
               nodes={initialNodes}
               edges={initialEdges}

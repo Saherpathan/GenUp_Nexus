@@ -1,11 +1,18 @@
 import React, { useRef, useState, useCallback } from "react";
 import Loader from "../../../components/Loader";
 import { useTheme } from "next-themes";
-import { Switch, Input, Button, Card, CardBody, CardFooter, Tooltip } from "@nextui-org/react";
+import {
+  Switch,
+  Input,
+  Button,
+  Card,
+  CardBody,
+  CardFooter,
+  Tooltip,
+} from "@nextui-org/react";
 import { MoonIcon } from "../../../components/MoonIcon";
 import { SunIcon } from "../../../components/SunIcon";
 import ReactFlow, {
-  addEdge,
   MiniMap,
   Controls,
   Background,
@@ -229,14 +236,16 @@ const Mindmaps = () => {
                   color="primary"
                   variant="shadow"
                   isLoading={isShareLoad}
-                ><HiOutlineShare /></Button>
+                >
+                  <HiOutlineShare />
+                </Button>
               </Tooltip>
             </div>
           )}
         </div>
 
         {initialNodes && (
-          <div style={{ width: "100dvw", height: "100dvh", position: 'absolute', top: '0', zIndex: '1' }}>
+          <div style={{ width: "98vw", height: "73vh" }}>
             <ReactFlow
               nodes={initialNodes}
               edges={initialEdges}
