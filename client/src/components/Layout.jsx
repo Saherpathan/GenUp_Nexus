@@ -4,6 +4,9 @@ import { Toaster } from "react-hot-toast";
 
 export const Layout = ({ children }) => (
   <>
+    <div className="bg-grid">
+      
+    </div>
     <NavBar />
     <div className=""> {children}</div>
     <div>

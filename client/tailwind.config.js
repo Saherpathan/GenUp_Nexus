@@ -1,5 +1,5 @@
 // import nextui from "@nextui-org/react";
-import {nextui} from "@nextui-org/theme"
+import { nextui } from "@nextui-org/theme";
 
 /** @type {import('tailwindcss').Config} */
 export default {
@@ -9,7 +9,24 @@ export default {
     "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      animation: {
+        shimmer: "shimmer 2s linear infinite",
+      },
+      keyframes: {
+        shimmer: {
+          '100%': {
+            transform: 'translateX(0%)',
+          },
+          from: {
+            backgroundPosition: "0 0",
+          },
+          to: {
+            backgroundPosition: "-200% 0",
+          },
+        },
+      },
+    },
   },
   darkMode: "class",
   plugins: [nextui()],
