@@ -94,61 +94,71 @@ export default function NavBar() {
             }}
           />
         </NavbarItem>
-        <div className="cursor-pointer">
-          <Dropdown placement="bottom-end">
-            <DropdownTrigger>
-              <NavbarItem>
-                <User
-                  name={user.result.name}
-                  description={user.result.email}
-                  avatarProps={{
-                    src:
-                      (user && user.result.picture) ||
-                      "https://img.icons8.com/?size=256&id=kDoeg22e5jUY&format=png",
-                  }}
-                />
-              </NavbarItem>
-            </DropdownTrigger>
-            <DropdownMenu aria-label="Profile Actions" variant="flat">
-              <DropdownItem key="profile" className="gap-2 h-14">
-                <p className="font-semibold">Signed in as</p>
-                <p className="font-semibold">{user.result.email}</p>
-              </DropdownItem>
-              <DropdownItem key="settings">
-                <Link to="/">My Dashboard</Link>
-              </DropdownItem>
-              <DropdownItem key="configurations">
-                {" "}
-                <Link to="/savedmindmaps">Saved Mindmaps</Link>
-              </DropdownItem>
-              <DropdownItem key="help_and_feedback">
-                Help & Feedback
-              </DropdownItem>
-              <DropdownItem key="logout" color="danger">
-                <Button
-                  onClick={logout}
-                  className="w-full "
-                  color="danger"
-                  variant="bordered"
-                  startContent={<RiLogoutCircleLine />}
-                >
-                  logout
-                </Button>
-              </DropdownItem>
-              <DropdownItem>
-                <Button
-                  onClick={deleteUser}
-                  className="w-full"
-                  color="danger"
-                  variant="shadow"
-                  startContent={<MdDeleteOutline />}
-                >
-                  Delete Account
-                </Button>
-              </DropdownItem>
-            </DropdownMenu>
-          </Dropdown>
-        </div>
+        {!user ? (
+          <Button
+            onClick={() => navigateTo("/login")}
+            color="primary"
+            variant="shadow"
+          >
+            Login
+          </Button>
+        ) : (
+          <div className="cursor-pointer">
+            <Dropdown placement="bottom-end">
+              <DropdownTrigger>
+                <NavbarItem>
+                  <User
+                    name={user.result.name}
+                    description={user.result.email}
+                    avatarProps={{
+                      src:
+                        (user && user.result.picture) ||
+                        "https://img.icons8.com/?size=256&id=kDoeg22e5jUY&format=png",
+                    }}
+                  />
+                </NavbarItem>
+              </DropdownTrigger>
+              <DropdownMenu aria-label="Profile Actions" variant="flat">
+                <DropdownItem key="profile" className="gap-2 h-14">
+                  <p className="font-semibold">Signed in as</p>
+                  <p className="font-semibold">{user.result.email}</p>
+                </DropdownItem>
+                <DropdownItem key="settings">
+                  <Link to="/">My Dashboard</Link>
+                </DropdownItem>
+                <DropdownItem key="configurations">
+                  {" "}
+                  <Link to="/savedmindmaps">Saved Mindmaps</Link>
+                </DropdownItem>
+                <DropdownItem key="help_and_feedback">
+                  Help & Feedback
+                </DropdownItem>
+                <DropdownItem key="logout" color="danger">
+                  <Button
+                    onClick={logout}
+                    className="w-full "
+                    color="danger"
+                    variant="bordered"
+                    startContent={<RiLogoutCircleLine />}
+                  >
+                    logout
+                  </Button>
+                </DropdownItem>
+                <DropdownItem>
+                  <Button
+                    onClick={deleteUser}
+                    className="w-full"
+                    color="danger"
+                    variant="shadow"
+                    startContent={<MdDeleteOutline />}
+                  >
+                    Delete Account
+                  </Button>
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+          </div>
+        )}
       </NavbarContent>
     </Navbar>
   );

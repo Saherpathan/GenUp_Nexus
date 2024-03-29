@@ -13,6 +13,7 @@ import Interview from "./components/User/interview/Interview";
 import Roadmaps from "./components/User/roadmaps/Roadmaps";
 import SavedMindmaps from "./pages/SavedMindmaps";
 import MindmapOpener from "./components/MindmapOpener";
+import { ReactFlowProvider } from "reactflow";
 // import { Excalidraw } from "@excalidraw/excalidraw";
 
 function App() {
@@ -24,16 +25,30 @@ function App() {
         <Route element={<ProtectedRoute />}>
           <Route path="/" element={<Home />} />
           <Route path="/test" element={<Test />} />
-          <Route path="/mindmap" element={<Mindmaps />} />
+          <Route
+            path="/mindmap"
+            element={
+              <ReactFlowProvider>
+                <Mindmaps />
+              </ReactFlowProvider>
+            }
+          />
           <Route path="/interview" element={<Interview />} />
           <Route path="/roadmap" element={<Roadmaps />} />
           <Route path="/savedmindmaps" element={<SavedMindmaps />} />
-          <Route path="/mindmap/save/:id" element={<MindmapOpener />} />
         </Route>
-        
+
         {/* <Route path="/" element={<Landing />} /> */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route
+          path="/mindmap/save/:id"
+          element={
+            <ReactFlowProvider>
+              <MindmapOpener />
+            </ReactFlowProvider>
+          }
+        />
       </Routes>
     </NextThemesProvider>
   );
