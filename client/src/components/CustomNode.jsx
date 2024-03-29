@@ -31,7 +31,7 @@ function CustomNode({ data }) {
                   <div className="text-white title">{data?.label}</div>
                   <div className="subline">{data?.category}</div>
                 </div>
-                <Handle type="target" position={Position.Left} />
+                <Handle type="target" position={Position.Top} />
                 <Handle type="source" position={Position.Bottom} />
               </div>
             </div>

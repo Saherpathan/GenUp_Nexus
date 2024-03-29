@@ -131,7 +131,7 @@
 }
 
 .react-flow__handle.target {
-  left: -10px;
+  top: -10px;
 }
 
 .react-flow__node:focus {
