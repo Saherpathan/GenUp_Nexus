@@ -31,7 +31,7 @@ def getMindmap(userId, savedMindmap):
 def getMindmapByid(userId, id, savedMindmap):
     try:
         object_id = ObjectId(id)
-        result = savedMindmap.find_one({"userId": userId, "_id": object_id})
+        result = savedMindmap.find_one({"_id": object_id})
         if result:
             return json_util.dumps({"data": result}), 200
         else:

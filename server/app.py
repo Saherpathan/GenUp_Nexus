@@ -302,7 +302,6 @@ def mindmapGet():
     return getMindmap(userId, savedMindmap)
 
 @app.route('/mindmap/get/<id>', methods=['GET'])
-@auth_user
 def mindmapGetById(id):
     userId = request.userId
     return getMindmapByid(userId, id, savedMindmap)
