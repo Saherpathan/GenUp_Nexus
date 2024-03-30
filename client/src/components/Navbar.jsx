@@ -99,9 +99,9 @@ export default function NavBar() {
               <CardItem as="button" translateZ="100">
                 <NavbarBrand className="justify-center mr-4 space-x-3">
                   <Link to="/user">
-                    <p className="font-bold sm:block text-[20px]">
+                    <div class="text-[24px] font-extrabold modded-bg bg-gradient-to-r from-blue-700 to-red-600 text-transparent">
                       GenUP Nexus
-                    </p>
+                    </div>
                   </Link>
                 </NavbarBrand>
               </CardItem>
