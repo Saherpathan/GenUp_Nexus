@@ -264,7 +264,7 @@ const Roadmaps = () => {
               <p className="text-small text-center">Start your Journey from here...</p>
             </Card>
           )}
-          <ScrollShadow size={100} onScroll={(e) => console.log(e)} hideScrollBar offset={100} className="max-w-full max-h-[350px] pl-20" orientation="horizontal" >
+          <ScrollShadow size={100} hideScrollBar offset={100} className="max-w-full max-h-[350px] pl-20" orientation="horizontal" >
             <div style={{width: `${(data.length * 380)+310}px`}} className={`flex flex-row gap-0 py-5 justify-center align-middle items-start w-[${data.length * 400}px] sm:w-[${data.length * 400}px]`}>
               {data.map((week, index) => (
                 <>
