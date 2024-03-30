@@ -11,12 +11,22 @@ import { useGlobalContext } from "../../../contexts/GlobalContext";
 import { companyNames } from "./data";
 import { Icon } from '@iconify/react';
 import Background from '../../Background/Background';
-// import ReactStoreIndicator from 'react-score-indicator';
 import {Divider} from "@nextui-org/react";
 import Editor from "@monaco-editor/react";
 import {ScrollShadow} from "@nextui-org/react";
 import { Progress } from "@nextui-org/react";
 import EmotionChart from './EmotionChart';
+import { Progress as AntDProgress, ConfigProvider } from 'antd';
+
+const twoColors = {
+    '0%': '#108ee9',
+    '100%': '#87d068',
+};
+const conicColors = {
+    '0%': '#87d068',
+    '50%': '#ffe58f',
+    '100%': '#ffccc7',
+};
 
 const Results = () => {
     const [error, setError] = useState('');
@@ -122,7 +132,7 @@ const Results = () => {
                             </Card>
                             <Card shadow="sm" isPressable className='w-full'>
                                 <CardBody className="overflow-visible p-3 items-center">
-                                    <Table aria-label="Dynamic Content" className='p-1'>
+                                    <Table aria-label="Dynamic Content" isCompact className='p-1'>
                                         <TableHeader>
                                             <TableColumn >Params</TableColumn>
                                             <TableColumn >Value</TableColumn>
@@ -153,11 +163,18 @@ const Results = () => {
                                 <CardBody className="overflow-visible p-0">
                                     <div className="max-w-[500px] w-full flex items-center gap-3 p-3 justify-center">
                                         <div className='pt-4 pb-5'>
-                                            {/* <ReactStoreIndicator
-                                                width={200}
-                                                value={resultData.interview_score}
-                                                maxValue={10}
-                                            /> */}
+                                        <ConfigProvider
+                                            theme={{
+                                                components: {
+                                                    Progress: {
+                                                        circleTextColor: `${theme === 'light' ? 'black' : 'white'}`,
+                                                        remainingColor: `${theme === 'light' ? 'rgb(240, 240, 240)' : 'rgb(60, 60, 60)'}`,
+                                                    },
+                                                },
+                                            }}
+                                        >
+                                            <AntDProgress type="dashboard" percent={resultData.interview_score*10} steps={10} strokeLinecap='round' strokeColor={twoColors} strokeWidth={9} size={150} />
+                                        </ConfigProvider>
                                         </div>
                                     </div>
                                 </CardBody>
@@ -168,11 +185,11 @@ const Results = () => {
                                 </CardFooter>
                             </Card>
                         </div>
-                        <div className='qa w-full'>
+                        <div className='qa w-full flex flex-col gap-5'>
                             Questions & Answers
                             {resultData.qa.map((item, index) => (
-                                <Card className="flex flex-col w-full h-[300px] m-3 p-3">
-                                    <div key={index} className="flex flex-col h-auto w-full space-x-4 text-small">
+                                <Card className="flex flex-col w-full h-[300px] py-10 p-2 align-middle justify-center items-center">
+                                    <div key={index} className="flex flex-col h-auto w-full space-x-4 p-2 text-small">
                                         <div>Question: {item.question}</div>
                                         <Divider className="my-4 w-[97%] " />
                                         <div className='flex flex-row h-auto items-center space-x-4 text-small'>
