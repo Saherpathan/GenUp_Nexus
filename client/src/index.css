@@ -9,3 +9,10 @@
 .questions-interface::-webkit-scrollbar{
     display: none;
 }
+
+.modded-bg {
+    background: #1626FF;
+    background: linear-gradient(to right, #1626FF 29%, #FF0000 100%);
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}

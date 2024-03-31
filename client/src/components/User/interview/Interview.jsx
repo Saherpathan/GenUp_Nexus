@@ -23,7 +23,7 @@ const Interview = () => {
     const { user } = useGlobalContext();
     const [userId, setUserID] = useState(null);
     const [interviewHistory, setInterviewHistory] = useState([]);
-    const [start, setStart] = useState(false);
+    const [start, setStart] = useState(true);
     const [position, setPosition] = useState('');
     const [round, setRound] = useState('');
     const [difficultyLevel, setDifficultyLevel] = useState('');
@@ -61,10 +61,6 @@ const Interview = () => {
                 gradioAppElement.classList.remove('light');
                 gradioAppElement.classList.add('dark');
             }
-            let temp = document.querySelector('button[aria-label="start recording"]');
-            temp.addEventListener('click', function() {
-                modal2Disclosure.onOpen();
-            });
         }, 1000);
         return () => clearTimeout(timerId);
     }, []);
@@ -137,7 +133,6 @@ const Interview = () => {
                 speak(temp.question);
                 setAnswer('');
                 setCode('');
-                setStart(true);
                 setNext(false);
                 listenContinuously();
             } else {
@@ -176,7 +171,7 @@ const Interview = () => {
                 speak("Thank you for your time!!");
                 SpeechRecognition.stopListening();
               }
-              if (data.success) {
+              else if (data.success) {
                   console.log(JSON.parse(data.data));
                   let temp = JSON.parse(data.data);
                   setQuestion(temp.next_question);
@@ -201,8 +196,8 @@ const Interview = () => {
         const voices = window.speechSynthesis.getVoices();
         const selectedVoice = voices.find(voice => voice.name === "Google UK English Male");
         utterance.voice = selectedVoice;
-        utterance.pitch = 1.5;
-        utterance.rate = 1.5;
+        utterance.pitch = 1;
+        utterance.rate = 1;
         speechSynthesis.speak(utterance);
     };
 
@@ -225,6 +220,20 @@ const Interview = () => {
             continuous: true,
             language: 'en-GB',
         });
+    };
+
+    const starter = () => {
+        let temp = document.querySelector('button[aria-label="start recording"]');
+        temp.addEventListener('click', function() {
+            if (end) {
+                modal2Disclosure.onOpen();
+            }
+            else {
+                startInterview();
+            }
+        });
+        console.log('event Added');
+        setStart(false);
     };
 
     return (
@@ -437,7 +446,7 @@ const Interview = () => {
                                         ))}
                                     </Select>
                                     <div className="flex py-2 px-1 align-items-center justify-center text-center">
-                                        <Button color="primary" onPress={onClose} disabled={start} onClick={startInterview} >
+                                        <Button color="primary" onPress={onClose} onClick={starter} >
                                             Start Interview
                                         </Button>
                                     </div>
@@ -481,84 +490,90 @@ const Interview = () => {
                         </CardFooter>
                     </Card>
                 </div>
-                <Card className='w-full p-3'>
-                    <CardBody>
-                        <div className='questionnaire'>
-                            <div className='question flex flex-row gap-10'>
-                                <div className='h-12 w-12'>
-                                    <Image
-                                        radius="lg"
-                                        alt="AiBot"
-                                        className="w-full object-cover h-full align-items-center justify-center text-center"
-                                        src={aiBotPng}
-                                        style={{objectFit: 'contain'}}
-                                    />
+                {end || start? (
+                    <Card className='w-full h-[300px] p-10 flex align-middle justify-center items-center'>
+                        {start ? 'Start the interview by starting the recording.' : 'Submit the interview by stoping the recording!'}
+                    </Card>
+                ) : (
+                    <Card className='w-full p-3'>
+                        <CardBody>
+                            <div className='questionnaire'>
+                                <div className='question flex flex-row gap-10'>
+                                    <div className='h-12 w-12'>
+                                        <Image
+                                            radius="lg"
+                                            alt="AiBot"
+                                            className="w-full object-cover h-full align-items-center justify-center text-center"
+                                            src={aiBotPng}
+                                            style={{objectFit: 'contain'}}
+                                        />
+                                    </div>
+                                    <div>{question}</div>
                                 </div>
-                                <div>{question}</div>
-                            </div>
-                            <Divider className='my-5'/>
-                            <div className='answer flex flex-row items-center p-2'>
-                                <Textarea
-                                    value={answer}
-                                    onChange={(e) => setAnswer(e.target.value)}
-                                    key="faded"
-                                    variant="faded"
-                                    label="Answer"
-                                    labelPlacement="outside"
-                                    placeholder="Enter your Answer"
-                                    className="col-span-12 md:col-span-6 mb-6 md:mb-0"
-                                    disableAutosize
-                                    // isReadOnly
-                                />
-                                <Icon icon="svg-spinners:pulse" className="text-5xl text-default-400 pointer-events-none flex-shrink-0" />
-                                <FaMicrophone className='translate-x-[-32px]'/>
-                            </div>
-                            <Spacer y={3} />
-                            <div className='code flex flex-col items-center p-2'>
-                                <div className='flex flex-row justify-between items-center align-middle gap-10 w-full'>
-                                    <div className='w-full text-small'>Code</div>
-                                    <Select
-                                        size='sm'
-                                        value={codeLang}
-                                        onChange={(e) => setCodeLang(e.target.value)}
-                                        endContent={
-                                            <Icon icon="mingcute:suitcase-fill" className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
-                                        }
-                                        placeholder="Select your coding language"
-                                        labelPlacement='outside'
-                                    >
-                                        {popularLanguages.map((popularLanguages) => (
-                                            <SelectItem key={popularLanguages.value} value={popularLanguages.value}>
-                                            {popularLanguages.label}
-                                            </SelectItem>
-                                        ))}
-                                    </Select>
+                                <Divider className='my-5'/>
+                                <div className='answer flex flex-row items-center p-2'>
+                                    <Textarea
+                                        value={answer}
+                                        onChange={(e) => setAnswer(e.target.value)}
+                                        key="faded"
+                                        variant="faded"
+                                        label="Answer"
+                                        labelPlacement="outside"
+                                        placeholder="Enter your Answer"
+                                        className="col-span-12 md:col-span-6 mb-6 md:mb-0"
+                                        disableAutosize
+                                        // isReadOnly
+                                    />
+                                    <Icon icon="svg-spinners:pulse" className="text-5xl text-default-400 pointer-events-none flex-shrink-0" />
+                                    <FaMicrophone className='translate-x-[-32px]'/>
                                 </div>
                                 <Spacer y={3} />
-                                <div className='rounded-xl w-full overflow-hidden'>
-                                    <Editor
-                                        height="250px"
-                                        language={codeLang}
-                                        theme={codeTheme}
-                                        value={code}
-                                        onChange={(e) => setCode(e)}
-                                        options={{
-                                            inlineSuggest: true,
-                                            fontSize: "16px",
-                                            formatOnType: true,
-                                            autoClosingBrackets: true,
-                                            minimap: { scale: 10 },
-                                        }}
-                                    />
+                                <div className='code flex flex-col items-center p-2'>
+                                    <div className='flex flex-row justify-between items-center align-middle gap-10 w-full'>
+                                        <div className='w-full text-small'>Code</div>
+                                        <Select
+                                            size='sm'
+                                            value={codeLang}
+                                            onChange={(e) => setCodeLang(e.target.value)}
+                                            endContent={
+                                                <Icon icon="mingcute:suitcase-fill" className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
+                                            }
+                                            placeholder="Select your coding language"
+                                            labelPlacement='outside'
+                                        >
+                                            {popularLanguages.map((popularLanguages) => (
+                                                <SelectItem key={popularLanguages.value} value={popularLanguages.value}>
+                                                {popularLanguages.label}
+                                                </SelectItem>
+                                            ))}
+                                        </Select>
+                                    </div>
+                                    <Spacer y={3} />
+                                    <div className='rounded-xl w-full overflow-hidden'>
+                                        <Editor
+                                            height="250px"
+                                            language={codeLang}
+                                            theme={codeTheme}
+                                            value={code}
+                                            onChange={(e) => setCode(e)}
+                                            options={{
+                                                inlineSuggest: true,
+                                                fontSize: "16px",
+                                                formatOnType: true,
+                                                autoClosingBrackets: true,
+                                                minimap: { scale: 10 },
+                                            }}
+                                        />
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </CardBody>
-                    <CardFooter className='flex justify-center'>
-                            <Button variant='shadow' color='primary' isDisabled={next} onClick={nextQuestion} >Next</Button>
-                        {/* <Button variant='shadow' color='success' isDisabled={!end} >Submit</Button> */}
-                    </CardFooter>
-                </Card> 
+                        </CardBody>
+                        <CardFooter className='flex justify-center'>
+                                <Button variant='shadow' color='primary' isDisabled={next} onClick={nextQuestion} >Next</Button>
+                            {/* <Button variant='shadow' color='success' isDisabled={!end} >Submit</Button> */}
+                        </CardFooter>
+                    </Card>
+                )}
             </div>
             <Modal 
                 backdrop={backdrop}
