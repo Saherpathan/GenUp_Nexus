@@ -1,4 +1,4 @@
-import React, { useRef, useState, useCallback } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import Loader from "../../../components/Loader";
 import { useTheme } from "next-themes";
 import {
@@ -68,7 +68,17 @@ const Mindmaps = () => {
   const { theme } = useTheme();
   const [form, setForm] = useState(initialForm);
   const [initialEdges, setInitialEdges] = useState([]);
-  const [initialNodes, setInitialNodes] = useState(null);
+  const [initialNodes, setInitialNodes] = useState([]);
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const [objectId, setObjectId] = useState(null);
+  const [isDisabledSave, setIsDisabledSave] = useState(false);
+
+  useEffect(() => {
+    setNodes(initialNodes);
+    setEdges(initialEdges);
+    console.log(nodes);
+  }, [initialNodes]);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -77,24 +87,30 @@ const Mindmaps = () => {
   const handleSumbmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+
     // toast.loading("Generating...");
 
     try {
       const res = await axios.post("/tree/demo", form);
       console.log(res);
       const result = res.data;
+      console.log("Response: ");
       console.log(JSON.parse(result.data));
       const datas = JSON.parse(result.data);
+      setObjectId(result.objectId);
+      console.log(result.objectId);
       const nodes = datas.nodes;
       const edges = datas.edges;
       setInitialNodes(nodes);
       setInitialEdges(edges);
-      console.log(initialNodes);
-      console.log(initialEdges);
+      // console.log(initialNodes);
+      // console.log(initialEdges);
+      setIsDisabledSave(false);
       setIsLoading(false);
       toast.success("Mindmap Created Successfully!");
     } catch (error) {
       console.log(error);
+      setIsDisabledSave(true);
       setIsLoading(false);
       toast.error("Server error please try again later");
     }
@@ -105,14 +121,19 @@ const Mindmaps = () => {
     setIsSaveLoad(true);
     try {
       const initialData = {
-        initialEdges: initialEdges,
-        initialNodes: initialNodes,
+        data: {
+          initialEdges: edges,
+          initialNodes: nodes,
+        },
+        _id: objectId,
       };
-      const res = await axios.post("/mindmap/save", initialData);
+      console.log(initialData);
+      const res = await axios.post("/mindmap/save/id", initialData);
       const result = res.data;
       console.log(result);
       setIsSaveLoad(false);
-      toast.success("Mindmap Saved!");
+      setIsDisabledSave(true);
+      toast.success(result.message);
     } catch (err) {
       console.error(err);
       setIsSaveLoad(false);
@@ -120,9 +141,32 @@ const Mindmaps = () => {
     }
   };
 
-  const removeAttr = () => {
-    let temp = document.getElementsByClassName("react-flow__attribution");
-    temp[0].parentNode.removeChild(temp[0]);
+  const handleShare = async () => {
+    setIsShareLoad(true);
+    if (!isDisabledSave) {
+      setIsShareLoad(false);
+      return toast.error("Please save the mindmap first");
+    }
+
+    console.log(objectId);
+
+    const currentUrl = window.location.href;
+    const text = currentUrl + "/save/" + objectId;
+
+    console.log(text);
+
+    navigator.clipboard
+      .writeText(text)
+      .then(() => {
+        setIsShareLoad(false);
+        toast.success("Link copied to clipboard!");
+        console.log("Text copied to clipboard successfully");
+      })
+      .catch((err) => {
+        setIsShareLoad(false);
+        toast.error("Failed to copy link to clipboard!");
+        console.error("Unable to copy text to clipboard:", err);
+      });
   };
 
   function downloadImage(dataUrl) {
@@ -201,7 +245,7 @@ const Mindmaps = () => {
             Get
           </Button>
 
-          {initialNodes && (
+          {initialNodes.length > 1 && (
             <div className="flex gap-2">
               <Tooltip content="Download">
                 <Button
@@ -215,7 +259,7 @@ const Mindmaps = () => {
                   <FiDownload />
                 </Button>
               </Tooltip>
-              <Tooltip content="Save">
+              <Tooltip content={"Save"}>
                 <Button
                   isIconOnly
                   onClick={handleSave}
@@ -229,9 +273,8 @@ const Mindmaps = () => {
               </Tooltip>
               <Tooltip content="Share">
                 <Button
-                  isDisabled
                   isIconOnly
-                  onClick={handleSave}
+                  onClick={handleShare}
                   className="flex m-2"
                   color="primary"
                   variant="shadow"
@@ -244,11 +287,13 @@ const Mindmaps = () => {
           )}
         </div>
 
-        {initialNodes && (
+        {initialNodes.length > 1 && (
           <div style={{ width: "98vw", height: "73vh" }}>
             <ReactFlow
-              nodes={initialNodes}
-              edges={initialEdges}
+              nodes={nodes}
+              edges={edges}
+              onNodesChange={onNodesChange}
+              onEdgesChange={onEdgesChange}
               onInit={onInit}
               snapToGrid={true}
               snapGrid={snapGrid}

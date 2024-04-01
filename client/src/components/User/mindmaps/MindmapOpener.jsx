@@ -51,8 +51,8 @@ const onInit = (reactFlowInstance) =>
 const MindmapOpener = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isButtonLoading, setIsButtonLoading] = useState(false);
-  const [initialNodes, setInitialNodes] = useState(null);
-  const [initialEdges, setInitialEdges] = useState(null);
+  const [initialNodes, setInitialNodes] = useState([]);
+  const [initialEdges, setInitialEdges] = useState([]);
   const [mindmaps, setMindmaps] = useState(null);
   const [isSaveLoad, setIsSaveLoad] = useState(false);
   const [isDownLoad, setIsDownLoad] = useState(false);
@@ -60,8 +60,8 @@ const MindmapOpener = () => {
   const { theme } = useTheme();
   const { user } = useGlobalContext();
   const navigateTo = useNavigate();
-  // const [nodes, setNodes,onNodesChange] = useNodesState(initialNodes);
-  // const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -77,8 +77,10 @@ const MindmapOpener = () => {
         setInitialEdges(res.data.data.data.initialEdges);
         setInitialNodes(res.data.data.data.initialNodes);
         console.log(initialNodes);
-        console.log(initialNodes);
+        console.log(initialEdges);
         // toast.success("Mindmap fetched!");
+        // setNodes(initialNodes);
+        // setEdges(initialEdges);
       } catch (err) {
         console.error(err);
         toast.error("Server error please try again later");
@@ -90,6 +92,12 @@ const MindmapOpener = () => {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    setNodes(initialNodes);
+    setEdges(initialEdges);
+    console.log(nodes);
+  }, [initialNodes]);
+
   const handleDelete = async (e) => {
     e.preventDefault();
     setIsButtonLoading(true);
@@ -100,7 +108,7 @@ const MindmapOpener = () => {
       const id = segments[segments.length - 1];
       await axios.post("/mindmap/delete", { _id: id });
       toast.success("Mindmap Deleted!");
-      navigateTo("/savedmindmaps");
+      navigateTo("/mindmap/personal");
     } catch (err) {
       console.error(err);
       toast.error("Server error please try again later");
@@ -113,15 +121,21 @@ const MindmapOpener = () => {
     e.preventDefault();
     setIsSaveLoad(true);
     try {
+      const currentUrl = window.location.href;
+      const segments = currentUrl.split("/");
+      const id = segments[segments.length - 1];
       const initialData = {
-        initialEdges: initialEdges,
-        initialNodes: initialNodes,
+        data : {
+        initialEdges: edges,
+        initialNodes: nodes,
+        },
+        _id: id
       };
-      const res = await axios.post("/mindmap/save", initialData);
+      const res = await axios.post("/mindmap/save/id", initialData);
       const result = res.data;
       console.log(result);
       setIsSaveLoad(false);
-      toast.success("Mindmap Saved!");
+      toast.success(result.message);
     } catch (err) {
       console.error(err);
       setIsSaveLoad(false);
@@ -129,19 +143,27 @@ const MindmapOpener = () => {
     }
   };
 
-  // const edgesWithUpdatedTypes = edges.map((edge) => {
-  //   if (edge.sourceHandle) {
-  //     const edgeType = nodes.find((node) => node.type === "custom").data
-  //       .selects[edge.sourceHandle];
-  //     edge.type = edgeType;
-  //   }
+  const handleShare = async () => {
+    setIsShareLoad(true);
+  
+    const currentUrl = window.location.href;
+    const text = currentUrl;
 
-  //   return edge;
-  // });
-  // const removeAttr = () => {
-  //   let temp = document.getElementsByClassName("react-flow__attribution");
-  //   temp[0].parentNode.removeChild(temp[0]);
-  // };
+    console.log(text);
+
+    navigator.clipboard
+      .writeText(text)
+      .then(() => {
+        setIsShareLoad(false);
+        toast.success("Link copied to clipboard!");
+        console.log("Text copied to clipboard successfully");
+      })
+      .catch((err) => {
+        setIsShareLoad(false);
+        toast.error("Failed to copy link to clipboard!");
+        console.error("Unable to copy text to clipboard:", err);
+      });
+  };
 
   function downloadImage(dataUrl) {
     const a = document.createElement("a");
@@ -195,9 +217,9 @@ const MindmapOpener = () => {
         <div className="flex justify-between">
           <div className="m-5 text-2xl">
             Mindmap{" "}
-            {initialNodes && <span>: {initialNodes[0].data.label}</span>}
+            {initialNodes.length > 1 && <span>: {initialNodes[0]?.data?.label}</span>}
           </div>
-          {initialNodes && (
+          {initialNodes.length > 1 && (
             <div className="flex gap-2">
               <Tooltip content="Download">
                 <Button
@@ -210,8 +232,7 @@ const MindmapOpener = () => {
                   startContent={<FiDownload />}
                 ></Button>
               </Tooltip>
-              {mindmaps?.data?.userId !== user?.result?.userId && (
-                <Tooltip content="Save">
+                <Tooltip content={user ? "Save" : "Login to save."}>
                   <Button
                     isIconOnly
                     onClick={handleSave}
@@ -222,12 +243,10 @@ const MindmapOpener = () => {
                     startContent={<IoSaveOutline />}
                   ></Button>
                 </Tooltip>
-              )}
               <Tooltip content="Share">
                 <Button
-                  isDisabled
                   isIconOnly
-                  onClick={handleSave}
+                  onClick={handleShare}
                   className="flex m-2"
                   color="primary"
                   variant="shadow"
@@ -253,13 +272,13 @@ const MindmapOpener = () => {
           )}
         </div>
         {}
-        {initialNodes && (
+        {initialNodes.length > 1 && (
           <div style={{ width: "98vw", height: "86vh" }}>
             <ReactFlow
-              nodes={initialNodes}
-              edges={initialEdges}
-              // onNodesChange={onNodesChange}
-              // onEdgesChange={onEdgesChange}
+              nodes={nodes}
+              edges={edges}
+              onNodesChange={onNodesChange}
+              onEdgesChange={onEdgesChange}
               onInit={onInit}
               snapToGrid={true}
               snapGrid={snapGrid}

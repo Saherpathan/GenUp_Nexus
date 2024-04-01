@@ -11,10 +11,12 @@ from flask_jwt_extended import JWTManager, create_access_token
 from middleware.authUser import auth_user
 from datetime import timedelta 
 from controllers.demo import get_initial_data
-from controllers.mindmap import saveMindmap, getMindmap, deleteMindmap, getMindmapByid
+from controllers.mindmap import saveMindmap, getMindmap, deleteMindmap, getMindmapByid, saveMindmapById
 import json
+from bson import ObjectId
 from dotenv import load_dotenv
 import os
+
 
 load_dotenv()
 
@@ -197,7 +199,6 @@ def treeDemo():
 - JSON structure compatible with ReactFlow:
     - nodes (list): id, position, type(custom), data(label, description, icon, category).
     - edges (list): id, source, target, label(if required), animated (true or false), style(stroke).
-- Keep the top level node centered and highlighted. 
 - The nodes should not overlap and have enough spacing for readability, therefore adjust it position accordingly.
 - keep atleast 2 edges "animated":true.
 - Strictly keep the all the nodes with type property value as custom. 
@@ -209,7 +210,13 @@ Topic is: ''' + query)
         print(response.text)
         json_data = response.text
         modified_json_data = json_data[8:-3]
-        return jsonify({'success': True, 'data': modified_json_data})
+
+        while True:
+            new_object_id = ObjectId()
+            if savedMindmap.find_one({'_id': new_object_id}) is None:
+                break 
+
+        return jsonify({'success': True, 'data': modified_json_data, 'objectId': str(new_object_id)})
         # return temp 
 
 
@@ -533,6 +540,13 @@ def mindmapSave():
     userId = request.userId
     data = request.json
     return saveMindmap(data, userId, savedMindmap)
+
+@app.route('/mindmap/save/id', methods=['POST'])
+@auth_user
+def mindmapSaveId():
+    userId = request.userId
+    data = request.json
+    return saveMindmapById(data, userId, savedMindmap)
 
 @app.route('/mindmap/get', methods=['GET'])
 @auth_user

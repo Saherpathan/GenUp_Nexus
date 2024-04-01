@@ -14,6 +14,39 @@ def saveMindmap(data, userId, savedMindmap):
         print(e) 
         return jsonify({"error": "An error occurred"}), 500
 
+def saveMindmapById(data, userId, savedMindmap):
+    try:
+        map_id = data["_id"]
+        existing_map = savedMindmap.find_one({"_id": ObjectId(map_id)})
+        
+        if existing_map:
+            existing_user_id = existing_map.get("userId")
+            
+            if existing_user_id != userId:
+                # If the existing map belongs to a different user, create a new map for the current user
+                savedMindmap.insert_one({
+                    "userId": userId,
+                    "data": data["data"]
+                })
+                return jsonify({"message": "Mindmap Saved to your space!"}), 201
+            else:
+                # If the existing map belongs to the current user, update it with the new data
+                savedMindmap.update_one({"_id": ObjectId(map_id)}, {"$set": {"data": data["data"]}})
+                return jsonify({"message": "Mindmap Updated!"}), 200
+        else:
+            # If the map does not exist, create a new one with the provided _id for the current user
+            savedMindmap.insert_one({
+                "_id": ObjectId(map_id),
+                "userId": userId,
+                "data": data["data"]
+            })
+            return jsonify({"message": "Minmdap Saved!"}), 201
+    except Exception as e:
+        print(e) 
+        return jsonify({"error": "An error occurred"}), 500
+
+
+
 def getMindmap(userId, savedMindmap):
     try:
         results = savedMindmap.find({"userId": userId})
