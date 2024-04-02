@@ -243,7 +243,8 @@ const MindmapOpener = () => {
     },
     {
       title: "Mindmap Controls",
-      description: "Control your mindmap view, with zoom, fitview and lock view.",
+      description:
+        "Control your mindmap view, with zoom, fitview and lock view.",
       target: () => ref5.current,
     },
     {
@@ -348,7 +349,7 @@ const MindmapOpener = () => {
         </div>
         {}
         {initialNodes.length > 1 && (
-          <div style={{ width: "98vw", height: "86vh" }} ref={ref7}>
+          <div style={{ width: "100vw", height: "82vh" }} ref={ref7}>
             <ReactFlow
               nodes={nodes}
               edges={edges}
@@ -362,10 +363,20 @@ const MindmapOpener = () => {
               nodeTypes={nodeTypes}
               defaultEdgeOptions={defaultEdgeOptions}
             >
-              <MiniMap style={minimapStyle} zoomable pannable />
-              <Controls ref={ref5} />
+              {" "}
+              <div
+                className="absolute bottom-0 right-0 w-[230px] h-[150px]"
+                ref={ref6}
+              >
+                <MiniMap style={minimapStyle} zoomable pannable />
+              </div>
+              <div
+                className="absolute bottom-0 left-0 w-[50px] h-[140px]"
+                ref={ref5}
+              >
+                <Controls ref={ref5} />
+              </div>
               <Background color="#aaa" gap={16} />
-
               <svg>
                 <defs>
                   <linearGradient id="edge-gradient">
