@@ -300,8 +300,8 @@ const Interview = () => {
                             <ScrollShadow hideScrollBar className="w-full h-[400px]">
                                 <div className='flex flex-col justify-between w-full gap-5'>
                                     {interviewHistory.map((item, index) => (
-                                        <Link key={item._id} target='blank' to={`./results/${item._id}`}>
-                                            <Card >
+                                        <Link target='blank' to={`./results/${item._id}`}>
+                                            <Card>
                                                 <CardBody className="flex flex-row items-center justify-center gap-5 p-3 overflow-visible">
                                                     <Card
                                                         isFooterBlurred
