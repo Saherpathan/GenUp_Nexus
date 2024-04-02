@@ -66,6 +66,8 @@ def index():
 def index2():
     return "routes checking..."
 
+
+#generative model routes
 @app.route('/tree', methods=["POST", "GET"])
 def tree():
     if request.method == 'POST':
@@ -159,7 +161,6 @@ def tree():
         return jsonify({'success': True, 'data': response.text})
         # return temp 
 
-
 @app.route('/tree/demo', methods=["POST"])
 def treeDemo():
     if request.method == 'POST':
@@ -219,6 +220,29 @@ Topic is: ''' + query)
         return jsonify({'success': True, 'data': modified_json_data, 'objectId': str(new_object_id)})
         # return temp 
 
+@app.route('/mindmap/generate/data', methods=["POST"])
+def generateData():
+    if request.method == 'POST':
+        data = request.get_json()
+        topic = data.get('topic')
+        description = data.get('description')
+        category = data.get('category')
+        print(topic)
+        print(description)
+        print(category)
+        response = model.generate_content('''I will provide you a topic. You need to generate its detailed explanation also provide its links to the related topics and subtopics and respond with html format with tailiwindcss styling, wrapped under a single<div></div>.
+                            
+        - keep the background tranparent.
+        - Title should be in text-2xl font-bold.
+        - Subtitle should be in text-lg font-semibold.
+        - make sure the content is well structured and easy to read.
+        - make sure the link text style is in text-aqua.    
+        Topic: ''' + topic)                                 
+        print(response.text)
+        json_data = response.text
+        modified_json_data = json_data[8:-3]
+
+        return jsonify({'success': True, 'data': modified_json_data})                                  
 
 def res(user_id):
     avg_text = 0        
