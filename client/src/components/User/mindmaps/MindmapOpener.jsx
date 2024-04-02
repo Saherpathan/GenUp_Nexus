@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import Loader from "../../Loader";
 import ReactFlow, {
   MiniMap,
@@ -26,7 +26,9 @@ import { toPng } from "html-to-image";
 import { IoSaveOutline } from "react-icons/io5";
 import { FiDownload } from "react-icons/fi";
 import { HiOutlineShare } from "react-icons/hi2";
+import { TfiInfoAlt } from "react-icons/tfi";
 import { useTheme } from "next-themes";
+import { Tour } from "antd";
 
 const imageWidth = 1024;
 const imageHeight = 768;
@@ -125,11 +127,11 @@ const MindmapOpener = () => {
       const segments = currentUrl.split("/");
       const id = segments[segments.length - 1];
       const initialData = {
-        data : {
-        initialEdges: edges,
-        initialNodes: nodes,
+        data: {
+          initialEdges: edges,
+          initialNodes: nodes,
         },
-        _id: id
+        _id: id,
       };
       const res = await axios.post("/mindmap/save/id", initialData);
       const result = res.data;
@@ -145,7 +147,7 @@ const MindmapOpener = () => {
 
   const handleShare = async () => {
     setIsShareLoad(true);
-  
+
     const currentUrl = window.location.href;
     const text = currentUrl;
 
@@ -203,6 +205,60 @@ const MindmapOpener = () => {
     }).then(downloadImage);
   };
 
+  // Tour
+  const ref1 = useRef(null);
+  const ref2 = useRef(null);
+  const ref3 = useRef(null);
+  const ref4 = useRef(null);
+  const ref5 = useRef(null);
+  const ref6 = useRef(null);
+  const ref7 = useRef(null);
+  const [open, setOpen] = useState(false);
+  const steps = [
+    {
+      title: "Download Mindmap",
+      description: "Download your mindmap as an image.",
+      cover: (
+        <img
+          alt="tour.png"
+          src="https://user-images.githubusercontent.com/5378891/197385811-55df8480-7ff4-44bd-9d43-a7dade598d70.png"
+        />
+      ),
+      target: () => ref1.current,
+    },
+    {
+      title: "Save",
+      description: "Save your mindmap.",
+      target: () => ref2.current,
+    },
+    {
+      title: "Share",
+      description: "Share your mindmap. Link is copied to clipboard.",
+      target: () => ref3.current,
+    },
+    {
+      title: "Delete",
+      description: "Delete your mindmap.",
+      target: () => ref4.current,
+    },
+    {
+      title: "Mindmap Controls",
+      description:
+        "Control your mindmap view, with zoom, fitview and lock view.",
+      target: () => ref5.current,
+    },
+    {
+      title: "Minimap",
+      description: "Minimap to view the whole mindmap at a glance.",
+      target: () => ref6.current,
+    },
+    {
+      title: "Your Mindmap",
+      description: "Mindmap you created. Click on the nodes to view details.",
+      target: () => ref7.current,
+    },
+  ];
+
   return (
     <div>
       <Layout>
@@ -217,32 +273,49 @@ const MindmapOpener = () => {
         <div className="flex justify-between">
           <div className="m-5 text-2xl">
             Mindmap{" "}
-            {initialNodes.length > 1 && <span>: {initialNodes[0]?.data?.label}</span>}
+            {initialNodes.length > 1 && (
+              <span>: {initialNodes[0]?.data?.label}</span>
+            )}
           </div>
           {initialNodes.length > 1 && (
             <div className="flex gap-2">
+              <Tooltip content="How this page works?">
+                <Button
+                  isIconOnly
+                  onClick={() => setOpen(true)}
+                  className="flex m-2"
+                  color="default"
+                  variant="shadow"
+                >
+                  <TfiInfoAlt />
+                </Button>
+              </Tooltip>
               <Tooltip content="Download">
                 <Button
                   isIconOnly
                   onClick={handleDownload}
                   className="flex m-2"
-                  color="default"
+                  color="warning"
                   variant="shadow"
                   isLoading={isDownLoad}
-                  startContent={<FiDownload />}
-                ></Button>
+                  ref={ref1}
+                >
+                  <FiDownload />
+                </Button>
               </Tooltip>
-                <Tooltip content={user ? "Save" : "Login to save."}>
-                  <Button
-                    isIconOnly
-                    onClick={handleSave}
-                    className="flex m-2"
-                    color="secondary"
-                    variant="shadow"
-                    isLoading={isSaveLoad}
-                    startContent={<IoSaveOutline />}
-                  ></Button>
-                </Tooltip>
+              <Tooltip content={user ? "Save" : "Login to save."}>
+                <Button
+                  isIconOnly
+                  onClick={handleSave}
+                  className="flex m-2"
+                  color="secondary"
+                  variant="shadow"
+                  isLoading={isSaveLoad}
+                  ref={ref2}
+                >
+                  <IoSaveOutline />
+                </Button>
+              </Tooltip>
               <Tooltip content="Share">
                 <Button
                   isIconOnly
@@ -251,8 +324,10 @@ const MindmapOpener = () => {
                   color="primary"
                   variant="shadow"
                   isLoading={isShareLoad}
-                  startContent={<HiOutlineShare />}
-                ></Button>
+                  ref={ref3}
+                >
+                  <HiOutlineShare />
+                </Button>
               </Tooltip>
               {mindmaps?.data?.userId === user?.result?.userId && (
                 <Tooltip content="Delete">
@@ -263,6 +338,7 @@ const MindmapOpener = () => {
                     color="danger"
                     variant="shadow"
                     isLoading={isButtonLoading}
+                    ref={ref4}
                   >
                     <MdDeleteOutline />
                   </Button>
@@ -273,7 +349,7 @@ const MindmapOpener = () => {
         </div>
         {}
         {initialNodes.length > 1 && (
-          <div style={{ width: "98vw", height: "86vh" }}>
+          <div style={{ width: "100vw", height: "82vh" }} ref={ref7}>
             <ReactFlow
               nodes={nodes}
               edges={edges}
@@ -287,10 +363,20 @@ const MindmapOpener = () => {
               nodeTypes={nodeTypes}
               defaultEdgeOptions={defaultEdgeOptions}
             >
-              <MiniMap style={minimapStyle} zoomable pannable />
-              <Controls />
+              {" "}
+              <div
+                className="absolute bottom-0 right-0 w-[230px] h-[150px]"
+                ref={ref6}
+              >
+                <MiniMap style={minimapStyle} zoomable pannable />
+              </div>
+              <div
+                className="absolute bottom-0 left-0 w-[50px] h-[140px]"
+                ref={ref5}
+              >
+                <Controls ref={ref5} />
+              </div>
               <Background color="#aaa" gap={16} />
-
               <svg>
                 <defs>
                   <linearGradient id="edge-gradient">
@@ -321,6 +407,8 @@ const MindmapOpener = () => {
             </ReactFlow>
           </div>
         )}
+
+        <Tour open={open} onClose={() => setOpen(false)} steps={steps} />
       </Layout>
     </div>
   );

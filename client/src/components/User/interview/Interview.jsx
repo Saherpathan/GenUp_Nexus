@@ -294,15 +294,15 @@ const Interview = () => {
                 {(onClose) => (
                     <>
                     <ModalHeader className="flex flex-col gap-1">Mock Interviews</ModalHeader>
-                    <ModalBody className='flex flex-row gap-5 justify-around '>
-                        <div className='flex flex-col gap-5 justify-around'>
+                    <ModalBody className='flex flex-row justify-around gap-5 '>
+                        <div className='flex flex-col justify-around gap-5'>
                             <b>Previous Interviews</b>
                             <ScrollShadow hideScrollBar className="w-full h-[400px]">
-                                <div className='flex flex-col gap-5 w-full justify-between'>
+                                <div className='flex flex-col justify-between w-full gap-5'>
                                     {interviewHistory.map((item, index) => (
                                         <Link target='blank' to={`./results/${item._id}`}>
                                             <Card>
-                                                <CardBody className="overflow-visible p-3 flex flex-row gap-5 justify-center items-center">
+                                                <CardBody className="flex flex-row items-center justify-center gap-5 p-3 overflow-visible">
                                                     <Card
                                                         isFooterBlurred
                                                         radius="lg"
@@ -311,13 +311,13 @@ const Interview = () => {
                                                         <Icon icon={item.src} width="200" height="200" style={{padding: '20px'}} />
                                                         <CardFooter className="justify-between before:bg-white/10 border-white/20 border-1 overflow-hidden py-1 absolute before:rounded-xl rounded-large bottom-1 w-[calc(100%_-_8px)] shadow-small ml-1 z-10">
                                                             <p className="text-tiny text-white/80">{item.company_name}</p>
-                                                            <Link target='blank' to={`./results/${item._id}`}><Button className="text-tiny text-white bg-black/20" variant="flat" color="default" radius="lg" size="sm" endContent={<Icon icon="line-md:arrow-right"  style={{color:`${theme==='light' ? `black` : `light`}`, fontSize: '16px'}} className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />}>
+                                                            <Link target='blank' to={`./results/${item._id}`}><Button className="text-white text-tiny bg-black/20" variant="flat" color="default" radius="lg" size="sm" endContent={<Icon icon="line-md:arrow-right"  style={{color:`${theme==='light' ? `black` : `light`}`, fontSize: '16px'}} className="flex-shrink-0 text-2xl pointer-events-none text-default-400" />}>
                                                                 Check
                                                             </Button></Link>
                                                         </CardFooter>
                                                     </Card>
                                                     <div className='flex flex-col'>
-                                                        <div className='text-center  '>
+                                                        <div className='text-center '>
                                                             <b className='text-lg text-green-500'>{item.interview_score}</b> / 10
                                                         </div>
                                                         <Table isCompact aria-label="Dynamic Content" hideHeader>
@@ -348,12 +348,12 @@ const Interview = () => {
                                 </div>
                             </ScrollShadow>
                         </div>  
-                        <div className='flex flex-col gap-5 w-full justify-start'>
+                        <div className='flex flex-col justify-start w-full gap-5'>
                             {!reveal ? (
                                 <>
                                     <b>New Interview</b>
                                     <Card shadow="sm" isPressable onPress={() => {setReveal(true)}}>
-                                        <CardBody className="overflow-visible p-0 flex justify-center items-center">
+                                        <CardBody className="flex items-center justify-center p-0 overflow-visible">
                                             <Image
                                                 radius="lg"
                                                 height={300}
@@ -362,23 +362,23 @@ const Interview = () => {
                                                 src={aiBot}
                                             />
                                         </CardBody>
-                                        <CardFooter className="text-medium justify-center">
+                                        <CardFooter className="justify-center text-medium">
                                             <p><b>AI Powered</b></p>
                                         </CardFooter>
                                     </Card>
                                 </>
                             ) : (
                                 <>
-                                    <div className='flex justify-between items-center'>
+                                    <div className='flex items-center justify-between'>
                                         <b>New Inerview</b>
-                                        <Button size='sm' onClick={() => {setReveal(false);}} startContent={<Icon icon="ph:arrow-left-bold" style={{color:`${theme==='light' ? `black` : `light`}`, fontSize:'16px'}} className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />} variant='light'>Back</Button>
+                                        <Button size='sm' onClick={() => {setReveal(false);}} startContent={<Icon icon="ph:arrow-left-bold" style={{color:`${theme==='light' ? `black` : `light`}`, fontSize:'16px'}} className="flex-shrink-0 text-2xl pointer-events-none text-default-400" />} variant='light'>Back</Button>
                                     </div>
                                     <Select
                                         value={position}
                                         onChange={(e) => setPosition(e.target.value)}
                                         autoFocus
                                         endContent={
-                                            <Icon icon="mingcute:suitcase-fill" className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
+                                            <Icon icon="mingcute:suitcase-fill" className="flex-shrink-0 text-2xl pointer-events-none text-default-400" />
                                         }
                                         label="Job Profile"
                                         placeholder="Select your Job profile"
@@ -396,7 +396,7 @@ const Interview = () => {
                                         value={round}
                                         onChange={(e) => setRound(e.target.value)}
                                         endContent={
-                                            <Icon icon="mingcute:suitcase-fill" className="text-2xl text-default-400 pointer-events-none flex-shrink-0" /> 
+                                            <Icon icon="mingcute:suitcase-fill" className="flex-shrink-0 text-2xl pointer-events-none text-default-400" /> 
                                         }
                                         label="Round Type"
                                         placeholder="Select your round type"
@@ -413,7 +413,7 @@ const Interview = () => {
                                         value={difficultyLevel}
                                         onChange={(e) => setDifficultyLevel(e.target.value)}
                                         endContent={
-                                            <Icon icon="mingcute:suitcase-fill" className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
+                                            <Icon icon="mingcute:suitcase-fill" className="flex-shrink-0 text-2xl pointer-events-none text-default-400" />
                                             
                                         }
                                         label="Difficulty Level"
@@ -431,7 +431,7 @@ const Interview = () => {
                                         value={companyName}
                                         onChange={(e) => setCompanyName(e.target.value)}
                                         endContent={
-                                            <Icon icon="mingcute:suitcase-fill" className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
+                                            <Icon icon="mingcute:suitcase-fill" className="flex-shrink-0 text-2xl pointer-events-none text-default-400" />
                                             
                                         }
                                         label="Company"
@@ -445,7 +445,7 @@ const Interview = () => {
                                             </SelectItem>
                                         ))}
                                     </Select>
-                                    <div className="flex py-2 px-1 align-items-center justify-center text-center">
+                                    <div className="flex justify-center px-1 py-2 text-center align-items-center">
                                         <Button color="primary" onPress={onClose} onClick={starter} >
                                             Start Interview
                                         </Button>
@@ -454,34 +454,34 @@ const Interview = () => {
                             )}    
                         </div>
                     </ModalBody>
-                    <ModalFooter className="d-flex align-items-center justify-center text-center">
+                    <ModalFooter className="justify-center text-center d-flex align-items-center">
                         
                     </ModalFooter>
                     </>
                 )}
                 </ModalContent>
             </Modal>
-            <div className='px-5 h-full' style={{display: 'flex', flexDirection:'row', gap: '10px'}}>
+            <div className='h-full px-5' style={{display: 'flex', flexDirection:'row', gap: '10px'}}>
                 <div className='flex flex-col w-[40%] gap-3'>
-                    <Card className='video-feed w-full' style={{margin:'auto'}}>
+                    <Card className='w-full video-feed' style={{margin:'auto'}}>
                         <CardBody>
                             <Card shadow="sm" isPressable>
-                                <CardBody className="overflow-visible p-5 flex justify-center items-center">
+                                <CardBody className="flex items-center justify-center p-5 overflow-visible">
                                     <Image
                                         radius="lg"
                                         alt="Check Mark"
                                         className="w-full object-cover h-[150px] align-items-center justify-center text-center"
                                         src={aiBot}
                                     />
-                                    {speaking && (<div className='w-0 h-0 flex align-middle justify-center'><Icon icon="svg-spinners:pulse-rings-multiple" className="text-default-400 text-9xl pointer-events-none flex-shrink-0 translate-y-[-100px]" /></div>)}
+                                    {speaking && (<div className='flex justify-center w-0 h-0 align-middle'><Icon icon="svg-spinners:pulse-rings-multiple" className="text-default-400 text-9xl pointer-events-none flex-shrink-0 translate-y-[-100px]" /></div>)}
                                 </CardBody>
-                                <CardFooter className="text-medium justify-center">
+                                <CardFooter className="justify-center text-medium">
                                     <p><b>AI</b></p>
                                 </CardFooter>
                             </Card>
                         </CardBody>
                     </Card>
-                    <Card className='video-feed w-full' style={{margin:'auto'}}>
+                    <Card className='w-full video-feed' style={{margin:'auto'}}>
                         <CardBody>
                             <gradio-app ref={gradioAppRef} src="https://parthcodes-test-video.hf.space/"></gradio-app>
                         </CardBody>
@@ -498,12 +498,12 @@ const Interview = () => {
                     <Card className='w-full p-3'>
                         <CardBody>
                             <div className='questionnaire'>
-                                <div className='question flex flex-row gap-10'>
-                                    <div className='h-12 w-12'>
+                                <div className='flex flex-row gap-10 question'>
+                                    <div className='w-12 h-12'>
                                         <Image
                                             radius="lg"
                                             alt="AiBot"
-                                            className="w-full object-cover h-full align-items-center justify-center text-center"
+                                            className="justify-center object-cover w-full h-full text-center align-items-center"
                                             src={aiBotPng}
                                             style={{objectFit: 'contain'}}
                                         />
@@ -511,7 +511,7 @@ const Interview = () => {
                                     <div>{question}</div>
                                 </div>
                                 <Divider className='my-5'/>
-                                <div className='answer flex flex-row items-center p-2'>
+                                <div className='flex flex-row items-center p-2 answer'>
                                     <Textarea
                                         value={answer}
                                         onChange={(e) => setAnswer(e.target.value)}
@@ -520,23 +520,23 @@ const Interview = () => {
                                         label="Answer"
                                         labelPlacement="outside"
                                         placeholder="Enter your Answer"
-                                        className="col-span-12 md:col-span-6 mb-6 md:mb-0"
+                                        className="col-span-12 mb-6 md:col-span-6 md:mb-0"
                                         disableAutosize
                                         // isReadOnly
                                     />
-                                    <Icon icon="svg-spinners:pulse" className="text-5xl text-default-400 pointer-events-none flex-shrink-0" />
+                                    <Icon icon="svg-spinners:pulse" className="flex-shrink-0 text-5xl pointer-events-none text-default-400" />
                                     <FaMicrophone className='translate-x-[-32px]'/>
                                 </div>
                                 <Spacer y={3} />
-                                <div className='code flex flex-col items-center p-2'>
-                                    <div className='flex flex-row justify-between items-center align-middle gap-10 w-full'>
+                                <div className='flex flex-col items-center p-2 code'>
+                                    <div className='flex flex-row items-center justify-between w-full gap-10 align-middle'>
                                         <div className='w-full text-small'>Code</div>
                                         <Select
                                             size='sm'
                                             value={codeLang}
                                             onChange={(e) => setCodeLang(e.target.value)}
                                             endContent={
-                                                <Icon icon="mingcute:suitcase-fill" className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
+                                                <Icon icon="mingcute:suitcase-fill" className="flex-shrink-0 text-2xl pointer-events-none text-default-400" />
                                             }
                                             placeholder="Select your coding language"
                                             labelPlacement='outside'
@@ -549,7 +549,7 @@ const Interview = () => {
                                         </Select>
                                     </div>
                                     <Spacer y={3} />
-                                    <div className='rounded-xl w-full overflow-hidden'>
+                                    <div className='w-full overflow-hidden rounded-xl'>
                                         <Editor
                                             height="250px"
                                             language={codeLang}
@@ -594,7 +594,7 @@ const Interview = () => {
                     <ModalHeader className="flex flex-col gap-1">Interview Submitted</ModalHeader>
                     <ModalBody>
                         <Card shadow="sm" isPressable>
-                            <CardBody className="overflow-visible p-0 flex justify-center items-center">
+                            <CardBody className="flex items-center justify-center p-0 overflow-visible">
                                 <Image
                                 radius="lg"
                                 height={200}
@@ -603,16 +603,16 @@ const Interview = () => {
                                 src={check}
                                 />
                             </CardBody>
-                            <CardFooter className="text-small justify-center">
+                            <CardFooter className="justify-center text-small">
                                 <b>Note: </b>
                                 <p className="text-default-500"> &nbsp; The results will take a few minutes to compute...</p>
                             </CardFooter>
                         </Card>
                     </ModalBody>
-                    <ModalFooter className="d-flex align-items-center justify-center text-center">
+                    <ModalFooter className="justify-center text-center d-flex align-items-center">
                         <Link to={'./interview'}>
                             <Button color="primary" onPress={onClose} disabled={start} onClick={startInterview} endContent={
-                                    <Icon icon="line-md:arrow-right"  style={{color: 'white'}} className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
+                                    <Icon icon="line-md:arrow-right"  style={{color: 'white'}} className="flex-shrink-0 text-2xl pointer-events-none text-default-400" />
                                 } >
                                 Check Results
                             </Button>

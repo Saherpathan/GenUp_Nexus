@@ -36,6 +36,9 @@ import CustomNode from "./CustomNode";
 import Background2 from "../../Background/Background";
 import "./overview.css";
 
+import { Tour } from "antd";
+import { TfiInfoAlt } from "react-icons/tfi";
+
 const initialForm = {
   query: "",
 };
@@ -208,6 +211,61 @@ const Mindmaps = () => {
     }).then(downloadImage);
   };
 
+  // Tour
+  const ref1 = useRef(null);
+  const ref2 = useRef(null);
+  const ref3 = useRef(null);
+  // const ref4 = useRef(null);
+  const ref5 = useRef(null);
+  const ref6 = useRef(null);
+  const ref7 = useRef(null);
+  const ref8 = useRef(null);
+  const [open, setOpen] = useState(false);
+  const steps = [
+    {
+      title: "Download Mindmap",
+      description: "Download your mindmap as an image.",
+      cover: (
+        <img
+          alt="tour.png"
+          src="https://user-images.githubusercontent.com/5378891/197385811-55df8480-7ff4-44bd-9d43-a7dade598d70.png"
+        />
+      ),
+      target: () => ref1.current,
+    },
+    {
+      title: "Save",
+      description: "Save your mindmap.",
+      target: () => ref2.current,
+    },
+    {
+      title: "Share",
+      description: "Share your mindmap. Link is copied to clipboard.",
+      target: () => ref3.current,
+    },
+    {
+      title: "Mindmap Controls",
+      description:
+        "Control your mindmap view, with zoom, fitview and lock view.",
+      target: () => ref5.current,
+    },
+    {
+      title: "Minimap",
+      description: "Minimap to view the whole mindmap at a glance.",
+      target: () => ref6.current,
+    },
+    {
+      title: "Your Mindmap",
+      description: "Mindmap you created. Click on the nodes to view details.",
+      target: () => ref7.current,
+    },
+    {
+      title: "Create Mindmap",
+      description: "You can also create mindmap by entering the query.",
+      target: () => ref8.current,
+    },
+  ];
+
   return (
     <div>
       <Background2 />
@@ -219,6 +277,7 @@ const Mindmaps = () => {
             height="250px"
           />
         ) : null}
+        <div ref={ref8} className="absolute w-[350px] h-[170px]"></div>
         <div className="flex justify-between m-5 text-2xl text-center">
           Mindmaps
         </div>
@@ -247,14 +306,26 @@ const Mindmaps = () => {
 
           {initialNodes.length > 1 && (
             <div className="flex gap-2">
+              <Tooltip content="How this page works?">
+                <Button
+                  isIconOnly
+                  onClick={() => setOpen(true)}
+                  className="flex m-2"
+                  color="default"
+                  variant="shadow"
+                >
+                  <TfiInfoAlt />
+                </Button>
+              </Tooltip>
               <Tooltip content="Download">
                 <Button
                   isIconOnly
                   onClick={handleDownload}
                   className="flex m-2"
-                  color="default"
+                  color="warning"
                   variant="shadow"
                   isLoading={isDownLoad}
+                  ref={ref1}
                 >
                   <FiDownload />
                 </Button>
@@ -267,6 +338,7 @@ const Mindmaps = () => {
                   color="secondary"
                   variant="shadow"
                   isLoading={isSaveLoad}
+                  ref={ref2}
                 >
                   <IoSaveOutline />
                 </Button>
@@ -279,6 +351,7 @@ const Mindmaps = () => {
                   color="primary"
                   variant="shadow"
                   isLoading={isShareLoad}
+                  ref={ref3}
                 >
                   <HiOutlineShare />
                 </Button>
@@ -288,7 +361,7 @@ const Mindmaps = () => {
         </div>
 
         {initialNodes.length > 1 && (
-          <div style={{ width: "98vw", height: "73vh" }}>
+          <div style={{ width: "100vw", height: "67vh" }} ref={ref7}>
             <ReactFlow
               nodes={nodes}
               edges={edges}
@@ -302,8 +375,18 @@ const Mindmaps = () => {
               nodeTypes={nodeTypes}
               defaultEdgeOptions={defaultEdgeOptions}
             >
-              <MiniMap style={minimapStyle} zoomable pannable />
-              <Controls />
+              <div
+                className="absolute bottom-0 right-0 w-[230px] h-[150px]"
+                ref={ref6}
+              >
+                <MiniMap style={minimapStyle} zoomable pannable />
+              </div>
+              <div
+                className="absolute bottom-0 left-0 w-[50px] h-[140px]"
+                ref={ref5}
+              >
+                <Controls ref={ref5} />
+              </div>
               <Background color="#aaa" gap={16} />
 
               <svg>
@@ -336,6 +419,8 @@ const Mindmaps = () => {
             </ReactFlow>
           </div>
         )}
+
+        <Tour open={open} onClose={() => setOpen(false)} steps={steps} />
       </Layout>
     </div>
   );
