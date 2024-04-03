@@ -288,7 +288,7 @@ const MindmapOpener = () => {
 
   // Live Pointer
   useEffect(() => {
-    const socket = io("https://genup-nexus.onrender.com"); // Replace with your server URL
+    const socket = io("https://gen-up-nexus-sidd-server.vercel.app"); // Replace with your server URL
     socketRef.current = socket;
     socket.on("remotePointerMove", (data) => {
       // Update remote pointers based on data received from the server
