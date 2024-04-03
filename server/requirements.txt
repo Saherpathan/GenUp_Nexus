@@ -7,3 +7,4 @@ pymongo[srv]
 marshmallow
 flask_bcrypt 
 flask_jwt_extended
+flask-socketio
