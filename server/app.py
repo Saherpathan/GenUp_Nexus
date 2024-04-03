@@ -595,7 +595,3 @@ def mindmapDemo():
     data = request.json
     print(data);
     return get_initial_data(), 200
-
-
-# if __name__ == '__main__':
-#     app.run(debug=True)

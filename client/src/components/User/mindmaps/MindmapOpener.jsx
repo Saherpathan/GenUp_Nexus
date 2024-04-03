@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
+import { FollowPointer } from "./FollowingPointer/FollowingPointerCard.jsx";
 import Loader from "../../Loader";
 import ReactFlow, {
   MiniMap,
@@ -18,7 +19,7 @@ import CustomNode from "./CustomNode";
 import axios from "../../../axios.js";
 import { toast } from "react-hot-toast";
 import { Layout } from "../../Layout";
-import { Button, Tooltip } from "@nextui-org/react";
+import { Button, Tooltip, Avatar } from "@nextui-org/react";
 import { MdDeleteOutline } from "react-icons/md";
 import { Link, useNavigate } from "react-router-dom";
 import { useGlobalContext } from "../../../contexts/GlobalContext";
@@ -29,6 +30,7 @@ import { HiOutlineShare } from "react-icons/hi2";
 import { TfiInfoAlt } from "react-icons/tfi";
 import { useTheme } from "next-themes";
 import { Tour } from "antd";
+import io from "socket.io-client";
 
 const imageWidth = 1024;
 const imageHeight = 768;
@@ -50,6 +52,28 @@ const defaultEdgeOptions = {
 const onInit = (reactFlowInstance) =>
   console.log("flow loaded:", reactFlowInstance);
 
+const TitleComponent = ({ title, avatar }) => (
+  <div className="flex items-center space-x-2">
+    <Avatar src=""></Avatar>
+    <p>{title}</p>
+  </div>
+);
+
+// const TitleComponent = ({ title, avatar }) => (
+//   <div className="flex items-center space-x-2">
+//     <Image
+//       src={avatar}
+//       height="20"
+//       width="20"
+//       alt="thumbnail"
+//       className="border-2 border-white rounded-full"
+//     />
+//     <p>{title}</p>
+//   </div>
+// );
+
+
+
 const MindmapOpener = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isButtonLoading, setIsButtonLoading] = useState(false);
@@ -64,6 +88,9 @@ const MindmapOpener = () => {
   const navigateTo = useNavigate();
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const socketRef = useRef(null);
+  const [remotePointers, setRemotePointers] = useState({});
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -259,6 +286,33 @@ const MindmapOpener = () => {
     },
   ];
 
+  // Live Pointer
+  useEffect(() => {
+    const socket = io("https://genup-nexus.onrender.com"); // Replace with your server URL
+    socketRef.current = socket;
+    socket.on("remotePointerMove", (data) => {
+      // Update remote pointers based on data received from the server
+      setRemotePointers((prevPointers) => ({
+        ...prevPointers,
+        [data.id]: { x: data.x, y: data.y },
+      }));
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+
+  const handlePointerMove = (event) => {
+    const { clientX, clientY } = event;
+    const pointerData = {
+      id: user?.id, // Use unique identifier for each client
+      x: clientX,
+      y: clientY,
+    };
+    socketRef.current.emit("pointerMove", pointerData);
+  };
+
   return (
     <div>
       <Layout>
@@ -348,8 +402,20 @@ const MindmapOpener = () => {
           )}
         </div>
         {}
+        {/* <FollowerPointerCard
+          title={
+            <TitleComponent
+              title={"Sidd"}
+              avatar={"https://img.icons8.com/?size=256&id=kDoeg22e5jUY&format=png"}
+            />
+          }
+        > */}
         {initialNodes.length > 1 && (
-          <div style={{ width: "100vw", height: "82vh" }} ref={ref7}>
+          <div
+            style={{ width: "100vw", height: "82vh" }}
+            ref={ref7}
+            onMouseMove={handlePointerMove}
+          >
             <ReactFlow
               nodes={nodes}
               edges={edges}
@@ -407,8 +473,22 @@ const MindmapOpener = () => {
             </ReactFlow>
           </div>
         )}
+        {/* </FollowerPointerCard> */}
 
         <Tour open={open} onClose={() => setOpen(false)} steps={steps} />
+        {Object.keys(remotePointers).map((pointerId) => (
+          <div
+            key={pointerId}
+            style={{
+              position: "absolute",
+              left: remotePointers[pointerId].x,
+              top: remotePointers[pointerId].y,
+            }}
+          >
+            {/* Render remote pointer */}
+            <FollowPointer title={user?.result?.name}></FollowPointer>
+          </div>
+        ))}
       </Layout>
     </div>
   );
