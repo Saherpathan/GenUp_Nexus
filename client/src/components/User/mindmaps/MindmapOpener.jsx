@@ -297,7 +297,7 @@ const MindmapOpener = () => {
   const secColor = colors[Math.floor(Math.random() * colors.length)];
 
   useEffect(() => {
-    const socket = io("https://gen-up-nexus-sidd-server.vercel.app", {
+    const socket = io("https://genup-nexus-socket.onrender.com/", {
       transports: ["websocket"],
     }); // Replace with your server URL
     socketRef.current = socket;
