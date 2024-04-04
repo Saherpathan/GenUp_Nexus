@@ -168,7 +168,7 @@ const Roadmaps = () => {
 
   const roadmapModder = async(data) => {
     try {
-      const response = await fetch( 'http://127.0.0.1:5000/roadmapmodder', {
+      const response = await fetch( 'https://parthcodes-test-flask-deploy.hf.space/roadmapmodder', {
           method: 'POST',
           headers: {
           'Content-Type': 'application/json',
@@ -657,7 +657,7 @@ const Roadmaps = () => {
     setUserID(user.result.user_id);
     const getRoadMap = async () => {
       try {
-        const response = await fetch( 'http://192.168.0.104:5000/roadmap', {
+        const response = await fetch( 'https://parthcodes-test-flask-deploy.hf.space/roadmap', {
             method: 'POST',
             headers: {
             'Content-Type': 'application/json',
