@@ -47,7 +47,7 @@ const Interview = () => {
     const { transcript, interimTranscript, finalTranscript, resetTranscript, listening } = useSpeechRecognition();
 
     useEffect(() => {
-        setUserID(user.result.user_id);
+        setUserID(user.result.userId);
         modal1Disclosure.onOpen();
         setCodeTheme(`vs-${theme}`);
         getInterviewHistory();
@@ -74,7 +74,7 @@ const Interview = () => {
                 },
                 body: JSON.stringify({
                     "type": 1,
-                    "user_id": user.result.user_id
+                    "user_id": user.result.userId
                 }),
             });
     
