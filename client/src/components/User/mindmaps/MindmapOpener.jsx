@@ -72,8 +72,6 @@ const TitleComponent = ({ title, avatar }) => (
 //   </div>
 // );
 
-
-
 const MindmapOpener = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isButtonLoading, setIsButtonLoading] = useState(false);
@@ -90,7 +88,6 @@ const MindmapOpener = () => {
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const socketRef = useRef(null);
   const [remotePointers, setRemotePointers] = useState({});
-
 
   useEffect(() => {
     const fetchData = async () => {
@@ -287,15 +284,29 @@ const MindmapOpener = () => {
   ];
 
   // Live Pointer
+  const colors = [
+    "var(--sky-500)",
+    "var(--neutral-500)",
+    "var(--teal-500)",
+    "var(--green-500)",
+    "var(--blue-500)",
+    "var(--red-500)",
+    "var(--yellow-500)",
+  ];
+
+  const secColor = colors[Math.floor(Math.random() * colors.length)];
+
   useEffect(() => {
-    const socket = io("https://genup-nexus.onrender.com"); // Replace with your server URL
+    const socket = io("http://127.0.0.1:5000"); // Replace with your server URL
     socketRef.current = socket;
     socket.on("remotePointerMove", (data) => {
       // Update remote pointers based on data received from the server
-      setRemotePointers((prevPointers) => ({
-        ...prevPointers,
-        [data.id]: { x: data.x, y: data.y },
-      }));
+      if (data.id !== user?.result?.userId) {
+        setRemotePointers((prevPointers) => ({
+          ...prevPointers,
+          [data.id]: { x: data.x, y: data.y, name: data.name, color: data.color},
+        }));
+      }
     });
 
     return () => {
@@ -305,10 +316,16 @@ const MindmapOpener = () => {
 
   const handlePointerMove = (event) => {
     const { clientX, clientY } = event;
+
+    // const coll = colors[Math.floor(Math.random() * colors.length)]
+    // console.log(coll)
+    
     const pointerData = {
-      id: user?.id, // Use unique identifier for each client
+      id: user?.result?.userId, // Use unique identifier for each client
       x: clientX,
       y: clientY,
+      name: user?.result?.name,
+      color: secColor,
     };
     socketRef.current.emit("pointerMove", pointerData);
   };
@@ -402,14 +419,6 @@ const MindmapOpener = () => {
           )}
         </div>
         {}
-        {/* <FollowerPointerCard
-          title={
-            <TitleComponent
-              title={"Sidd"}
-              avatar={"https://img.icons8.com/?size=256&id=kDoeg22e5jUY&format=png"}
-            />
-          }
-        > */}
         {initialNodes.length > 1 && (
           <div
             style={{ width: "100vw", height: "82vh" }}
@@ -473,7 +482,6 @@ const MindmapOpener = () => {
             </ReactFlow>
           </div>
         )}
-        {/* </FollowerPointerCard> */}
 
         <Tour open={open} onClose={() => setOpen(false)} steps={steps} />
         {Object.keys(remotePointers).map((pointerId) => (
@@ -486,7 +494,7 @@ const MindmapOpener = () => {
             }}
           >
             {/* Render remote pointer */}
-            <FollowPointer title={user?.result?.name}></FollowPointer>
+            <FollowPointer title={remotePointers[pointerId].name} colorr={remotePointers[pointerId].color} />
           </div>
         ))}
       </Layout>

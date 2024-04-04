@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence, useMotionValue } from "framer-motion";
-import { cn } from './cn';
+import { cn } from "./cn";
 
 const FollowerPointerCard = ({ children, className, title }) => {
   const x = useMotionValue(0);
@@ -51,7 +51,7 @@ const FollowerPointerCard = ({ children, className, title }) => {
   );
 };
 
-const FollowPointer = ({ x, y, title }) => {
+const FollowPointer = ({ x, y, title, colorr }) => {
   const colors = [
     "var(--sky-500)",
     "var(--neutral-500)",
@@ -96,8 +96,7 @@ const FollowPointer = ({ x, y, title }) => {
       </svg>
       <motion.div
         style={{
-          backgroundColor:
-            colors[Math.floor(Math.random() * colors.length)],
+          backgroundColor: colorr,
         }}
         initial={{
           scale: 0.5,
