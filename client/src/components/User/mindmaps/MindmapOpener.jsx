@@ -297,13 +297,16 @@ const MindmapOpener = () => {
   const secColor = colors[Math.floor(Math.random() * colors.length)];
 
   useEffect(() => {
-    const socket = io("https://genup-nexus-socket.onrender.com/", {
+    const socket = io("https://genup-nexus-socket.onrender.com", {
       transports: ["websocket"],
     }); // Replace with your server URL
     socketRef.current = socket;
     socket.on("remotePointerMove", (data) => {
       // Update remote pointers based on data received from the server
-      if (data.id !== user?.result?.userId) {
+      const currentUrl = window.location.href;
+      const segments = currentUrl.split("/");
+      const mindMapId = segments[segments.length - 1];
+      if (data.id !== user?.result?.userId && data.mapId === mindMapId) {
         setRemotePointers((prevPointers) => ({
           ...prevPointers,
           [data.id]: {
@@ -311,6 +314,7 @@ const MindmapOpener = () => {
             y: data.y,
             name: data.name,
             color: data.color,
+            mapId: data.mapId,
           },
         }));
       }
@@ -326,13 +330,17 @@ const MindmapOpener = () => {
 
     // const coll = colors[Math.floor(Math.random() * colors.length)]
     // console.log(coll)
-
+    const currentUrl = window.location.href;
+    const segments = currentUrl.split("/");
+    const id = segments[segments.length - 1];
+    
     const pointerData = {
       id: user?.result?.userId, // Use unique identifier for each client
       x: clientX,
       y: clientY,
       name: user?.result?.name,
       color: secColor,
+      mapId: id,
     };
     socketRef.current.emit("pointerMove", pointerData);
   };
