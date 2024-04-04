@@ -5,3 +5,5 @@
 .venv/
 /server/middleware/__pycache__/
 /server/controllers/__pycache__/
+
+/server/socket-server/node_modules/

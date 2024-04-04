@@ -297,14 +297,21 @@ const MindmapOpener = () => {
   const secColor = colors[Math.floor(Math.random() * colors.length)];
 
   useEffect(() => {
-    const socket = io("http://127.0.0.1:5000"); // Replace with your server URL
+    const socket = io("https://gen-up-nexus-sidd-server.vercel.app", {
+      transports: ["websocket"],
+    }); // Replace with your server URL
     socketRef.current = socket;
     socket.on("remotePointerMove", (data) => {
       // Update remote pointers based on data received from the server
       if (data.id !== user?.result?.userId) {
         setRemotePointers((prevPointers) => ({
           ...prevPointers,
-          [data.id]: { x: data.x, y: data.y, name: data.name, color: data.color},
+          [data.id]: {
+            x: data.x,
+            y: data.y,
+            name: data.name,
+            color: data.color,
+          },
         }));
       }
     });
@@ -319,7 +326,7 @@ const MindmapOpener = () => {
 
     // const coll = colors[Math.floor(Math.random() * colors.length)]
     // console.log(coll)
-    
+
     const pointerData = {
       id: user?.result?.userId, // Use unique identifier for each client
       x: clientX,
@@ -494,7 +501,10 @@ const MindmapOpener = () => {
             }}
           >
             {/* Render remote pointer */}
-            <FollowPointer title={remotePointers[pointerId].name} colorr={remotePointers[pointerId].color} />
+            <FollowPointer
+              title={remotePointers[pointerId].name}
+              colorr={remotePointers[pointerId].color}
+            />
           </div>
         ))}
       </Layout>
