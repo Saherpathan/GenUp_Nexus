@@ -1,24 +1,12 @@
 import { useGlobalContext } from "../contexts/GlobalContext";
 import { useEffect, useState } from "react";
-
 import { RiLogoutCircleLine } from "react-icons/ri";
 import { MdDeleteOutline } from "react-icons/md";
 import { Link, useNavigate } from "react-router-dom";
-
 import Loader from "../components/Loader";
 import axios from "../axios";
-
 import { useTheme } from "next-themes";
-import {
-  Switch,
-  Button,
-  User,
-  Card,
-  CardHeader,
-  CardBody,
-  CardFooter,
-  Image,
-} from "@nextui-org/react";
+import { Switch, Button, User, Card, CardHeader, CardBody, CardFooter, Image } from "@nextui-org/react";
 import { toast } from "react-hot-toast";
 import { Layout } from "../components/Layout";
 import { IoSaveOutline } from "react-icons/io5";
@@ -55,7 +43,7 @@ const Home = () => {
           </Link>
           <Link to="/roadmap" className="p-2 m-2 text-primary">
             <Button className="flex m-2" color="danger" variant="shadow">
-              Roadmap
+              Roadmaps
             </Button>
           </Link>
           <Link to="/mindmap/personal" className="p-2 m-2 text-primary">

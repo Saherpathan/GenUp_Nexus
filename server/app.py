@@ -16,6 +16,8 @@ import json
 from bson import ObjectId
 from dotenv import load_dotenv
 import os
+import re
+import requests
 
 
 load_dotenv()
@@ -31,15 +33,16 @@ app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET')
 # MongoDB configuration
 username = urllib.parse.quote_plus(os.getenv('MONGO_USERNAME'))
 password = urllib.parse.quote_plus(os.getenv('MONGO_PASSWORD'))
-restUri = os.getenv('REST_URI');
+restUri = os.getenv('REST_URI')
 
 uri = f'mongodb+srv://{username}:{password}{restUri}'
 
-client = MongoClient(uri, server_api=ServerApi('1'))
+client = MongoClient(uri)
 db = client.GenUpNexus
 users_collection = db["users"]
 interviews_collection = db["interviews"]
 savedMindmap = db["savedMindmap"]
+roadmap_collection = db['roadmaps']
 
 # Send a ping to confirm a successful connection
 try:
@@ -511,7 +514,7 @@ def signup():
         "password": hashed_password
     })
 
-    print(result);
+    print(result)
 
     expires = timedelta(days=7)
     access_token = create_access_token(identity={"email": email, "id": str(result.inserted_id)}, expires_delta=expires)
@@ -593,9 +596,2151 @@ def mindmapDelete():
 @app.route('/mindmap/demo', methods=['POST'])
 def mindmapDemo():
     data = request.json
-    print(data);
+    print(data)
     return get_initial_data(), 200
 
+roads_data_demo = {
+          "data": [
+            {
+              "week1": {
+                "data": {
+                  "day1": {
+                    "description": "Learn the basic structure of HTML and how to create elements.",
+                    "heading": "HTML Basics",
+                    "isComplete": True,
+                    "links": [
+                      {
+                        "link": "https://www.w3schools.com/html/",
+                        "visited": False
+                      },
+                      {
+                        "link": "https://developer.mozilla.org/en-US/docs/Web/HTML",
+                        "visited": False
+                      }
+                    ],
+                    "youtube": [
+                      {
+                        "channelName": "Simplilearn",
+                        "thumbnail": "https://i.ytimg.com/vi/MDLn5-zSQQI/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "MDLn5-zSQQI",
+                        "videoTitle": "HTML Tutorial For Beginners |HTML In 10 Minutes | HTML Basics For Beginners | Simplilearn",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Apna College",
+                        "thumbnail": "https://i.ytimg.com/vi/HcOc7P5BMi4/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "HcOc7P5BMi4",
+                        "videoTitle": "HTML Tutorial for Beginners | Complete HTML with Notes &amp; Code",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Programming with Mosh",
+                        "thumbnail": "https://i.ytimg.com/vi/qz0aGYrrlhU/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "qz0aGYrrlhU",
+                        "videoTitle": "HTML Tutorial for Beginners: HTML Crash Course",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Kevin Stratvert",
+                        "thumbnail": "https://i.ytimg.com/vi/FQdaUv95mR8/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "FQdaUv95mR8",
+                        "videoTitle": "HTML Tutorial for Beginners",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Technical Sagar",
+                        "thumbnail": "https://i.ytimg.com/vi/6kycPB7RMnY/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "6kycPB7RMnY",
+                        "videoTitle": "Lesson -1 | HTML Structure | HTML Basics (In Hindi)",
+                        "viewed": False
+                      }
+                    ]
+                  },
+                  "day2": {
+                    "description": "Explore CSS syntax, selectors, and basic styling techniques.",
+                    "heading": "CSS Basics",
+                    "isComplete": True,
+                    "links": [
+                      {
+                        "link": "https://www.w3schools.com/css/",
+                        "visited": False
+                      },
+                      {
+                        "link": "https://developer.mozilla.org/en-US/docs/Web/CSS",
+                        "visited": False
+                      }
+                    ],
+                    "youtube": [
+                      {
+                        "channelName": "Web Dev Simplified",
+                        "thumbnail": "https://i.ytimg.com/vi/1PnVor36_40/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "1PnVor36_40",
+                        "videoTitle": "Learn CSS in 20 Minutes",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Coding Shuttle by Anuj Bhaiya",
+                        "playlistId": "PLhzIaPMgkbxBk9-drEC0MBPqEOXpVlwY4",
+                        "thumbnail": "https://i.ytimg.com/vi/PVBqZRAOZL8/hqdefault.jpg",
+                        "type": "playlist",
+                        "videoTitle": "Complete CSS - Basics to Advanced",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Fireship",
+                        "thumbnail": "https://i.ytimg.com/vi/OEV8gMkCHXQ/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "OEV8gMkCHXQ",
+                        "videoTitle": "CSS in 100 Seconds",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Bro Code",
+                        "thumbnail": "https://i.ytimg.com/vi/wRNinF7YQqQ/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "wRNinF7YQqQ",
+                        "videoTitle": "Learn CSS in 1 hour 🎨",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Apna College",
+                        "thumbnail": "https://i.ytimg.com/vi/ESnrn1kAD4E/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "ESnrn1kAD4E",
+                        "videoTitle": "CSS Tutorial for Beginners | Complete CSS with Project, Notes &amp; Code",
+                        "viewed": False
+                      }
+                    ]
+                  },
+                  "day3": {
+                    "description": "Get started with JavaScript fundamentals such as variables, data types, and operators.",
+                    "heading": "Introduction to JavaScript",
+                    "isComplete": True,
+                    "links": [
+                      {
+                        "link": "https://www.javascript.com/",
+                        "visited": False
+                      },
+                      {
+                        "link": "https://developer.mozilla.org/en-US/docs/Web/JavaScript",
+                        "visited": False
+                      }
+                    ],
+                    "youtube": [
+                      {
+                        "channelName": "Apna College",
+                        "thumbnail": "https://i.ytimg.com/vi/B7wHpNUUT4Y/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "B7wHpNUUT4Y",
+                        "videoTitle": "Javascript Introduction | Lecture 1 | Web Development Course",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Programming with Mosh",
+                        "thumbnail": "https://i.ytimg.com/vi/W6NZfCO5SIk/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "W6NZfCO5SIk",
+                        "videoTitle": "JavaScript Tutorial for Beginners: Learn JavaScript in 1 Hour",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Education 4u",
+                        "thumbnail": "https://i.ytimg.com/vi/J2q0x70YDPk/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "J2q0x70YDPk",
+                        "videoTitle": "Javascript | Introduction | Web Technology | Lec-24 | Bhanu Priya",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "CodeWithHarry",
+                        "playlistId": "PLu0W_9lII9ahR1blWXxgSlL4y9iQBnLpR",
+                        "thumbnail": "https://i.ytimg.com/vi/ER9SspLe4Hg/hqdefault.jpg",
+                        "type": "playlist",
+                        "videoTitle": "JavaScript Tutorials for Beginners in Hindi",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "SB Tech Tuts",
+                        "thumbnail": "https://i.ytimg.com/vi/M_1kvq20KmU/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "M_1kvq20KmU",
+                        "videoTitle": "JavaScript (Introduction, Applications, Features, Advantages &amp; Disadvantages) | CLASS-28 | Telugu",
+                        "viewed": False
+                      }
+                    ]
+                  },
+                  "day4": {
+                    "description": "Install and configure necessary development tools such as code editors and web browsers.",
+                    "heading": "Setting Up Development Environment",
+                    "isComplete": True,
+                    "links": [
+                      {
+                        "link": "https://code.visualstudio.com/",
+                        "visited": False
+                      },
+                      {
+                        "link": "https://www.google.com/chrome/",
+                        "visited": False
+                      }
+                    ],
+                    "youtube": [
+                      {
+                        "channelName": "Tech With Tim",
+                        "thumbnail": "https://i.ytimg.com/vi/qI3P7zMMsgY/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "qI3P7zMMsgY",
+                        "videoTitle": "My Python Development Environment Setup - Full Tutorial",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Competitive Exams TechPrep",
+                        "thumbnail": "https://i.ytimg.com/vi/XkKQa6cUkMU/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "XkKQa6cUkMU",
+                        "videoTitle": "Lec - 2.1 Setting up Development Environment in Development of Android Applications in Hindi",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "notJust․dev",
+                        "thumbnail": "https://i.ytimg.com/vi/oorfevovPWw/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "oorfevovPWw",
+                        "videoTitle": "React Native Environment FULL Setup (Windows)",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Ali Hossain",
+                        "thumbnail": "https://i.ytimg.com/vi/D4wHnTLAFlI/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "D4wHnTLAFlI",
+                        "videoTitle": "Step-by-Step Guide to Set Up Your Web Development Environment",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Imperion",
+                        "thumbnail": "https://i.ytimg.com/vi/WTcogaTVqnk/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "WTcogaTVqnk",
+                        "videoTitle": "DevOps - Setting up a development environment",
+                        "viewed": False
+                      }
+                    ]
+                  },
+                  "day5": {
+                    "description": "Apply HTML, CSS, and JavaScript to build a simple web page.",
+                    "heading": "Building Your First Web Page",
+                    "isComplete": True,
+                    "links": [],
+                    "youtube": [
+                      {
+                        "channelName": "freeCodeCamp.org",
+                        "thumbnail": "https://i.ytimg.com/vi/PlxWf493en4/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "PlxWf493en4",
+                        "videoTitle": "HTML Tutorial - How to Make a Super Simple Website",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Website Learners",
+                        "thumbnail": "https://i.ytimg.com/vi/YWA-xbsJrVg/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "YWA-xbsJrVg",
+                        "videoTitle": "How to Make a Website in 10 mins - Simple &amp; Easy",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "OpenClassrooms in English",
+                        "playlistId": "PLlup9oTyUUAsSnWx2FYRPO_W5FdTtWNO7",
+                        "thumbnail": "https://i.ytimg.com/vi/UM4tMwMGapI/hqdefault.jpg",
+                        "type": "playlist",
+                        "videoTitle": "Build your first web pages with HTML and CSS - OpenClassrooms Full Course",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Nick White",
+                        "thumbnail": "https://i.ytimg.com/vi/d_jjPhh8PJo/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "d_jjPhh8PJo",
+                        "videoTitle": "How To Build and Host A Website From Scratch in 2023 (For Free)",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Kevin Powell",
+                        "thumbnail": "https://i.ytimg.com/vi/V8UAEoOvqFg/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "V8UAEoOvqFg",
+                        "videoTitle": "HTML and CSS for Beginners Part 2: Building your first web page!",
+                        "viewed": False
+                      }
+                    ]
+                  },
+                  "day6": {
+                    "description": "Work on a small project to reinforce learning and review the week's topics.",
+                    "heading": "Project Work and Review",
+                    "isComplete": True,
+                    "links": [],
+                    "youtube": [
+                      {
+                        "channelName": "Parul Creations",
+                        "thumbnail": "https://i.ytimg.com/vi/ZxCr3B7kOb4/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "ZxCr3B7kOb4",
+                        "videoTitle": "Book Review on The Jungle Book/ English project/ School project/ Jungle Book review noval",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "commerce point",
+                        "thumbnail": "https://i.ytimg.com/vi/UNiMDpXGT8Y/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "UNiMDpXGT8Y",
+                        "videoTitle": "PROJECT REVIEW | Review Report",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Pearson UK Educators",
+                        "thumbnail": "https://i.ytimg.com/vi/GKDBJyqwy1Q/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "GKDBJyqwy1Q",
+                        "videoTitle": "Project Learning: Finish project work with a review",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Sonu Singh - PPT wale",
+                        "thumbnail": "https://i.ytimg.com/vi/YVBP21Rx-9A/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "YVBP21Rx-9A",
+                        "videoTitle": "PROJECT - Meaning &amp; Characteristics in Hindi | Concept &amp; Features | Project Management | BBA/MBA",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "NitMan Talks",
+                        "thumbnail": "https://i.ytimg.com/vi/l3ed9pnMviI/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "l3ed9pnMviI",
+                        "videoTitle": "Tell Me About Your Project Experience? | How To Explain Project During An Interview | NitMan Talks",
+                        "viewed": False
+                      }
+                    ]
+                  },
+                  "day7": {
+                    "description": "Take a break and recharge for the upcoming week.",
+                    "heading": "Rest Day",
+                    "isComplete": True,
+                    "links": [],
+                    "youtube": [
+                      {
+                        "channelName": "Huberman Lab Clips",
+                        "thumbnail": "https://i.ytimg.com/vi/52cOdRE97Kk/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "52cOdRE97Kk",
+                        "videoTitle": "How to Know If You Need a Rest Day | Dr. Andy Galpin &amp; Dr. Andrew Huberman",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Renaissance Periodization",
+                        "thumbnail": "https://i.ytimg.com/vi/1cZbv9Eyd4c/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "1cZbv9Eyd4c",
+                        "videoTitle": "Do You REALLY Need Rest Days?",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "The Running Channel",
+                        "thumbnail": "https://i.ytimg.com/vi/qKNi0-lA7NM/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "qKNi0-lA7NM",
+                        "videoTitle": "Rest Days - Every Runner&#39;s Secret Weapon | The Benefit Of Resting",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Mind Pump TV",
+                        "thumbnail": "https://i.ytimg.com/vi/oMYyDYUrDi4/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "oMYyDYUrDi4",
+                        "videoTitle": "Why The Days You Don’t Workout Matter The Most!",
+                        "viewed": False
+                      }
+                    ]
+                  }
+                },
+                "description": "Basic concepts and tools for web development.",
+                "title": "Introduction to Web Development"
+              }
+            },
+            {
+              "week2": {
+                "data": {
+                  "day1": {
+                    "description": "Dive deeper into HTML by learning about forms, tables, and semantic markup.",
+                    "heading": "Intermediate HTML",
+                    "isComplete": True,
+                    "links": [
+                      {
+                        "link": "https://www.w3schools.com/html/html_forms.asp",
+                        "visited": False
+                      },
+                      {
+                        "link": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element",
+                        "visited": False
+                      }
+                    ],
+                    "youtube": [
+                      {
+                        "channelName": "SuperSimpleDev",
+                        "thumbnail": "https://i.ytimg.com/vi/G3e-cpL7ofc/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "G3e-cpL7ofc",
+                        "videoTitle": "HTML &amp; CSS Full Course - Beginner to Pro",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Apna College",
+                        "thumbnail": "https://i.ytimg.com/vi/HcOc7P5BMi4/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "HcOc7P5BMi4",
+                        "videoTitle": "HTML Tutorial for Beginners | Complete HTML with Notes &amp; Code",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "freeCodeCamp.org",
+                        "thumbnail": "https://i.ytimg.com/vi/kUMe1FH4CHE/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "kUMe1FH4CHE",
+                        "videoTitle": "Learn HTML – Full Tutorial for Beginners (2022)",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Apna College",
+                        "thumbnail": "https://i.ytimg.com/vi/Rek0NWPCNOc/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "Rek0NWPCNOc",
+                        "videoTitle": "HTML Course | From Beginners to Advance Level | Lecture 1",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Dani Krossing",
+                        "thumbnail": "https://i.ytimg.com/vi/xE7VOZbHhFY/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "xE7VOZbHhFY",
+                        "videoTitle": "28: How to Write Better HTML and CSS | Learn HTML and CSS | Full Course For Beginners",
+                        "viewed": False
+                      }
+                    ]
+                  },
+                  "day2": {
+                    "description": "Learn advanced CSS techniques like flexbox, grid layout, and CSS preprocessors.",
+                    "heading": "Intermediate CSS",
+                    "isComplete": True,
+                    "links": [
+                      {
+                        "link": "https://css-tricks.com/snippets/css/a-guide-to-flexbox/",
+                        "visited": False
+                      },
+                      {
+                        "link": "https://sass-lang.com/",
+                        "visited": False
+                      }
+                    ],
+                    "youtube": [
+                      {
+                        "channelName": "Coding Courses",
+                        "playlistId": "PLOCBdiBQPLL88nciVBrzFM7Z7NcvfEUgo",
+                        "thumbnail": "https://i.ytimg.com/vi/02L0ywUY4B4/hqdefault.jpg",
+                        "type": "playlist",
+                        "videoTitle": "Intermediate CSS",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Fireship",
+                        "thumbnail": "https://i.ytimg.com/vi/Qhaz36TZG5Y/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "Qhaz36TZG5Y",
+                        "videoTitle": "10 CSS Pro Tips - Code this, NOT that!",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Coding Shuttle by Anuj Bhaiya",
+                        "playlistId": "PLhzIaPMgkbxBk9-drEC0MBPqEOXpVlwY4",
+                        "thumbnail": "https://i.ytimg.com/vi/PVBqZRAOZL8/hqdefault.jpg",
+                        "type": "playlist",
+                        "videoTitle": "Complete CSS - Basics to Advanced",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Web Dev Simplified",
+                        "thumbnail": "https://i.ytimg.com/vi/TUD1AWZVgQ8/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "TUD1AWZVgQ8",
+                        "videoTitle": "Top 10 Advanced CSS Responsive Design Concepts You Should Know",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "James Q Quick",
+                        "thumbnail": "https://i.ytimg.com/vi/IyYC-hSFEFQ/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "IyYC-hSFEFQ",
+                        "videoTitle": "Intermediate CSS with Kyle from Web Dev Simplified (Flexbox, Grid, Custom Properties, and more!)",
+                        "viewed": False
+                      }
+                    ]
+                  },
+                  "day3": {
+                    "description": "Understand how to manipulate the Document Object Model (DOM) using JavaScript.",
+                    "heading": "DOM Manipulation with JavaScript",
+                    "isComplete": True,
+                    "links": [
+                      {
+                        "link": "https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model/Introduction",
+                        "visited": False
+                      }
+                    ],
+                    "youtube": [
+                      {
+                        "channelName": "Apna College",
+                        "thumbnail": "https://i.ytimg.com/vi/fYR3i0mcE5c/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "fYR3i0mcE5c",
+                        "videoTitle": "DOM Manipulation | Javascript | Web Development Course",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "freeCodeCamp.org",
+                        "thumbnail": "https://i.ytimg.com/vi/5fb2aPlgoys/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "5fb2aPlgoys",
+                        "videoTitle": "JavaScript DOM Manipulation – Full Course for Beginners",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Sheryians Coding School",
+                        "thumbnail": "https://i.ytimg.com/vi/2IPEp_4obGw/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "2IPEp_4obGw",
+                        "videoTitle": "JavaScript DOM Manipulation: How to DOMinate the DOM with JavaScript",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Web Dev Simplified",
+                        "thumbnail": "https://i.ytimg.com/vi/y17RuWkWdn8/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "y17RuWkWdn8",
+                        "videoTitle": "Learn DOM Manipulation In 18 Minutes",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Chai aur Code",
+                        "thumbnail": "https://i.ytimg.com/vi/DcjNkHtDj8A/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "DcjNkHtDj8A",
+                        "videoTitle": "DOM introduction in javascript | chai aur #javascript",
+                        "viewed": False
+                      }
+                    ]
+                  },
+                  "day4": {
+                    "description": "Learn techniques to create responsive layouts that adapt to different screen sizes.",
+                    "heading": "Responsive Web Design",
+                    "isComplete": True,
+                    "links": [
+                      {
+                        "link": "https://www.w3schools.com/css/css_rwd_intro.asp",
+                        "visited": False
+                      },
+                      {
+                        "link": "https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Responsive/responsive_design_building_blocks",
+                        "visited": False
+                      }
+                    ],
+                    "youtube": [
+                      {
+                        "channelName": "Net Ninja",
+                        "playlistId": "PL4cUxeGkcC9g9Vh9MAA-XKnfJsWZnPZFw",
+                        "thumbnail": "https://i.ytimg.com/vi/3tLb3i7GB38/hqdefault.jpg",
+                        "type": "playlist",
+                        "videoTitle": "Responsive Web Design Tutorials",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Kevin Powell",
+                        "thumbnail": "https://i.ytimg.com/vi/x4u1yp3Msao/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "x4u1yp3Msao",
+                        "videoTitle": "A practical guide to responsive web design",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Mr. Web Designer",
+                        "playlistId": "PLSJxovi1IyDH-pPIe0OF0z_mW-WVdhmhx",
+                        "thumbnail": "https://i.ytimg.com/vi/9DJrsu-2Zvs/hqdefault.jpg",
+                        "type": "playlist",
+                        "videoTitle": "Complete Responsive Website Designs",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "freeCodeCamp.org",
+                        "thumbnail": "https://i.ytimg.com/vi/srvUrASNj0s/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "srvUrASNj0s",
+                        "videoTitle": "Introduction To Responsive Web Design - HTML &amp; CSS Tutorial",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "DesignWithArash",
+                        "thumbnail": "https://i.ytimg.com/vi/gwiX0oASlEw/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "gwiX0oASlEw",
+                        "videoTitle": "Make Your Web Design Responsive in 10 Minutes | Figma Tutorial",
+                        "viewed": False
+                      }
+                    ]
+                  },
+                  "day5": {
+                    "description": "Explore the Bootstrap framework for building responsive and mobile-first websites.",
+                    "heading": "Introduction to Bootstrap",
+                    "links": [
+                      {
+                        "link": "https://getbootstrap.com/docs/5.1/getting-started/introduction/",
+                        "visited": False
+                      },
+                      {
+                        "link": "https://www.tutorialrepublic.com/twitter-bootstrap-tutorial/",
+                        "visited": False
+                      }
+                    ],
+                    "youtube": [
+                      {
+                        "channelName": "Apna College",
+                        "thumbnail": "https://i.ytimg.com/vi/DUiYVJIVNcA/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "DUiYVJIVNcA",
+                        "videoTitle": "Namaste World in Bootstrap | Web Development Course",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Net Ninja",
+                        "thumbnail": "https://i.ytimg.com/vi/O_9u1P5YjVc/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "O_9u1P5YjVc",
+                        "videoTitle": "Bootstrap 5 Crash Course Tutorial #1 - Intro &amp; Setup",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "WsCube Tech",
+                        "thumbnail": "https://i.ytimg.com/vi/kg3kbH9XDAI/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "kg3kbH9XDAI",
+                        "videoTitle": "Introduction to Bootstrap| Learn Bootstrap | Bootstrap Tutorial  | Create Responsive Design",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Yahoo Baba",
+                        "playlistId": "PL0b6OzIxLPbz1cgxiH5KCBsyQij1HsPtG",
+                        "thumbnail": "https://i.ytimg.com/vi/wkSA9bfCmKU/hqdefault.jpg",
+                        "type": "playlist",
+                        "videoTitle": "Bootstrap Tutorial for beginners in Hindi / Urdu",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Geeky Shows",
+                        "thumbnail": "https://i.ytimg.com/vi/rjTKLIwm0oE/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "rjTKLIwm0oE",
+                        "videoTitle": "Introduction to Bootstrap (Hindi)",
+                        "viewed": False
+                      }
+                    ]
+                  },
+                  "day6": {
+                    "description": "Apply the concepts learned during the week to a practical project and review previous topics.",
+                    "heading": "Project Work and Review",
+                    "links": [],
+                    "youtube": [
+                      {
+                        "channelName": "Parul Creations",
+                        "thumbnail": "https://i.ytimg.com/vi/ZxCr3B7kOb4/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "ZxCr3B7kOb4",
+                        "videoTitle": "Book Review on The Jungle Book/ English project/ School project/ Jungle Book review noval",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "commerce point",
+                        "thumbnail": "https://i.ytimg.com/vi/UNiMDpXGT8Y/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "UNiMDpXGT8Y",
+                        "videoTitle": "PROJECT REVIEW | Review Report",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Dr. Devika Bhatnagar",
+                        "thumbnail": "https://i.ytimg.com/vi/9xbOUEFOIXw/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "9xbOUEFOIXw",
+                        "videoTitle": "How To Select A Good Project ?",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Prof.Karan Ajay Gupta",
+                        "thumbnail": "https://i.ytimg.com/vi/HEGvTH4v7jE/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "HEGvTH4v7jE",
+                        "videoTitle": "REVIEW ARTICLE I PROJECT I HOW TO PREPARE I HINDI",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Automation Step by Step",
+                        "thumbnail": "https://i.ytimg.com/vi/UArZK5LA1o0/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "UArZK5LA1o0",
+                        "videoTitle": "#AskRaghav | How to explain your project in an interview | 5 Points |",
+                        "viewed": False
+                      }
+                    ]
+                  },
+                  "day7": {
+                    "description": "Take a break and recharge for the upcoming week.",
+                    "heading": "Rest Day",
+                    "links": [],
+                    "youtube": [
+                      {
+                        "channelName": "Huberman Lab Clips",
+                        "thumbnail": "https://i.ytimg.com/vi/52cOdRE97Kk/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "52cOdRE97Kk",
+                        "videoTitle": "How to Know If You Need a Rest Day | Dr. Andy Galpin &amp; Dr. Andrew Huberman",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Renaissance Periodization",
+                        "thumbnail": "https://i.ytimg.com/vi/1cZbv9Eyd4c/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "1cZbv9Eyd4c",
+                        "videoTitle": "Do You REALLY Need Rest Days?",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Garage Strength",
+                        "thumbnail": "https://i.ytimg.com/vi/fB4bCGalMM4/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "fB4bCGalMM4",
+                        "videoTitle": "When Should You Have A Rest Day? #shorts",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Mind Pump TV",
+                        "thumbnail": "https://i.ytimg.com/vi/oMYyDYUrDi4/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "oMYyDYUrDi4",
+                        "videoTitle": "Why The Days You Don’t Workout Matter The Most!",
+                        "viewed": False
+                      }
+                    ]
+                  }
+                },
+                "description": "Focus on frontend technologies and frameworks.",
+                "title": "Frontend Development Essentials"
+              }
+            },
+            {
+              "week3": {
+                "data": {
+                  "day1": {
+                    "description": "Learn about Node.js and its role in server-side development.",
+                    "heading": "Introduction to Node.js",
+                    "links": [
+                      {
+                        "link": "https://nodejs.org/en/",
+                        "visited": False
+                      },
+                      {
+                        "link": "https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs/Introduction",
+                        "visited": False
+                      }
+                    ],
+                    "youtube": [
+                      {
+                        "channelName": "Simplilearn",
+                        "thumbnail": "https://i.ytimg.com/vi/8u1o-OmOeGQ/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "8u1o-OmOeGQ",
+                        "videoTitle": "What Is Node.js? | Introduction To Node.js | Node JS Tutorial For Beginners | Simplilearn",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Telusko",
+                        "thumbnail": "https://i.ytimg.com/vi/yEHCfRWz-EI/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "yEHCfRWz-EI",
+                        "videoTitle": "What is Node js? | Simplified Explanation",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Web Dev Simplified",
+                        "playlistId": "PLZlA0Gpn_vH_uZs4vJMIhcinABSTUH2bY",
+                        "thumbnail": "https://i.ytimg.com/vi/VShtPwEkDD0/hqdefault.jpg",
+                        "type": "playlist",
+                        "videoTitle": "Introduction to Node.js",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Fireship",
+                        "thumbnail": "https://i.ytimg.com/vi/ENrzD9HAZK4/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "ENrzD9HAZK4",
+                        "videoTitle": "Node.js Ultimate Beginner’s Guide in 7 Easy Steps",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Code Step By Step",
+                        "playlistId": "PL8p2I9GklV456iofeMKReMTvWLr7Ki9At",
+                        "thumbnail": "https://i.ytimg.com/vi/zaLfOjNEOaQ/hqdefault.jpg",
+                        "type": "playlist",
+                        "videoTitle": "Node js in Hindi",
+                        "viewed": False
+                      }
+                    ]
+                  },
+                  "day2": {
+                    "description": "Explore the Express.js framework for building web applications and APIs.",
+                    "heading": "Working with Express.js",
+                    "links": [
+                      {
+                        "link": "https://expressjs.com/",
+                        "visited": False
+                      },
+                      {
+                        "link": "https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs",
+                        "visited": False
+                      }
+                    ],
+                    "youtube": [
+                      {
+                        "channelName": "Simplilearn",
+                        "thumbnail": "https://i.ytimg.com/vi/0QRFOsrBtXw/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "0QRFOsrBtXw",
+                        "videoTitle": "What Is Express JS? | Express JS Tutorial for Beginners 2022 | Express JS API | Simplilearn",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "procademy",
+                        "thumbnail": "https://i.ytimg.com/vi/UFxhPlMEywU/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "UFxhPlMEywU",
+                        "videoTitle": "#30 Introduction to Express JS | Working with Express JS | A Complete NODE JS Course",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Simplilearn",
+                        "thumbnail": "https://i.ytimg.com/vi/dyMCr2lD5k0/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "dyMCr2lD5k0",
+                        "videoTitle": "Express JS In 15 Minutes | Introduction To Express JS | Express JS Tutorial | Simplilearn",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Web Dev Simplified",
+                        "thumbnail": "https://i.ytimg.com/vi/SccSCuHhOw0/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "SccSCuHhOw0",
+                        "videoTitle": "Learn Express JS In 35 Minutes",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Hitesh Choudhary",
+                        "thumbnail": "https://i.ytimg.com/vi/ooBxSg1Cl1w/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "ooBxSg1Cl1w",
+                        "videoTitle": "How node JS works | Engineering side",
+                        "viewed": False
+                      }
+                    ]
+                  },
+                  "day3": {
+                    "description": "Understand the principles of RESTful API design and implementation.",
+                    "heading": "RESTful APIs",
+                    "links": [
+                      {
+                        "link": "https://restfulapi.net/",
+                        "visited": False
+                      },
+                      {
+                        "link": "https://developer.mozilla.org/en-US/docs/Glossary/REST",
+                        "visited": False
+                      }
+                    ],
+                    "youtube": [
+                      {
+                        "channelName": "IBM Technology",
+                        "thumbnail": "https://i.ytimg.com/vi/lsMQRaeKNDk/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "lsMQRaeKNDk",
+                        "videoTitle": "What is a REST API?",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "ByteByteGo",
+                        "thumbnail": "https://i.ytimg.com/vi/-mN3VyJuCjM/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "-mN3VyJuCjM",
+                        "videoTitle": "What Is REST API? Examples And How To Use It: Crash Course System Design #3",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Fireship",
+                        "thumbnail": "https://i.ytimg.com/vi/-MTSQjw5DrM/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "-MTSQjw5DrM",
+                        "videoTitle": "RESTful APIs in 100 Seconds // Build an API from Scratch with Node.js Express",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Postman",
+                        "thumbnail": "https://i.ytimg.com/vi/PfujVETI-i4/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "PfujVETI-i4",
+                        "videoTitle": "What is REST API?",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "sudoCODE",
+                        "playlistId": "PLTCrU9sGybupzS5-3iYTsYUI1emBDKdHu",
+                        "thumbnail": "https://i.ytimg.com/vi/ST8XxjOTIsg/hqdefault.jpg",
+                        "type": "playlist",
+                        "videoTitle": "REST APIs MADE EASY",
+                        "viewed": False
+                      }
+                    ]
+                  },
+                  "day4": {
+                    "description": "Learn about different types of databases including SQL and NoSQL.",
+                    "heading": "Database Basics (SQL/NoSQL)",
+                    "links": [
+                      {
+                        "link": "https://www.w3schools.com/sql/",
+                        "visited": False
+                      },
+                      {
+                        "link": "https://www.mongodb.com/nosql-explained",
+                        "visited": False
+                      }
+                    ],
+                    "youtube": [
+                      {
+                        "channelName": "Exponent",
+                        "thumbnail": "https://i.ytimg.com/vi/_Ss42Vb1SU4/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "_Ss42Vb1SU4",
+                        "videoTitle": "SQL vs. NoSQL Explained (in 4 Minutes)",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Simplilearn",
+                        "thumbnail": "https://i.ytimg.com/vi/jh14LlMHyds/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "jh14LlMHyds",
+                        "videoTitle": "SQL vs NoSQL | Difference Between SQL And NoSQL | SQL And NoSQL Tutorial | SQL Training |Simplilearn",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Simply Explained",
+                        "thumbnail": "https://i.ytimg.com/vi/0buKQHokLK8/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "0buKQHokLK8",
+                        "videoTitle": "How do NoSQL databases work? Simply Explained!",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Web Dev Simplified",
+                        "thumbnail": "https://i.ytimg.com/vi/t0GlGbtMTio/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "t0GlGbtMTio",
+                        "videoTitle": "Which Is Better? SQL vs NoSQL",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "IT k Funde",
+                        "thumbnail": "https://i.ytimg.com/vi/B3gJT3t8g4Q/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "B3gJT3t8g4Q",
+                        "videoTitle": "What is nosql ? | sql vs nosql | Types of NOSQL databases - Explained with real life example (2024)",
+                        "viewed": False
+                      }
+                    ]
+                  },
+                  "day5": {
+                    "description": "Practice creating, reading, updating, and deleting data in MongoDB.",
+                    "heading": "CRUD Operations with MongoDB",
+                    "links": [
+                      {
+                        "link": "https://docs.mongodb.com/guides/",
+                        "visited": False
+                      },
+                      {
+                        "link": "https://www.tutorialspoint.com/mongodb/index.htm",
+                        "visited": False
+                      }
+                    ],
+                    "youtube": [
+                      {
+                        "channelName": "CodeWithHarry",
+                        "thumbnail": "https://i.ytimg.com/vi/9Om0FMBz1yU/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "9Om0FMBz1yU",
+                        "videoTitle": "CRUD Operations in MongoDB | Sigma Web Development Course - Tutorial #95",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Engineering Digest",
+                        "thumbnail": "https://i.ytimg.com/vi/2Qj33fkKRo0/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "2Qj33fkKRo0",
+                        "videoTitle": "CRUD Operations in MongoDB in Hindi ( All methods )",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "itversity",
+                        "thumbnail": "https://i.ytimg.com/vi/v6Xmydb7u4Y/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "v6Xmydb7u4Y",
+                        "videoTitle": "MongoDB Database Operations - CRUD Operations (insert, find, update and delete)",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Vamsi Bhavani",
+                        "thumbnail": "https://i.ytimg.com/vi/iIJoKm1cgUw/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "iIJoKm1cgUw",
+                        "videoTitle": "Mongo DB in telugu | Insert Find Update Delete | CRUD Operations | Vamsi Bhavani",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "DCodeMania",
+                        "playlistId": "PL6u82dzQtlfvJoAWdyf5mUxPQRnNKCMGt",
+                        "thumbnail": "https://i.ytimg.com/vi/zBTPDAh8ABM/hqdefault.jpg",
+                        "type": "playlist",
+                        "videoTitle": "CRUD App Node Js, Express, MongoDB &amp; EJS Templating Engine",
+                        "viewed": False
+                      }
+                    ]
+                  },
+                  "day6": {
+                    "description": "Apply backend development concepts to a project and review previous topics.",
+                    "heading": "Project Work and Review",
+                    "links": [],
+                    "youtube": [
+                      {
+                        "channelName": "Parul Creations",
+                        "thumbnail": "https://i.ytimg.com/vi/ZxCr3B7kOb4/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "ZxCr3B7kOb4",
+                        "videoTitle": "Book Review on The Jungle Book/ English project/ School project/ Jungle Book review noval",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "commerce point",
+                        "thumbnail": "https://i.ytimg.com/vi/UNiMDpXGT8Y/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "UNiMDpXGT8Y",
+                        "videoTitle": "PROJECT REVIEW | Review Report",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Prof.Karan Ajay Gupta",
+                        "thumbnail": "https://i.ytimg.com/vi/HEGvTH4v7jE/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "HEGvTH4v7jE",
+                        "videoTitle": "REVIEW ARTICLE I PROJECT I HOW TO PREPARE I HINDI",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Dr. Devika Bhatnagar",
+                        "thumbnail": "https://i.ytimg.com/vi/9xbOUEFOIXw/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "9xbOUEFOIXw",
+                        "videoTitle": "How To Select A Good Project ?",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Automation Step by Step",
+                        "thumbnail": "https://i.ytimg.com/vi/UArZK5LA1o0/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "UArZK5LA1o0",
+                        "videoTitle": "#AskRaghav | How to explain your project in an interview | 5 Points |",
+                        "viewed": False
+                      }
+                    ]
+                  },
+                  "day7": {
+                    "description": "Take a break and recharge for the upcoming week.",
+                    "heading": "Rest Day",
+                    "links": [],
+                    "youtube": [
+                      {
+                        "channelName": "Huberman Lab Clips",
+                        "thumbnail": "https://i.ytimg.com/vi/52cOdRE97Kk/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "52cOdRE97Kk",
+                        "videoTitle": "How to Know If You Need a Rest Day | Dr. Andy Galpin &amp; Dr. Andrew Huberman",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Renaissance Periodization",
+                        "thumbnail": "https://i.ytimg.com/vi/1cZbv9Eyd4c/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "1cZbv9Eyd4c",
+                        "videoTitle": "Do You REALLY Need Rest Days?",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Garage Strength",
+                        "thumbnail": "https://i.ytimg.com/vi/fB4bCGalMM4/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "fB4bCGalMM4",
+                        "videoTitle": "When Should You Have A Rest Day? #shorts",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Mind Pump TV",
+                        "thumbnail": "https://i.ytimg.com/vi/oMYyDYUrDi4/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "oMYyDYUrDi4",
+                        "videoTitle": "Why The Days You Don’t Workout Matter The Most!",
+                        "viewed": False
+                      }
+                    ]
+                  }
+                },
+                "description": "Understanding server-side development.",
+                "title": "Backend Development Fundamentals"
+              }
+            },
+            {
+              "week4": {
+                "data": {
+                  "day1": {
+                    "description": "Learn techniques to connect frontend and backend components.",
+                    "heading": "Connecting Frontend to Backend",
+                    "links": [
+                      {
+                        "link": "https://www.sitepoint.com/how-to-connect-your-flask-app-with-a-mongodb-database/",
+                        "visited": False
+                      }
+                    ],
+                    "youtube": [
+                      {
+                        "channelName": "CodersArts",
+                        "thumbnail": "https://i.ytimg.com/vi/hYYd_3Tz6Zo/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "hYYd_3Tz6Zo",
+                        "videoTitle": "Connect Frontend  to Backend Using React JS and Node JS",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Chai aur Code",
+                        "thumbnail": "https://i.ytimg.com/vi/fFHyqhmnVfs/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "fFHyqhmnVfs",
+                        "videoTitle": "How to connect frontend and backend in javascript | Fullstack Proxy and CORS",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "CBT Nuggets",
+                        "thumbnail": "https://i.ytimg.com/vi/C_vv1D5oDZ0/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "C_vv1D5oDZ0",
+                        "videoTitle": "Getting Data from the Backend (Node.js/Express) to the Frontend (JavaScript)",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Techy Web Dev",
+                        "thumbnail": "https://i.ytimg.com/vi/KZB6gtKQ9_I/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "KZB6gtKQ9_I",
+                        "videoTitle": "How to send data from frontend to backend in React JS in 2023 | Connect frontend and backend",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "YS2code",
+                        "thumbnail": "https://i.ytimg.com/vi/OgYKAI38JvY/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "OgYKAI38JvY",
+                        "videoTitle": "Connect frontend and backend | React JS, Node JS, Express | Send data from backend to frontend | API",
+                        "viewed": False
+                      }
+                    ]
+                  },
+                  "day2": {
+                    "description": "Implement user authentication and authorization in web applications.",
+                    "heading": "User Authentication",
+                    "links": [
+                      {
+                        "link": "https://auth0.com/docs/authentication",
+                        "visited": False
+                      },
+                      {
+                        "link": "https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs/Authentication",
+                        "visited": False
+                      }
+                    ],
+                    "youtube": [
+                      {
+                        "channelName": "Fireship",
+                        "thumbnail": "https://i.ytimg.com/vi/UBUNrFtufWo/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "UBUNrFtufWo",
+                        "videoTitle": "Session vs Token Authentication in 100 Seconds",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Education Matters",
+                        "thumbnail": "https://i.ytimg.com/vi/fx1wrvwgkXQ/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "fx1wrvwgkXQ",
+                        "videoTitle": "Secure your Users Identity || User Authentication |Prerequisite|Salesforce|Trailhead|Admin Trailmix",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "ISTAMPERS",
+                        "thumbnail": "https://i.ytimg.com/vi/51_ngxhGQ8w/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "51_ngxhGQ8w",
+                        "videoTitle": "User Authentication | Secure Your Users’ Identity Salesforce Trailhead",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "ISTAMPERS",
+                        "thumbnail": "https://i.ytimg.com/vi/hwIytW39Irw/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "hwIytW39Irw",
+                        "videoTitle": "User Authentication | Quiz 1,2,3 | Security Specialist Superbadge",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "D Sumathi",
+                        "thumbnail": "https://i.ytimg.com/vi/M8NbBkk8StA/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "M8NbBkk8StA",
+                        "videoTitle": "User Authentication-Operating Systems-20A05402T-UNIT – 5  Protection and System Security",
+                        "viewed": False
+                      }
+                    ]
+                  },
+                  "day3": {
+                    "description": "Understand Redux for managing application state in React applications.",
+                    "heading": "State Management (Redux)",
+                    "links": [
+                      {
+                        "link": "https://redux.js.org/introduction/getting-started",
+                        "visited": False
+                      },
+                      {
+                        "link": "https://react-redux.js.org/introduction/quick-start",
+                        "visited": False
+                      }
+                    ],
+                    "youtube": [
+                      {
+                        "channelName": "Fireship",
+                        "thumbnail": "https://i.ytimg.com/vi/_shA5Xwe8_4/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "_shA5Xwe8_4",
+                        "videoTitle": "Redux in 100 Seconds",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Cosden Solutions",
+                        "thumbnail": "https://i.ytimg.com/vi/5yEG6GhoJBs/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "5yEG6GhoJBs",
+                        "videoTitle": "Redux - Complete Tutorial (with Redux Toolkit)",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Techbase",
+                        "thumbnail": "https://i.ytimg.com/vi/1rP_yHj2dqg/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "1rP_yHj2dqg",
+                        "videoTitle": "React Course - State Management - Using Redux",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "IT with Paulo Alves",
+                        "thumbnail": "https://i.ytimg.com/vi/_v2dPI7kwCo/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "_v2dPI7kwCo",
+                        "videoTitle": "Understand REDUX and STATE Management in 8 minutes",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "kudvenkat",
+                        "thumbnail": "https://i.ytimg.com/vi/JkBi7l_6mEA/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "JkBi7l_6mEA",
+                        "videoTitle": "React Redux for State Management",
+                        "viewed": False
+                      }
+                    ]
+                  },
+                  "day4": {
+                    "description": "Explore various methods for deploying web applications to production servers.",
+                    "heading": "Deploying Applications",
+                    "links": [
+                      {
+                        "link": "https://www.heroku.com/",
+                        "visited": False
+                      },
+                      {
+                        "link": "https://aws.amazon.com/getting-started/projects/deploy-nodejs-web-app/",
+                        "visited": False
+                      }
+                    ],
+                    "youtube": [
+                      {
+                        "channelName": "ByteByteGo",
+                        "thumbnail": "https://i.ytimg.com/vi/AWVTKBUnoIg/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "AWVTKBUnoIg",
+                        "videoTitle": "Top 5 Most-Used Deployment Strategies",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Amazon Web Services",
+                        "thumbnail": "https://i.ytimg.com/vi/goiW0g7A0WE/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "goiW0g7A0WE",
+                        "videoTitle": "Deploying a Website to AWS in Under 1 Minute",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Unfold Data Science",
+                        "thumbnail": "https://i.ytimg.com/vi/-Wtsdigvm3c/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "-Wtsdigvm3c",
+                        "videoTitle": "Application deployment in AWS Step by Step | AWS deployment tutorial | AWS deployment strategies",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Thetips4you",
+                        "thumbnail": "https://i.ytimg.com/vi/0GgBi8yNQT4/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "0GgBi8yNQT4",
+                        "videoTitle": "Deploying Java Applications with Docker and Kubernetes | DevOps Project",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Google Cloud Tech",
+                        "thumbnail": "https://i.ytimg.com/vi/thlFWQ15Z-0/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "thlFWQ15Z-0",
+                        "videoTitle": "Deploying Node.js apps on Google App Engine",
+                        "viewed": False
+                      }
+                    ]
+                  },
+                  "day5": {
+                    "description": "Work on a full-stack project integrating frontend and backend components, and review previous topics.",
+                    "heading": "Project Work and Review",
+                    "links": [],
+                    "youtube": [
+                      {
+                        "channelName": "Parul Creations",
+                        "thumbnail": "https://i.ytimg.com/vi/ZxCr3B7kOb4/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "ZxCr3B7kOb4",
+                        "videoTitle": "Book Review on The Jungle Book/ English project/ School project/ Jungle Book review noval",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Prof.Karan Ajay Gupta",
+                        "thumbnail": "https://i.ytimg.com/vi/HEGvTH4v7jE/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "HEGvTH4v7jE",
+                        "videoTitle": "REVIEW ARTICLE I PROJECT I HOW TO PREPARE I HINDI",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Zack D. Films",
+                        "thumbnail": "https://i.ytimg.com/vi/yy5xxh0wt2U/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "yy5xxh0wt2U",
+                        "videoTitle": "How A Derma Roller Works 🤔",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Cup of Knowledge",
+                        "thumbnail": "https://i.ytimg.com/vi/39iDXfDK14g/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "39iDXfDK14g",
+                        "videoTitle": "Project Review Preparation sothanaigal 😂😂 #final project report",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "commerce point",
+                        "thumbnail": "https://i.ytimg.com/vi/UNiMDpXGT8Y/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "UNiMDpXGT8Y",
+                        "videoTitle": "PROJECT REVIEW | Review Report",
+                        "viewed": False
+                      }
+                    ]
+                  },
+                  "day6": {
+                    "description": "Continue working on the full-stack project and review previous topics.",
+                    "heading": "Project Work and Review",
+                    "links": [],
+                    "youtube": [
+                      {
+                        "channelName": "Parul Creations",
+                        "thumbnail": "https://i.ytimg.com/vi/ZxCr3B7kOb4/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "ZxCr3B7kOb4",
+                        "videoTitle": "Book Review on The Jungle Book/ English project/ School project/ Jungle Book review noval",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "commerce point",
+                        "thumbnail": "https://i.ytimg.com/vi/UNiMDpXGT8Y/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "UNiMDpXGT8Y",
+                        "videoTitle": "PROJECT REVIEW | Review Report",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Dr. Devika Bhatnagar",
+                        "thumbnail": "https://i.ytimg.com/vi/9xbOUEFOIXw/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "9xbOUEFOIXw",
+                        "videoTitle": "How To Select A Good Project ?",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Prof.Karan Ajay Gupta",
+                        "thumbnail": "https://i.ytimg.com/vi/HEGvTH4v7jE/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "HEGvTH4v7jE",
+                        "videoTitle": "REVIEW ARTICLE I PROJECT I HOW TO PREPARE I HINDI",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Automation Step by Step",
+                        "thumbnail": "https://i.ytimg.com/vi/UArZK5LA1o0/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "UArZK5LA1o0",
+                        "videoTitle": "#AskRaghav | How to explain your project in an interview | 5 Points |",
+                        "viewed": False
+                      }
+                    ]
+                  },
+                  "day7": {
+                    "description": "Finish the full-stack project and review previous topics in preparation for further learning.",
+                    "heading": "Project Work and Review",
+                    "links": [],
+                    "youtube": [
+                      {
+                        "channelName": "Parul Creations",
+                        "thumbnail": "https://i.ytimg.com/vi/ZxCr3B7kOb4/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "ZxCr3B7kOb4",
+                        "videoTitle": "Book Review on The Jungle Book/ English project/ School project/ Jungle Book review noval",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Prof.Karan Ajay Gupta",
+                        "thumbnail": "https://i.ytimg.com/vi/HEGvTH4v7jE/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "HEGvTH4v7jE",
+                        "videoTitle": "REVIEW ARTICLE I PROJECT I HOW TO PREPARE I HINDI",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "commerce point",
+                        "thumbnail": "https://i.ytimg.com/vi/UNiMDpXGT8Y/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "UNiMDpXGT8Y",
+                        "videoTitle": "PROJECT REVIEW | Review Report",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Dr. Devika Bhatnagar",
+                        "thumbnail": "https://i.ytimg.com/vi/9xbOUEFOIXw/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "9xbOUEFOIXw",
+                        "videoTitle": "How To Select A Good Project ?",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Cup of Knowledge",
+                        "thumbnail": "https://i.ytimg.com/vi/39iDXfDK14g/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "39iDXfDK14g",
+                        "videoTitle": "Project Review Preparation sothanaigal 😂😂 #final project report",
+                        "viewed": False
+                      }
+                    ]
+                  }
+                },
+                "description": "Integrating frontend and backend development.",
+                "title": "Full Stack Development"
+              }
+            },
+            {
+              "week5": {
+                "data": {
+                  "day1": {
+                    "description": "Learn techniques to connect frontend and backend components.",
+                    "heading": "Connecting Frontend to Backend",
+                    "links": [
+                      {
+                        "link": "https://www.sitepoint.com/how-to-connect-your-flask-app-with-a-mongodb-database/",
+                        "visited": False
+                      }
+                    ],
+                    "youtube": [
+                      {
+                        "channelName": "CodersArts",
+                        "thumbnail": "https://i.ytimg.com/vi/hYYd_3Tz6Zo/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "hYYd_3Tz6Zo",
+                        "videoTitle": "Connect Frontend  to Backend Using React JS and Node JS",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Chai aur Code",
+                        "thumbnail": "https://i.ytimg.com/vi/fFHyqhmnVfs/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "fFHyqhmnVfs",
+                        "videoTitle": "How to connect frontend and backend in javascript | Fullstack Proxy and CORS",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "CBT Nuggets",
+                        "thumbnail": "https://i.ytimg.com/vi/C_vv1D5oDZ0/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "C_vv1D5oDZ0",
+                        "videoTitle": "Getting Data from the Backend (Node.js/Express) to the Frontend (JavaScript)",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Techy Web Dev",
+                        "thumbnail": "https://i.ytimg.com/vi/KZB6gtKQ9_I/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "KZB6gtKQ9_I",
+                        "videoTitle": "How to send data from frontend to backend in React JS in 2023 | Connect frontend and backend",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "YS2code",
+                        "thumbnail": "https://i.ytimg.com/vi/OgYKAI38JvY/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "OgYKAI38JvY",
+                        "videoTitle": "Connect frontend and backend | React JS, Node JS, Express | Send data from backend to frontend | API",
+                        "viewed": False
+                      }
+                    ]
+                  },
+                  "day2": {
+                    "description": "Implement user authentication and authorization in web applications.",
+                    "heading": "User Authentication",
+                    "links": [
+                      {
+                        "link": "https://auth0.com/docs/authentication",
+                        "visited": False
+                      },
+                      {
+                        "link": "https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs/Authentication",
+                        "visited": False
+                      }
+                    ],
+                    "youtube": [
+                      {
+                        "channelName": "Fireship",
+                        "thumbnail": "https://i.ytimg.com/vi/UBUNrFtufWo/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "UBUNrFtufWo",
+                        "videoTitle": "Session vs Token Authentication in 100 Seconds",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Education Matters",
+                        "thumbnail": "https://i.ytimg.com/vi/fx1wrvwgkXQ/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "fx1wrvwgkXQ",
+                        "videoTitle": "Secure your Users Identity || User Authentication |Prerequisite|Salesforce|Trailhead|Admin Trailmix",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "ISTAMPERS",
+                        "thumbnail": "https://i.ytimg.com/vi/51_ngxhGQ8w/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "51_ngxhGQ8w",
+                        "videoTitle": "User Authentication | Secure Your Users’ Identity Salesforce Trailhead",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "ISTAMPERS",
+                        "thumbnail": "https://i.ytimg.com/vi/hwIytW39Irw/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "hwIytW39Irw",
+                        "videoTitle": "User Authentication | Quiz 1,2,3 | Security Specialist Superbadge",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "trailhead Challenge",
+                        "thumbnail": "https://i.ytimg.com/vi/9SqOAPlWMDY/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "9SqOAPlWMDY",
+                        "videoTitle": "User Authentication ||Secure Your Users’ Identity",
+                        "viewed": False
+                      }
+                    ]
+                  },
+                  "day3": {
+                    "description": "Understand Redux for managing application state in React applications.",
+                    "heading": "State Management (Redux)",
+                    "links": [
+                      {
+                        "link": "https://redux.js.org/introduction/getting-started",
+                        "visited": False
+                      },
+                      {
+                        "link": "https://react-redux.js.org/introduction/quick-start",
+                        "visited": False
+                      }
+                    ],
+                    "youtube": [
+                      {
+                        "channelName": "Fireship",
+                        "thumbnail": "https://i.ytimg.com/vi/_shA5Xwe8_4/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "_shA5Xwe8_4",
+                        "videoTitle": "Redux in 100 Seconds",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Cosden Solutions",
+                        "thumbnail": "https://i.ytimg.com/vi/5yEG6GhoJBs/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "5yEG6GhoJBs",
+                        "videoTitle": "Redux - Complete Tutorial (with Redux Toolkit)",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Techbase",
+                        "thumbnail": "https://i.ytimg.com/vi/1rP_yHj2dqg/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "1rP_yHj2dqg",
+                        "videoTitle": "React Course - State Management - Using Redux",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "IT with Paulo Alves",
+                        "thumbnail": "https://i.ytimg.com/vi/_v2dPI7kwCo/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "_v2dPI7kwCo",
+                        "videoTitle": "Understand REDUX and STATE Management in 8 minutes",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "kudvenkat",
+                        "thumbnail": "https://i.ytimg.com/vi/JkBi7l_6mEA/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "JkBi7l_6mEA",
+                        "videoTitle": "React Redux for State Management",
+                        "viewed": False
+                      }
+                    ]
+                  },
+                  "day4": {
+                    "description": "Explore various methods for deploying web applications to production servers.",
+                    "heading": "Deploying Applications",
+                    "links": [
+                      {
+                        "link": "https://www.heroku.com/",
+                        "visited": False
+                      },
+                      {
+                        "link": "https://aws.amazon.com/getting-started/projects/deploy-nodejs-web-app/",
+                        "visited": False
+                      }
+                    ],
+                    "youtube": [
+                      {
+                        "channelName": "ByteByteGo",
+                        "thumbnail": "https://i.ytimg.com/vi/AWVTKBUnoIg/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "AWVTKBUnoIg",
+                        "videoTitle": "Top 5 Most-Used Deployment Strategies",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Amazon Web Services",
+                        "thumbnail": "https://i.ytimg.com/vi/goiW0g7A0WE/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "goiW0g7A0WE",
+                        "videoTitle": "Deploying a Website to AWS in Under 1 Minute",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "TrainWithShubham",
+                        "playlistId": "PLlfy9GnSVerRpz3u8casjjv1eNJr9tlR9",
+                        "thumbnail": "https://i.ytimg.com/vi/dXUnAK9_ets/hqdefault.jpg",
+                        "type": "playlist",
+                        "videoTitle": "2-Tier Application Deployment Series",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Unfold Data Science",
+                        "thumbnail": "https://i.ytimg.com/vi/-Wtsdigvm3c/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "-Wtsdigvm3c",
+                        "videoTitle": "Application deployment in AWS Step by Step | AWS deployment tutorial | AWS deployment strategies",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Thetips4you",
+                        "thumbnail": "https://i.ytimg.com/vi/0GgBi8yNQT4/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "0GgBi8yNQT4",
+                        "videoTitle": "Deploying Java Applications with Docker and Kubernetes | DevOps Project",
+                        "viewed": False
+                      }
+                    ]
+                  },
+                  "day5": {
+                    "description": "Work on a full-stack project integrating frontend and backend components, and review previous topics.",
+                    "heading": "Project Work and Review",
+                    "links": [],
+                    "youtube": [
+                      {
+                        "channelName": "Parul Creations",
+                        "thumbnail": "https://i.ytimg.com/vi/ZxCr3B7kOb4/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "ZxCr3B7kOb4",
+                        "videoTitle": "Book Review on The Jungle Book/ English project/ School project/ Jungle Book review noval",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "commerce point",
+                        "thumbnail": "https://i.ytimg.com/vi/UNiMDpXGT8Y/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "UNiMDpXGT8Y",
+                        "videoTitle": "PROJECT REVIEW | Review Report",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Prof.Karan Ajay Gupta",
+                        "thumbnail": "https://i.ytimg.com/vi/HEGvTH4v7jE/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "HEGvTH4v7jE",
+                        "videoTitle": "REVIEW ARTICLE I PROJECT I HOW TO PREPARE I HINDI",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Dr. Devika Bhatnagar",
+                        "thumbnail": "https://i.ytimg.com/vi/9xbOUEFOIXw/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "9xbOUEFOIXw",
+                        "videoTitle": "How To Select A Good Project ?",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Automation Step by Step",
+                        "thumbnail": "https://i.ytimg.com/vi/UArZK5LA1o0/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "UArZK5LA1o0",
+                        "videoTitle": "#AskRaghav | How to explain your project in an interview | 5 Points |",
+                        "viewed": False
+                      }
+                    ]
+                  },
+                  "day6": {
+                    "description": "Continue working on the full-stack project and review previous topics.",
+                    "heading": "Project Work and Review",
+                    "links": [],
+                    "youtube": [
+                      {
+                        "channelName": "Parul Creations",
+                        "thumbnail": "https://i.ytimg.com/vi/ZxCr3B7kOb4/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "ZxCr3B7kOb4",
+                        "videoTitle": "Book Review on The Jungle Book/ English project/ School project/ Jungle Book review noval",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "commerce point",
+                        "thumbnail": "https://i.ytimg.com/vi/UNiMDpXGT8Y/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "UNiMDpXGT8Y",
+                        "videoTitle": "PROJECT REVIEW | Review Report",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Dr. Devika Bhatnagar",
+                        "thumbnail": "https://i.ytimg.com/vi/9xbOUEFOIXw/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "9xbOUEFOIXw",
+                        "videoTitle": "How To Select A Good Project ?",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Automation Step by Step",
+                        "thumbnail": "https://i.ytimg.com/vi/UArZK5LA1o0/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "UArZK5LA1o0",
+                        "videoTitle": "#AskRaghav | How to explain your project in an interview | 5 Points |",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Prof.Karan Ajay Gupta",
+                        "thumbnail": "https://i.ytimg.com/vi/HEGvTH4v7jE/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "HEGvTH4v7jE",
+                        "videoTitle": "REVIEW ARTICLE I PROJECT I HOW TO PREPARE I HINDI",
+                        "viewed": False
+                      }
+                    ]
+                  },
+                  "day7": {
+                    "description": "Finish the full-stack project and review previous topics in preparation for further learning.",
+                    "heading": "Project Work and Review",
+                    "links": [],
+                    "youtube": [
+                      {
+                        "channelName": "Parul Creations",
+                        "thumbnail": "https://i.ytimg.com/vi/ZxCr3B7kOb4/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "ZxCr3B7kOb4",
+                        "videoTitle": "Book Review on The Jungle Book/ English project/ School project/ Jungle Book review noval",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "commerce point",
+                        "thumbnail": "https://i.ytimg.com/vi/UNiMDpXGT8Y/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "UNiMDpXGT8Y",
+                        "videoTitle": "PROJECT REVIEW | Review Report",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Dr. Devika Bhatnagar",
+                        "thumbnail": "https://i.ytimg.com/vi/9xbOUEFOIXw/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "9xbOUEFOIXw",
+                        "videoTitle": "How To Select A Good Project ?",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Prof.Karan Ajay Gupta",
+                        "thumbnail": "https://i.ytimg.com/vi/HEGvTH4v7jE/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "HEGvTH4v7jE",
+                        "videoTitle": "REVIEW ARTICLE I PROJECT I HOW TO PREPARE I HINDI",
+                        "viewed": False
+                      },
+                      {
+                        "channelName": "Automation Step by Step",
+                        "thumbnail": "https://i.ytimg.com/vi/UArZK5LA1o0/hqdefault.jpg",
+                        "type": "video",
+                        "videoId": "UArZK5LA1o0",
+                        "videoTitle": "#AskRaghav | How to explain your project in an interview | 5 Points |",
+                        "viewed": False
+                      }
+                    ]
+                  }
+                },
+                "description": "Integrating frontend and backend development.",
+                "title": "Full Stack Development"
+              }
+            }
+          ],
+          "success": True
+        }
 
-# if __name__ == '__main__':
-#     app.run(debug=True)
+active_days = [
+	{ "day": 2, "month": 4, "year": 2024, "dayOfWeek": 'Tuesday' },
+	{ "day": 1, "month": 4, "year": 2024, "dayOfWeek": 'Monday' },
+	{ "day": 31, "month": 3, "year": 2024, "dayOfWeek": 'Sunday' },
+	{ "day": 30, "month": 3, "year": 2024, "dayOfWeek": 'Saturday' },
+	{ "day": 29, "month": 3, "year": 2024, "dayOfWeek": 'Friday' },
+	{ "day": 28, "month": 3, "year": 2024, "dayOfWeek": 'Thursday' },
+	{ "day": 27, "month": 3, "year": 2024, "dayOfWeek": 'Wednesday' },
+	{ "day": 23, "month": 3, "year": 2024, "dayOfWeek": 'Saturday' },
+	{ "day": 22, "month": 3, "year": 2024, "dayOfWeek": 'Friday' },
+	{ "day": 21, "month": 3, "year": 2024, "dayOfWeek": 'Thursday' },
+	{ "day": 20, "month": 3, "year": 2024, "dayOfWeek": 'Wednesday' },
+	{ "day": 19, "month": 3, "year": 2024, "dayOfWeek": 'Tuesday' },
+	{ "day": 18, "month": 3, "year": 2024, "dayOfWeek": 'Monday' },
+	{ "day": 13, "month": 3, "year": 2024, "dayOfWeek": 'Wednesday' },
+	{ "day": 12, "month": 3, "year": 2024, "dayOfWeek": 'Tuesday' },
+	{ "day": 11, "month": 3, "year": 2024, "dayOfWeek": 'Monday' },
+	{ "day": 3, "month": 3, "year": 2024, "dayOfWeek": 'Sunday' },
+	{ "day": 2, "month": 3, "year": 2024, "dayOfWeek": 'Saturday' }
+]
+
+@app.route('/roadmap', methods=['POST'])
+def roadmap():
+    if request.method == 'POST':
+        data = request.get_json()
+        # user_id = data.get('user_id')
+        # day_data = data.get('todayData')
+
+        if data.get('type') == 1:
+            # Generate New Roadmap
+            response = model.generate_content('''Generate a roadmap for Web developement in 2 months  in following JSON format:
+[
+ {
+  "week1": {
+   "title": "...",
+   "description": "What will i learn in this week...",
+   "data": {
+    "day1": {
+     "heading": "....",
+     "description": "What will i learn on this day...",
+     "links": [
+      "link1",
+      "link2",
+      ....
+     ]
+    },
+    "day2": {
+     "description": "...",
+     "heading": "....",
+     "links": [
+      "link1",
+      "link2",
+      ....
+     ]
+    },
+    ...
+   },
+   {
+    "week2": {
+     "title": "...",
+     "description": "What will i learn in this week...",
+     "data": {
+      "day1": {
+       "heading": "....",
+       "description": "What will i learn on this day...",
+       "links": [
+        "link1",
+        "link2",
+        ....
+       ]
+      },
+      "day2": {
+       "description": "...",
+       "heading": "....",
+       "links": [
+        "link1",
+        "link2",
+        ....
+       ]
+      },
+      ...
+    continue for other weeks...
+  ]
+Generate topics for all 7 days in a week and reference links only links(no header) accordingly.
+''')			# Prompt
+            
+            # Youtube Integration & links modification
+            print(response)
+            print(response.text)
+            roads_data = json.loads(response.text)
+
+            print(roads_data)
+            return jsonify({'success': True})
+            
+            API_KEY = os.environ('YOUTUBE_API_KEY')
+            url = "https://youtube.googleapis.com/youtube/v3/search"
+            
+            for index, ele in enumerate(roads_data):
+                for i in range(0,7):
+                    params = {
+                      "part": "snippet",
+                      "q": ele[f"week{index + 1}"]['data'][f"day{i+1}"]['heading'],
+                      "key": API_KEY
+                    }
+                
+                response = requests.get(url, params=params)
+                
+                if response.status_code == 200:
+                    print(response.json())
+                    video_data = response.json()
+
+                    temp1 = []
+                    for vid in video_data['items']:
+                        if vid['id']['kind']=='youtube#playlist':
+                            temp1.append({'viewed': False, 'type': 'playlist', 'playlistId': vid['id']['playlistId'], 'videoTitle': vid['snippet']['title'], 'channelName': vid['snippet']['channelTitle'], 'thumbnail': vid['snippet']['thumbnails']['high']['url']})
+                        elif vid['id']['kind']=='youtube#video':
+                            temp1.append({'viewed': False, 'type': 'video', 'videoId': vid['id']['videoId'], 'videoTitle': vid['snippet']['title'], 'channelName': vid['snippet']['channelTitle'], 'thumbnail': vid['snippet']['thumbnails']['high']['url']})
+
+                    ele[f"week{index + 1}"]['data'][f"day{i+1}"]['youtube'] = temp1
+
+                  # Reference Links
+                    temp2 = []
+                    for link in ele[f"week{index + 1}"]['data'][f"day{i+1}"]['links']:
+                        temp2.append({'link': link, 'visited': False})
+
+                    ele[f"week{index + 1}"]['data'][f"day{i+1}"]['links'] = temp2
+                
+                else:
+                    print("Error:", response.json())
+                      
+            # Save to MongoDB
+            roadmap_collection.insert_one({'data': roads_data, 'activeDays': [day_data], 'user_id': user_id})
+
+            return jsonify({'success': True})
+        
+        elif data.get('type') == 2:
+            # Get roadmap data
+            roadmap_data = roadmap_collection.find_one({"_id": ObjectId(data.get("_id")), "userId": user_id})
+            if roadmap_data:
+                return jsonify({'success': True, 'roadmapData': {'data': roadmap_data['data']}, 'activeDays': roadmap_data['activeDays']})
+            else:
+                return jsonify({'success': False})
+            # return jsonify({'success': True, 'roadmapData': roads_data_demo, 'activeDays': active_days})
+            
+    
+@app.route('/roadmapmodder', methods=['POST'])
+def roadmapmodder():
+    if request.method == 'POST':
+        data = request.get_json()
+        user_id = data.get('user_id')
+        obj_id = data.get('_id')
+        day_data = data.get('todayData')
+        week_num = data.get('weekNum')
+        day_num = data.get('dayNum')
+        week_field = f'week{week_num}'
+        day_field = f'day{day_num}'
+
+        if data.get('type') == 11:                  # Add Youtube Video
+            video_url = data.get('videoUrl')
+
+            video_id_match = re.search(r"(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})", video_url)
+            video_id = video_id_match.group(1)
+            api_key = os.getenv('YOUTUBE_API_KEY')
+
+            api_url = f"https://www.googleapis.com/youtube/v3/videos?id={video_id}&key={api_key}&part=snippet"
+            response = requests.get(api_url)
+            temp = {}
+            if response.status_code == 200:
+                data = response.json()
+            
+            if 'items' in data and data['items']:
+                item = data['items'][0]
+                print(item)
+
+                if item['kind'] == 'youtube#video':
+                    temp = {
+                        "channelName": item['snippet']['channelTitle'],
+                        "thumbnail": item['snippet']['thumbnails']['high']['url'],
+                        "type": 'video',
+                        "videoId": item['id'],
+                        "videoTitle": item['snippet']['localized']['title'],
+                        "viewed": True
+                    }
+                elif item['kind'] == 'youtube#playlist':
+                    temp = {
+                        "channelName": item['snippet']['channelTitle'],
+                        "thumbnail": item['snippet']['thumbnails']['high']['url'],
+                        "type": 'playlist',
+                        "playlistId": item['id'],
+                        "videoTitle": item['snippet']['localized']['title'],
+                        "viewed": True
+                    }
+
+            else:
+                print("Error occurred:", response.status_code)
+            
+            temp_data = roadmap_collection.find_one({"_id": ObjectId(obj_id)})
+            temp_data['data'][week_num-1][week_field]['data'][day_field]['youtube'].append(temp)
+
+            roadmap_collection.update_one(
+                {"_id": ObjectId(obj_id)},
+                {"$set": { "data": temp_data['data'] }}
+            )
+            
+            if temp_data['activeDays'][len(temp_data['activeDays'])-1]['day'] != day_data['day'] or temp_data['activeDays'][len(temp_data['activeDays'])-1]['month'] != day_data['month'] or temp_data['activeDays'][len(temp_data['activeDays'])-1]['year'] != day_data['year']:
+                updateActiveStreak(obj_id, day_data)
+            
+            return jsonify({'success': True, 'youtubeUpdate': temp})
+            
+        elif data.get('type') == 12:                # Update Youtube Video View
+            video_index = data.get('videoIndex')
+
+            temp_data = roadmap_collection.find_one({"_id": ObjectId(obj_id)})
+            temp_data['data'][week_num-1][week_field]['data'][day_field]['youtube'][video_index]['viewed'] = True
+
+            roadmap_collection.update_one(
+                {"_id": ObjectId(obj_id)},
+                {"$set": { "data": temp_data['data'] }}
+            )
+            
+            if temp_data['activeDays'][len(temp_data['active_days'])-1]['day'] != day_data['day'] or temp_data['activeDays'][len(temp_data['active_days'])-1]['month'] != day_data['month'] or temp_data['activeDays'][len(temp_data['active_days'])-1]['year'] != day_data['year']:
+                updateActiveStreak(obj_id, day_data)
+
+            return jsonify({'success': True})
+
+        elif data.get('type') == 21:                # Add Reference Link
+            ref_link = data.get('refLink')
+
+            temp_data = roadmap_collection.find_one({"_id": ObjectId(obj_id)})
+            temp_data['data'][week_num-1][week_field]['data'][day_field]['links'].append({"link": ref_link, "visited": True})
+
+            roadmap_collection.update_one(
+                {"_id": ObjectId(obj_id)},
+                {"$set": { "data": temp_data['data'] }}
+            )
+            
+            if temp_data['activeDays'][len(temp_data['active_days'])-1]['day'] != day_data['day'] or temp_data['activeDays'][len(temp_data['active_days'])-1]['month'] != day_data['month'] or temp_data['activeDays'][len(temp_data['active_days'])-1]['year'] != day_data['year']:
+                updateActiveStreak(obj_id, day_data)
+
+        elif data.get('type') == 22:                # Update Reference link Visit
+            ref_link_index = data.get('refLinkIndex')
+
+            temp_data = roadmap_collection.find_one({"_id": ObjectId(obj_id)})
+            temp_data['data'][week_num-1][week_field]['data'][day_field]['links'][ref_link_index]["visited"] = True
+
+            roadmap_collection.update_one(
+                {"_id": ObjectId(obj_id)},
+                {"$set": { "data": temp_data['data'] }}
+            )
+
+            if temp_data['activeDays'][len(temp_data['active_days'])-1]['day'] != day_data['day'] or temp_data['activeDays'][len(temp_data['active_days'])-1]['month'] != day_data['month'] or temp_data['activeDays'][len(temp_data['active_days'])-1]['year'] != day_data['year']:
+                updateActiveStreak(obj_id, day_data)
+
+        # Add Mindmaps change in mindap generation fucntion such that if roadmapId, WeekNum, DayNum is sent while generation of mindmap then associate it directly with the roadmap.
+
+        elif data.get('type') == 31:                # Update isComplete
+            temp_data = roadmap_collection.find_one({"_id": ObjectId(obj_id)})
+            temp_data['data'][week_num-1][week_field]['data'][day_field]['isComplete'] = True
+
+            roadmap_collection.update_one(
+                {"_id": ObjectId(obj_id)},
+                {"$set": { "data": temp_data['data'] }}
+            )
+            
+            if temp_data['activeDays'][len(temp_data['active_days'])-1]['day'] != day_data['day'] or temp_data['activeDays'][len(temp_data['active_days'])-1]['month'] != day_data['month'] or temp_data['activeDays'][len(temp_data['active_days'])-1]['year'] != day_data['year']:
+                updateActiveStreak(obj_id, day_data)
+
+        return jsonify({'success': True})
+    
+def updateActiveStreak(object_id, day_data):       # Update Active Streak
+    temp_data = roadmap_collection.find_one({"_id": ObjectId(object_id)})
+    temp_data['activeDays'].append(day_data)
+
+    roadmap_collection.update_one(
+        {"_id": ObjectId(object_id)},
+        {"$set": { "activeDays": temp_data['activeDays'] }}
+    )
+
+
+if __name__ == '__main__':
+    app.run(debug=True, host='0.0.0.0')

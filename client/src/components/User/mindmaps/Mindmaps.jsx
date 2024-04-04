@@ -111,6 +111,25 @@ const Mindmaps = () => {
       setIsDisabledSave(false);
       setIsLoading(false);
       toast.success("Mindmap Created Successfully!");
+      const timer = setTimeout(() => {
+        if (theme === 'dark') {
+          document.getElementsByClassName("react-flow__attribution")[0].remove();
+          document.getElementsByClassName('react-flow__minimap')[0].style.borderRadius = '21px';
+          document.getElementsByClassName('react-flow__minimap')[0].childNodes[0].style.borderRadius = '12px';
+          document.getElementsByClassName('react-flow__minimap')[0].childNodes[0].style.background = '#1c1c1c';
+          for (var i = 0 ; i <= 10; i++) {
+            document.getElementsByClassName('react-flow__minimap-node')[i].style.fill = 'purple';
+          }
+        }
+        else {
+          document.getElementsByClassName("react-flow__attribution")[0].remove();
+          document.getElementsByClassName('react-flow__minimap')[0].style.borderRadius = '21px';
+          document.getElementsByClassName('react-flow__minimap')[0].childNodes[0].style.borderRadius = '12px';
+          for (var i = 0 ; i <= 10; i++) {
+            document.getElementsByClassName('react-flow__minimap-node')[i].style.fill = 'purple';
+          }
+        }
+      }, 500);
     } catch (error) {
       console.log(error);
       setIsDisabledSave(true);
@@ -278,32 +297,33 @@ const Mindmaps = () => {
           />
         ) : null}
         <div ref={ref8} className="absolute w-[350px] h-[170px]"></div>
-        <div className="flex justify-between m-5 text-2xl text-center">
-          Mindmaps
-        </div>
-        <Input
-          type="text"
-          label="What you want to learn ?"
-          name="query"
-          id="query"
-          value={form.query}
-          onChange={handleChange}
-          isRequired
-          className="m-3 w-[300px]"
-        />
 
-        <div className="flex justify-between">
-          <Button
-            onClick={handleSumbmit}
-            className="flex mx-3 my-2"
-            color="primary"
-            variant="shadow"
-            isLoading={isLoading}
-            isDisabled={form.query === ""}
-          >
-            Get
-          </Button>
-
+        <div className="flex justify-between z-50 relative">
+          <div className="flex flex-col justify-between align-middle items-center">
+            <div className="flex justify-between m-5 text-2xl text-center">
+              Mindmaps
+            </div>
+            <Input
+              type="text"
+              label="What you want to learn ?"
+              name="query"
+              id="query"
+              value={form.query}
+              onChange={handleChange}
+              isRequired
+              className="m-3 w-[300px]"
+            />
+            <Button
+              onClick={handleSumbmit}
+              className="flex mx-3 my-2"
+              color="primary"
+              variant="shadow"
+              isLoading={isLoading}
+              isDisabled={form.query === ""}
+            >
+              Get
+            </Button>
+          </div>
           {initialNodes.length > 1 && (
             <div className="flex gap-2">
               <Tooltip content="How this page works?">
@@ -361,7 +381,7 @@ const Mindmaps = () => {
         </div>
 
         {initialNodes.length > 1 && (
-          <div style={{ width: "100vw", height: "67vh" }} ref={ref7}>
+          <div style={{ width: "100dvw", height: "100dvh", position: 'absolute', top: 0 }} ref={ref7}>
             <ReactFlow
               nodes={nodes}
               edges={edges}

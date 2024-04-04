@@ -1,4 +1,3 @@
-// test.jsx
 import React from 'react';
 import { MouseEnterProvider } from './3dCard';
 import { CardContainer, CardBody, CardItem } from './3dCard';
@@ -84,7 +83,6 @@ export function ThreeDCard({item, index}) {
                 </Button>
               </Link>
             </CardItem>
-            
           </div>
         </CardBody>
       </CardContainer>

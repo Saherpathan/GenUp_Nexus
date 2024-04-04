@@ -29,7 +29,7 @@ import { HiOutlineShare } from "react-icons/hi2";
 import { TfiInfoAlt } from "react-icons/tfi";
 import { useTheme } from "next-themes";
 import { Tour } from "antd";
-
+import Background2 from "../../Background/Background.jsx";
 const imageWidth = 1024;
 const imageHeight = 768;
 
@@ -83,6 +83,26 @@ const MindmapOpener = () => {
         // toast.success("Mindmap fetched!");
         // setNodes(initialNodes);
         // setEdges(initialEdges);
+        const timer = setTimeout(() => {
+          if (theme === 'dark') {
+            document.getElementsByClassName("react-flow__attribution")[0].remove();
+            document.getElementsByClassName('react-flow__minimap')[0].style.borderRadius = '21px';
+            document.getElementsByClassName('react-flow__minimap')[0].childNodes[0].style.borderRadius = '12px';
+            document.getElementsByClassName('react-flow__minimap')[0].childNodes[0].style.background = '#1c1c1c';
+            for (var i = 0 ; i <= 10; i++) {
+              document.getElementsByClassName('react-flow__minimap-node')[i].style.fill = 'purple';
+            }
+          }
+          else {
+            document.getElementsByClassName("react-flow__attribution")[0].remove();
+            document.getElementsByClassName('react-flow__minimap')[0].style.borderRadius = '21px';
+            document.getElementsByClassName('react-flow__minimap')[0].childNodes[0].style.borderRadius = '12px';
+            for (var i = 0 ; i <= 10; i++) {
+              document.getElementsByClassName('react-flow__minimap-node')[i].style.fill = 'purple';
+            }
+          }
+        }, 500);
+        return () => clearTimeout(timer);
       } catch (err) {
         console.error(err);
         toast.error("Server error please try again later");
@@ -262,6 +282,7 @@ const MindmapOpener = () => {
   return (
     <div>
       <Layout>
+        <Background2 />
         {isLoading ? (
           <Loader
             json="https://lottie.host/2639b394-c2db-4afd-a6ad-00e8dde8a240/OAhwCbq88U.json"
@@ -270,7 +291,7 @@ const MindmapOpener = () => {
           />
         ) : null}
 
-        <div className="flex justify-between">
+        <div className="flex justify-between z-50 relative">
           <div className="m-5 text-2xl">
             Mindmap{" "}
             {initialNodes.length > 1 && (
@@ -347,9 +368,9 @@ const MindmapOpener = () => {
             </div>
           )}
         </div>
-        {}
+        
         {initialNodes.length > 1 && (
-          <div style={{ width: "100vw", height: "82vh" }} ref={ref7}>
+          <div style={{ width: "100dvw", height: "100dvh", position: 'absolute', top: 0 }} ref={ref7}>
             <ReactFlow
               nodes={nodes}
               edges={edges}
