@@ -49,7 +49,7 @@ const Results = () => {
                     },
                     body: JSON.stringify({
                         "type": 2,
-                        "user_id": user.result.user_id,
+                        "user_id": user.result.userId,
                         "_id": id
                     }),
                 });
