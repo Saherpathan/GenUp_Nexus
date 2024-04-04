@@ -5,7 +5,7 @@ import Background from "../../Background/Background";
 import {Popover, PopoverTrigger, PopoverContent, Button, ScrollShadow, Card, CardBody, CardFooter, Image, Divider, Chip, CardHeader, Input, Tabs, Tab, Tooltip} from "@nextui-org/react";
 import {Breadcrumbs, BreadcrumbItem} from "@nextui-org/react";
 import { Icon } from "@iconify/react";
-import path from '../../../../public/pppointed.svg';
+import path from '/pppointed.svg';
 import botPoint from '../../../assets/botpoint.png';
 import botCheer from '../../../assets/botcheer.png';
 import membot1 from '../../../assets/membot1.png';
