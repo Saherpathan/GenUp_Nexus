@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
+import { FollowPointer } from "./FollowingPointer/FollowingPointerCard.jsx";
 import Loader from "../../Loader";
 import ReactFlow, {
   MiniMap,
@@ -18,7 +19,7 @@ import CustomNode from "./CustomNode";
 import axios from "../../../axios.js";
 import { toast } from "react-hot-toast";
 import { Layout } from "../../Layout";
-import { Button, Tooltip } from "@nextui-org/react";
+import { Button, Tooltip, Avatar } from "@nextui-org/react";
 import { MdDeleteOutline } from "react-icons/md";
 import { Link, useNavigate } from "react-router-dom";
 import { useGlobalContext } from "../../../contexts/GlobalContext";
@@ -29,6 +30,7 @@ import { HiOutlineShare } from "react-icons/hi2";
 import { TfiInfoAlt } from "react-icons/tfi";
 import { useTheme } from "next-themes";
 import { Tour } from "antd";
+import io from "socket.io-client";
 
 const imageWidth = 1024;
 const imageHeight = 768;
@@ -50,6 +52,26 @@ const defaultEdgeOptions = {
 const onInit = (reactFlowInstance) =>
   console.log("flow loaded:", reactFlowInstance);
 
+const TitleComponent = ({ title, avatar }) => (
+  <div className="flex items-center space-x-2">
+    <Avatar src=""></Avatar>
+    <p>{title}</p>
+  </div>
+);
+
+// const TitleComponent = ({ title, avatar }) => (
+//   <div className="flex items-center space-x-2">
+//     <Image
+//       src={avatar}
+//       height="20"
+//       width="20"
+//       alt="thumbnail"
+//       className="border-2 border-white rounded-full"
+//     />
+//     <p>{title}</p>
+//   </div>
+// );
+
 const MindmapOpener = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isButtonLoading, setIsButtonLoading] = useState(false);
@@ -64,6 +86,8 @@ const MindmapOpener = () => {
   const navigateTo = useNavigate();
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const socketRef = useRef(null);
+  const [remotePointers, setRemotePointers] = useState({});
 
   useEffect(() => {
     const fetchData = async () => {
@@ -259,6 +283,68 @@ const MindmapOpener = () => {
     },
   ];
 
+  // Live Pointer
+  const colors = [
+    "var(--sky-500)",
+    "var(--neutral-500)",
+    "var(--teal-500)",
+    "var(--green-500)",
+    "var(--blue-500)",
+    "var(--red-500)",
+    "var(--yellow-500)",
+  ];
+
+  const secColor = colors[Math.floor(Math.random() * colors.length)];
+
+  useEffect(() => {
+    const socket = io("https://genup-nexus-socket.onrender.com", {
+      transports: ["websocket"],
+    }); // Replace with your server URL
+    socketRef.current = socket;
+    socket.on("remotePointerMove", (data) => {
+      // Update remote pointers based on data received from the server
+      const currentUrl = window.location.href;
+      const segments = currentUrl.split("/");
+      const mindMapId = segments[segments.length - 1];
+      if (data.id !== user?.result?.userId && data.mapId === mindMapId) {
+        setRemotePointers((prevPointers) => ({
+          ...prevPointers,
+          [data.id]: {
+            x: data.x,
+            y: data.y,
+            name: data.name,
+            color: data.color,
+            mapId: data.mapId,
+          },
+        }));
+      }
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+
+  const handlePointerMove = (event) => {
+    const { clientX, clientY } = event;
+
+    // const coll = colors[Math.floor(Math.random() * colors.length)]
+    // console.log(coll)
+    const currentUrl = window.location.href;
+    const segments = currentUrl.split("/");
+    const id = segments[segments.length - 1];
+    
+    const pointerData = {
+      id: user?.result?.userId, // Use unique identifier for each client
+      x: clientX,
+      y: clientY,
+      name: user?.result?.name,
+      color: secColor,
+      mapId: id,
+    };
+    socketRef.current.emit("pointerMove", pointerData);
+  };
+
   return (
     <div>
       <Layout>
@@ -349,7 +435,11 @@ const MindmapOpener = () => {
         </div>
         {}
         {initialNodes.length > 1 && (
-          <div style={{ width: "100vw", height: "82vh" }} ref={ref7}>
+          <div
+            style={{ width: "100vw", height: "82vh" }}
+            ref={ref7}
+            onMouseMove={handlePointerMove}
+          >
             <ReactFlow
               nodes={nodes}
               edges={edges}
@@ -409,6 +499,22 @@ const MindmapOpener = () => {
         )}
 
         <Tour open={open} onClose={() => setOpen(false)} steps={steps} />
+        {Object.keys(remotePointers).map((pointerId) => (
+          <div
+            key={pointerId}
+            style={{
+              position: "absolute",
+              left: remotePointers[pointerId].x,
+              top: remotePointers[pointerId].y,
+            }}
+          >
+            {/* Render remote pointer */}
+            <FollowPointer
+              title={remotePointers[pointerId].name}
+              colorr={remotePointers[pointerId].color}
+            />
+          </div>
+        ))}
       </Layout>
     </div>
   );

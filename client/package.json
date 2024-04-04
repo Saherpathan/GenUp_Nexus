@@ -19,8 +19,9 @@
     "antd": "^5.15.4",
     "axios": "^1.5.1",
     "chart.js": "^4.4.2",
+    "clsx": "^2.1.0",
     "d3": "^7.9.0",
-    "framer-motion": "^10.16.4",
+    "framer-motion": "^10.18.0",
     "gsap": "^3.12.5",
     "html-to-image": "^1.11.11",
     "jwt-decode": "^4.0.0",
@@ -39,6 +40,8 @@
     "react-spring": "^9.7.3",
     "reactflow": "^11.10.4",
     "regenerator-runtime": "^0.14.1",
+    "socket.io-client": "^4.7.5",
+    "tailwind-merge": "^2.2.2",
     "web-vitals": "^2.1.4"
   },
   "devDependencies": {

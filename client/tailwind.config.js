@@ -1,4 +1,10 @@
 // import nextui from "@nextui-org/react";
+const defaultTheme = require("tailwindcss/defaultTheme");
+const colors = require("tailwindcss/colors");
+const {
+  default: flattenColorPalette,
+} = require("tailwindcss/lib/util/flattenColorPalette");
+
 import { nextui } from "@nextui-org/theme";
 
 /** @type {import('tailwindcss').Config} */
@@ -15,8 +21,8 @@ export default {
       },
       keyframes: {
         shimmer: {
-          '100%': {
-            transform: 'translateX(0%)',
+          "100%": {
+            transform: "translateX(0%)",
           },
           from: {
             backgroundPosition: "0 0",
@@ -29,5 +35,19 @@ export default {
     },
   },
   darkMode: "class",
-  plugins: [nextui()],
+  plugins: [
+    nextui(), 
+    addVariablesForColors
+  ],
 };
+
+function addVariablesForColors({ addBase, theme }: any) {
+  let allColors = flattenColorPalette(theme("colors"));
+  let newVars = Object.fromEntries(
+    Object.entries(allColors).map(([key, val]) => [`--${key}`, val])
+  );
+ 
+  addBase({
+    ":root": newVars,
+  });
+}

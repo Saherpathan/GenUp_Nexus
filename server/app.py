@@ -24,9 +24,10 @@ app = Flask(__name__)
 
 bcrypt = Bcrypt(app)
 jwt = JWTManager(app)
-CORS(app)
+
 
 app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET')
+CORS(app,resources={r"/*":{"origins":"*"}})
 
 # MongoDB configuration
 username = urllib.parse.quote_plus(os.getenv('MONGO_USERNAME'))
@@ -595,7 +596,3 @@ def mindmapDemo():
     data = request.json
     print(data);
     return get_initial_data(), 200
-
-
-# if __name__ == '__main__':
-#     app.run(debug=True)
