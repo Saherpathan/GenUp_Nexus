@@ -130,6 +130,7 @@ const Mindmaps = () => {
           }
         }
       }, 500);
+      return () => clearTimeout(timer);
     } catch (error) {
       console.log(error);
       setIsDisabledSave(true);

@@ -21,7 +21,7 @@ import { FaMicrophone } from "react-icons/fa";
 
 const Interview = () => {
     const { user } = useGlobalContext();
-    const [userId, setUserID] = useState(null);
+    const [userId, setUserId] = useState(null);
     const [interviewHistory, setInterviewHistory] = useState([]);
     const [start, setStart] = useState(true);
     const [position, setPosition] = useState('');
@@ -47,7 +47,7 @@ const Interview = () => {
     const { transcript, interimTranscript, finalTranscript, resetTranscript, listening } = useSpeechRecognition();
 
     useEffect(() => {
-        setUserID(user.result.userId);
+        setUserId(user.result.userId);
         modal1Disclosure.onOpen();
         setCodeTheme(`vs-${theme}`);
         getInterviewHistory();
@@ -106,6 +106,7 @@ const Interview = () => {
     }
 
     const startInterview = async () => {
+        setStart(false);
         try {
         const response = await fetch( 'https://parthcodes-test-flask-deploy.hf.space/interview', {
             method: 'POST',
@@ -170,6 +171,10 @@ const Interview = () => {
                 setNext(true);
                 speak("Thank you for your time!!");
                 SpeechRecognition.stopListening();
+                const timer = setTimeout(() => {
+                   modal2Disclosure.onOpen();
+                }, 5000);
+                return () => clearTimeout(timer);
               }
               else if (data.success) {
                   console.log(JSON.parse(data.data));
@@ -233,7 +238,6 @@ const Interview = () => {
             }
         });
         console.log('event Added');
-        setStart(false);
     };
 
     return (
@@ -446,7 +450,7 @@ const Interview = () => {
                                         ))}
                                     </Select>
                                     <div className="flex justify-center px-1 py-2 text-center align-items-center">
-                                        <Button color="primary" onPress={onClose} onClick={starter} >
+                                        <Button color="primary" onPress={() => {onClose(); starter();}} >
                                             Start Interview
                                         </Button>
                                     </div>
@@ -490,7 +494,7 @@ const Interview = () => {
                         </CardFooter>
                     </Card>
                 </div>
-                {end || start? (
+                {end || start ? (
                     <Card className='w-full h-[300px] p-10 flex align-middle justify-center items-center'>
                         {start ? 'Start the interview by starting the recording.' : 'Submit the interview by stoping the recording!'}
                     </Card>
