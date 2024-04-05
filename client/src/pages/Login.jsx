@@ -74,7 +74,7 @@ const Login = () => {
     setIsLoading(true);
 
     window.location.href =
-      "https://sidd-template-react-server.vercel.app/auth/google";
+      "http://localhost:5000/auth/google";
   };
   //Google Auth Redirect
   const queryParams = new URLSearchParams(window.location.search);
@@ -166,7 +166,7 @@ const Login = () => {
           variant="shadow"
           isLoading={isLoading}
           startContent={<ImGoogle />}
-          disabled
+          // disabled
         >
           Sign in with Google
         </Button>

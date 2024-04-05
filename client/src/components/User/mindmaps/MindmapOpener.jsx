@@ -315,6 +315,7 @@ const MindmapOpener = () => {
             name: data.name,
             color: data.color,
             mapId: data.mapId,
+            dp: data.dp,
           },
         }));
       }
@@ -333,7 +334,7 @@ const MindmapOpener = () => {
     const currentUrl = window.location.href;
     const segments = currentUrl.split("/");
     const id = segments[segments.length - 1];
-    
+
     const pointerData = {
       id: user?.result?.userId, // Use unique identifier for each client
       x: clientX,
@@ -341,6 +342,7 @@ const MindmapOpener = () => {
       name: user?.result?.name,
       color: secColor,
       mapId: id,
+      dp: user?.result?.picture,
     };
     socketRef.current.emit("pointerMove", pointerData);
   };
@@ -356,7 +358,7 @@ const MindmapOpener = () => {
           />
         ) : null}
 
-        <div className="flex justify-between">
+        <div className="flex justify-between mt-5">
           <div className="m-5 text-2xl">
             Mindmap{" "}
             {initialNodes.length > 1 && (
@@ -436,7 +438,7 @@ const MindmapOpener = () => {
         {}
         {initialNodes.length > 1 && (
           <div
-            style={{ width: "100vw", height: "82vh" }}
+            style={{ width: "100vw", height: "81vh" }}
             ref={ref7}
             onMouseMove={handlePointerMove}
           >
@@ -512,6 +514,7 @@ const MindmapOpener = () => {
             <FollowPointer
               title={remotePointers[pointerId].name}
               colorr={remotePointers[pointerId].color}
+              pic={remotePointers[pointerId].dp}
             />
           </div>
         ))}
