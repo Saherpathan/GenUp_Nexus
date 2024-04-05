@@ -3,6 +3,7 @@ import Loader from "../components/Loader";
 import Validator from "../contexts/Validator";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "../axios.js";
+import axiosvercel from "../axios-vercel.js";
 import { useGlobalContext } from "../contexts/GlobalContext";
 
 import { useTheme } from "next-themes";
@@ -50,7 +51,7 @@ const Login = () => {
       setIsLoading(true);
 
       try {
-        const res = await axios.post("/user/signin", form);
+        const res = await axiosvercel.post("/user/signin", form);
         const result = res.data;
         localStorage.setItem("user", JSON.stringify({ ...result }));
         setUser(JSON.parse(localStorage.getItem("user")));

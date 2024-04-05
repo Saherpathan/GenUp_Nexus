@@ -17,6 +17,7 @@ import "reactflow/dist/style.css";
 import "./overview.css";
 import CustomNode from "./CustomNode";
 import axios from "../../../axios.js";
+import axiosvercel from "../../../axios-vercel.js";
 import { toast } from "react-hot-toast";
 import { Layout } from "../../Layout";
 import { Button, Tooltip, Avatar } from "@nextui-org/react";
@@ -52,26 +53,6 @@ const defaultEdgeOptions = {
 const onInit = (reactFlowInstance) =>
   console.log("flow loaded:", reactFlowInstance);
 
-const TitleComponent = ({ title, avatar }) => (
-  <div className="flex items-center space-x-2">
-    <Avatar src=""></Avatar>
-    <p>{title}</p>
-  </div>
-);
-
-// const TitleComponent = ({ title, avatar }) => (
-//   <div className="flex items-center space-x-2">
-//     <Image
-//       src={avatar}
-//       height="20"
-//       width="20"
-//       alt="thumbnail"
-//       className="border-2 border-white rounded-full"
-//     />
-//     <p>{title}</p>
-//   </div>
-// );
-
 const MindmapOpener = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isButtonLoading, setIsButtonLoading] = useState(false);
@@ -97,7 +78,7 @@ const MindmapOpener = () => {
         const currentUrl = window.location.href;
         const segments = currentUrl.split("/");
         const id = segments[segments.length - 1];
-        const res = await axios.get(`/mindmap/get/${id}`);
+        const res = await axiosvercel.get(`/mindmap/get/${id}`);
         setMindmaps(res.data);
         console.log(mindmaps);
         setInitialEdges(res.data.data.data.initialEdges);
