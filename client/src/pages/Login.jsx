@@ -74,7 +74,7 @@ const Login = () => {
     setIsLoading(true);
 
     window.location.href =
-      "http://localhost:5000/auth/google";
+      "https://gen-up-nexus-server-v2.vercel.app/auth/google";
   };
   //Google Auth Redirect
   const queryParams = new URLSearchParams(window.location.search);

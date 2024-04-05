@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "start": "ncc build index.js && node index.js",
-    "server": "nodemon index.js"
+    "server": "nodemon index.js",
+    "render": "node index.js"
   },
   "keywords": [],
   "author": "Siddhant Patil",
