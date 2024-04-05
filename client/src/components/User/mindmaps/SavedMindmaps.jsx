@@ -3,6 +3,7 @@ import { Layout } from "../../Layout";
 import { Button, Card, CardBody, CardFooter, Image } from "@nextui-org/react";
 import Loader from "../../Loader";
 import axios from "../../../axios.js";
+import axiosvercel from "../../../axios-vercel.js";
 import { toast } from "react-hot-toast";
 import { IoSaveOutline } from "react-icons/io5";
 import { IoOpenOutline } from "react-icons/io5";
@@ -54,7 +55,7 @@ const SavedMindmaps = () => {
           </div>
         )}
 
-        <div className="flex flex-wrap gap-3 m-3 justify-center">
+        <div className="flex flex-wrap justify-center gap-3 m-3">
           {mindmaps?.data?.map((item, index) => {
             console.log(item);
             return (

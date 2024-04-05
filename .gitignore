@@ -7,3 +7,5 @@
 /server/controllers/__pycache__/
 
 /server/socket-server/node_modules/
+/server/server2.0/node_modules/
+/server/server2.0/.env

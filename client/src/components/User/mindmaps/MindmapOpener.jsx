@@ -17,6 +17,7 @@ import "reactflow/dist/style.css";
 import "./overview.css";
 import CustomNode from "./CustomNode";
 import axios from "../../../axios.js";
+import axiosvercel from "../../../axios-vercel.js";
 import { toast } from "react-hot-toast";
 import { Layout } from "../../Layout";
 import { Button, Tooltip, Avatar } from "@nextui-org/react";
@@ -52,26 +53,6 @@ const defaultEdgeOptions = {
 const onInit = (reactFlowInstance) =>
   console.log("flow loaded:", reactFlowInstance);
 
-const TitleComponent = ({ title, avatar }) => (
-  <div className="flex items-center space-x-2">
-    <Avatar src=""></Avatar>
-    <p>{title}</p>
-  </div>
-);
-
-// const TitleComponent = ({ title, avatar }) => (
-//   <div className="flex items-center space-x-2">
-//     <Image
-//       src={avatar}
-//       height="20"
-//       width="20"
-//       alt="thumbnail"
-//       className="border-2 border-white rounded-full"
-//     />
-//     <p>{title}</p>
-//   </div>
-// );
-
 const MindmapOpener = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isButtonLoading, setIsButtonLoading] = useState(false);
@@ -97,7 +78,7 @@ const MindmapOpener = () => {
         const currentUrl = window.location.href;
         const segments = currentUrl.split("/");
         const id = segments[segments.length - 1];
-        const res = await axios.get(`/mindmap/get/${id}`);
+        const res = await axiosvercel.get(`/mindmap/get/${id}`);
         setMindmaps(res.data);
         console.log(mindmaps);
         setInitialEdges(res.data.data.data.initialEdges);
@@ -297,7 +278,7 @@ const MindmapOpener = () => {
   const secColor = colors[Math.floor(Math.random() * colors.length)];
 
   useEffect(() => {
-    const socket = io("https://genup-nexus-socket.onrender.com", {
+    const socket = io("https://genup-nexus-server-v2.onrender.com/", {
       transports: ["websocket"],
     }); // Replace with your server URL
     socketRef.current = socket;
@@ -315,6 +296,7 @@ const MindmapOpener = () => {
             name: data.name,
             color: data.color,
             mapId: data.mapId,
+            dp: data.dp,
           },
         }));
       }
@@ -333,7 +315,7 @@ const MindmapOpener = () => {
     const currentUrl = window.location.href;
     const segments = currentUrl.split("/");
     const id = segments[segments.length - 1];
-    
+
     const pointerData = {
       id: user?.result?.userId, // Use unique identifier for each client
       x: clientX,
@@ -341,6 +323,7 @@ const MindmapOpener = () => {
       name: user?.result?.name,
       color: secColor,
       mapId: id,
+      dp: user?.result?.picture,
     };
     socketRef.current.emit("pointerMove", pointerData);
   };
@@ -356,7 +339,7 @@ const MindmapOpener = () => {
           />
         ) : null}
 
-        <div className="flex justify-between">
+        <div className="flex justify-between mt-5">
           <div className="m-5 text-2xl">
             Mindmap{" "}
             {initialNodes.length > 1 && (
@@ -364,7 +347,7 @@ const MindmapOpener = () => {
             )}
           </div>
           {initialNodes.length > 1 && (
-            <div className="flex gap-2">
+            <div className="flex flex-wrap md:gap-2">
               <Tooltip content="How this page works?">
                 <Button
                   isIconOnly
@@ -436,7 +419,8 @@ const MindmapOpener = () => {
         {}
         {initialNodes.length > 1 && (
           <div
-            style={{ width: "100vw", height: "82vh" }}
+            // style={{ width: "100vw", height: "81vh" }}
+            className="w-full h-[68vh] md:h-[80vh]"
             ref={ref7}
             onMouseMove={handlePointerMove}
           >
@@ -512,6 +496,7 @@ const MindmapOpener = () => {
             <FollowPointer
               title={remotePointers[pointerId].name}
               colorr={remotePointers[pointerId].color}
+              pic={remotePointers[pointerId].dp}
             />
           </div>
         ))}

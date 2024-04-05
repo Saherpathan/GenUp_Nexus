@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence, useMotionValue } from "framer-motion";
 import { cn } from "./cn";
+import {Avatar} from "@nextui-org/react";
 
 const FollowerPointerCard = ({ children, className, title }) => {
   const x = useMotionValue(0);
@@ -51,7 +52,7 @@ const FollowerPointerCard = ({ children, className, title }) => {
   );
 };
 
-const FollowPointer = ({ x, y, title, colorr }) => {
+const FollowPointer = ({ x, y, title, colorr, pic }) => {
   const colors = [
     "var(--sky-500)",
     "var(--neutral-500)",
@@ -111,10 +112,13 @@ const FollowPointer = ({ x, y, title, colorr }) => {
           opacity: 0,
         }}
         className={
-          "px-2 py-2 bg-neutral-200 text-white whitespace-nowrap min-w-max text-xs rounded-full"
+          "px-2 py-2 bg-neutral-200 text-white whitespace-nowrap min-w-max text-xs rounded-full flex gap-1 items-center"
         }
       >
-        {title || `William Shakespeare`}
+        <motion.div>
+          <Avatar src={pic || `https://img.icons8.com/?size=256&id=kDoeg22e5jUY&format=png`} className="w-6 h-6 text-tiny"></Avatar>
+        </motion.div>
+        <motion.div>{title || `Anonymous`}</motion.div>
       </motion.div>
     </motion.div>
   );
