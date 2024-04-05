@@ -63,7 +63,9 @@ const Login = () => {
         setServerMsg(
           error.response.data.message || "Server error please try again later"
         );
-        toast.error(error.response.data.message || "Server error please try again later");
+        toast.error(
+          error.response.data.message || "Server error please try again later"
+        );
       }
     } else {
       setErrors(validationErrors);
@@ -75,7 +77,8 @@ const Login = () => {
     setIsLoading(true);
 
     window.location.href =
-      "https://gen-up-nexus-server-v2.vercel.app/auth/google";
+      "https://gen-up-nexus-server-v2.vercel.app/auth/google?sourceLink=" +
+      encodeURIComponent(window.location.href);
   };
   //Google Auth Redirect
   const queryParams = new URLSearchParams(window.location.search);
