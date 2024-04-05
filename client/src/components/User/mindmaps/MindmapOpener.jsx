@@ -347,7 +347,7 @@ const MindmapOpener = () => {
             )}
           </div>
           {initialNodes.length > 1 && (
-            <div className="flex gap-2">
+            <div className="flex flex-wrap md:gap-2">
               <Tooltip content="How this page works?">
                 <Button
                   isIconOnly
@@ -419,7 +419,8 @@ const MindmapOpener = () => {
         {}
         {initialNodes.length > 1 && (
           <div
-            style={{ width: "100vw", height: "81vh" }}
+            // style={{ width: "100vw", height: "81vh" }}
+            className="w-full h-[68vh] md:h-[80vh]"
             ref={ref7}
             onMouseMove={handlePointerMove}
           >

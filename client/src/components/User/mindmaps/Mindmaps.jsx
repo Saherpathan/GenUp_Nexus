@@ -305,7 +305,7 @@ const Mindmaps = () => {
           </Button>
 
           {initialNodes.length > 1 && (
-            <div className="flex gap-2">
+            <div className="flex md:gap-2">
               <Tooltip content="How this page works?">
                 <Button
                   isIconOnly
@@ -361,7 +361,7 @@ const Mindmaps = () => {
         </div>
 
         {initialNodes.length > 1 && (
-          <div style={{ width: "100vw", height: "67vh" }} ref={ref7}>
+          <div className="w-full md:h-[67vh] h-[65vh]" ref={ref7}>
             <ReactFlow
               nodes={nodes}
               edges={edges}
