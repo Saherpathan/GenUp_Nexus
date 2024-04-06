@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
+import { FollowPointer } from "./FollowingPointer/FollowingPointerCard.jsx";
 import Loader from "../../Loader";
 import ReactFlow, {
   MiniMap,
@@ -16,9 +17,10 @@ import "reactflow/dist/style.css";
 import "./overview.css";
 import CustomNode from "./CustomNode";
 import axios from "../../../axios.js";
+import axiosvercel from "../../../axios-vercel.js";
 import { toast } from "react-hot-toast";
 import { Layout } from "../../Layout";
-import { Button, Tooltip } from "@nextui-org/react";
+import { Button, Tooltip, Avatar } from "@nextui-org/react";
 import { MdDeleteOutline } from "react-icons/md";
 import { Link, useNavigate } from "react-router-dom";
 import { useGlobalContext } from "../../../contexts/GlobalContext";
@@ -29,6 +31,9 @@ import { HiOutlineShare } from "react-icons/hi2";
 import { TfiInfoAlt } from "react-icons/tfi";
 import { useTheme } from "next-themes";
 import { Tour } from "antd";
+import io from "socket.io-client";
+import { LuMousePointer2 } from "react-icons/lu";
+import { TbPointerStar } from "react-icons/tb";
 import Background2 from "../../Background/Background.jsx";
 const imageWidth = 1024;
 const imageHeight = 768;
@@ -64,6 +69,9 @@ const MindmapOpener = () => {
   const navigateTo = useNavigate();
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const socketRef = useRef(null);
+  const [remotePointers, setRemotePointers] = useState({});
+  const [remoteActivity, setRemoteActivity] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -73,7 +81,7 @@ const MindmapOpener = () => {
         const currentUrl = window.location.href;
         const segments = currentUrl.split("/");
         const id = segments[segments.length - 1];
-        const res = await axios.get(`/mindmap/get/${id}`);
+        const res = await axiosvercel.get(`/mindmap/get/${id}`);
         setMindmaps(res.data);
         console.log(mindmaps);
         setInitialEdges(res.data.data.data.initialEdges);
@@ -226,6 +234,7 @@ const MindmapOpener = () => {
   };
 
   // Tour
+  const ref0 = useRef(null);
   const ref1 = useRef(null);
   const ref2 = useRef(null);
   const ref3 = useRef(null);
@@ -233,8 +242,22 @@ const MindmapOpener = () => {
   const ref5 = useRef(null);
   const ref6 = useRef(null);
   const ref7 = useRef(null);
+
   const [open, setOpen] = useState(false);
+
   const steps = [
+    {
+      title: "Mindmap Remote Activity",
+      description: "See others users activity on this mindmap",
+      cover: (
+        <img
+          alt="tour.png"
+          src="https://kit8.net/wp-content/uploads/2020/12/Remote_collaboration@2x.png"
+          className="h-[300px]"
+        />
+      ),
+      target: () => ref0.current,
+    },
     {
       title: "Download Mindmap",
       description: "Download your mindmap as an image.",
@@ -279,6 +302,70 @@ const MindmapOpener = () => {
     },
   ];
 
+  // Live Pointer
+  const colors = [
+    "var(--sky-500)",
+    "var(--neutral-500)",
+    "var(--teal-500)",
+    "var(--green-500)",
+    "var(--blue-500)",
+    "var(--red-500)",
+    "var(--yellow-500)",
+  ];
+
+  const secColor = colors[Math.floor(Math.random() * colors.length)];
+
+  useEffect(() => {
+    const socket = io("https://genup-nexus-server-v2.onrender.com/", {
+      transports: ["websocket"],
+    }); // Replace with your server URL
+    socketRef.current = socket;
+    socket.on("remotePointerMove", (data) => {
+      // Update remote pointers based on data received from the server
+      const currentUrl = window.location.href;
+      const segments = currentUrl.split("/");
+      const mindMapId = segments[segments.length - 1];
+      if (data.id !== user?.result?.userId && data.mapId === mindMapId) {
+        setRemotePointers((prevPointers) => ({
+          ...prevPointers,
+          [data.id]: {
+            x: data.x,
+            y: data.y,
+            name: data.name,
+            color: data.color,
+            mapId: data.mapId,
+            dp: data.dp,
+          },
+        }));
+      }
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+
+  const handlePointerMove = (event) => {
+    const { clientX, clientY } = event;
+
+    // const coll = colors[Math.floor(Math.random() * colors.length)]
+    // console.log(coll)
+    const currentUrl = window.location.href;
+    const segments = currentUrl.split("/");
+    const id = segments[segments.length - 1];
+
+    const pointerData = {
+      id: user?.result?.userId, // Use unique identifier for each client
+      x: clientX,
+      y: clientY,
+      name: user?.result?.name,
+      color: secColor,
+      mapId: id,
+      dp: user?.result?.picture,
+    };
+    socketRef.current.emit("pointerMove", pointerData);
+  };
+
   return (
     <div>
       <Layout>
@@ -291,7 +378,7 @@ const MindmapOpener = () => {
           />
         ) : null}
 
-        <div className="flex justify-between z-50 relative">
+        <div className="flex justify-between mt-5 z-50 relative">
           <div className="m-5 text-2xl">
             Mindmap{" "}
             {initialNodes.length > 1 && (
@@ -299,7 +386,7 @@ const MindmapOpener = () => {
             )}
           </div>
           {initialNodes.length > 1 && (
-            <div className="flex gap-2">
+            <div className="flex flex-wrap md:gap-2">
               <Tooltip content="How this page works?">
                 <Button
                   isIconOnly
@@ -309,6 +396,18 @@ const MindmapOpener = () => {
                   variant="shadow"
                 >
                   <TfiInfoAlt />
+                </Button>
+              </Tooltip>
+              <Tooltip content="Mindmap Remote Activity">
+                <Button
+                  isIconOnly
+                  onClick={() => setRemoteActivity((prevState) => !prevState)}
+                  className="flex m-2"
+                  color="success"
+                  variant="shadow"
+                  ref={ref0}
+                >
+                  {!remoteActivity ? <LuMousePointer2 /> : <TbPointerStar />}
                 </Button>
               </Tooltip>
               <Tooltip content="Download">
@@ -370,7 +469,12 @@ const MindmapOpener = () => {
         </div>
         
         {initialNodes.length > 1 && (
-          <div style={{ width: "100dvw", height: "100dvh", position: 'absolute', top: 0 }} ref={ref7}>
+          <div
+            // style={{ width: "100vw", height: "81vh" }}
+            className="w-full h-[68vh] md:h-[80vh]"
+            ref={ref7}
+            onMouseMove={handlePointerMove}
+          >
             <ReactFlow
               nodes={nodes}
               edges={edges}
@@ -430,6 +534,24 @@ const MindmapOpener = () => {
         )}
 
         <Tour open={open} onClose={() => setOpen(false)} steps={steps} />
+        {remoteActivity &&
+          Object.keys(remotePointers).map((pointerId) => (
+            <div
+              key={pointerId}
+              style={{
+                position: "absolute",
+                left: remotePointers[pointerId].x,
+                top: remotePointers[pointerId].y,
+              }}
+            >
+              {/* Render remote pointer */}
+              <FollowPointer
+                title={remotePointers[pointerId].name}
+                colorr={remotePointers[pointerId].color}
+                pic={remotePointers[pointerId].dp}
+              />
+            </div>
+          ))}
       </Layout>
     </div>
   );

@@ -3,6 +3,7 @@ import Loader from "../components/Loader";
 import Validator from "../contexts/Validator";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "../axios.js";
+import axiosvercel from "../axios-vercel.js";
 import { useGlobalContext } from "../contexts/GlobalContext";
 
 import { useTheme } from "next-themes";
@@ -51,7 +52,7 @@ const Register = () => {
       setIsLoading(true);
 
       try {
-        const res = await axios.post("/user/signup", form);
+        const res = await axiosvercel.post("/user/signup", form);
         const result = res.data;
         localStorage.setItem("user", JSON.stringify({ ...result }));
         setUser(JSON.parse(localStorage.getItem("user")));
@@ -74,26 +75,28 @@ const Register = () => {
     e.preventDefault();
     setIsLoading(true);
 
-    window.location.href = "https://sidd-template-react-server.vercel.app/auth/google";
+    window.location.href =
+      "https://gen-up-nexus-server-v2.vercel.app/auth/google?sourceLink=" +
+      encodeURIComponent(window.location.href);
   };
-    //Google Auth Redirect
-    const queryParams = new URLSearchParams(window.location.search);
-    const token = queryParams.get("token");
-    const userResult = queryParams.get("result");
-    // console.log(token, userResult);
-    if (token && userResult) {
-      useEffect(() => {
-        setIsLoading(true);
-        const userG = {};
-        userG.result = JSON.parse(userResult); // Parse the userResult JSON string into an object
-        userG.token = token;
-        localStorage.setItem("user", JSON.stringify(userG));
-        setUser(JSON.parse(localStorage.getItem("user")));
-        
-        setIsLoading(false);
-        navigateTo("/user");
-      }, []);
-    }
+  //Google Auth Redirect
+  const queryParams = new URLSearchParams(window.location.search);
+  const token = queryParams.get("token");
+  const userResult = queryParams.get("result");
+  // console.log(token, userResult);
+  if (token && userResult) {
+    useEffect(() => {
+      setIsLoading(true);
+      const userG = {};
+      userG.result = JSON.parse(userResult); // Parse the userResult JSON string into an object
+      userG.token = token;
+      localStorage.setItem("user", JSON.stringify(userG));
+      setUser(JSON.parse(localStorage.getItem("user")));
+
+      setIsLoading(false);
+      navigateTo("/user");
+    }, []);
+  }
 
   return (
     <div className="">
@@ -194,7 +197,7 @@ const Register = () => {
         variant="shadow"
         isLoading={isLoading}
         startContent={<ImGoogle />}
-        disabled
+        // disabled
       >
         Sign in with Google
       </Button>

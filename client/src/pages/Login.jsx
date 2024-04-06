@@ -3,6 +3,7 @@ import Loader from "../components/Loader";
 import Validator from "../contexts/Validator";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "../axios.js";
+import axiosvercel from "../axios-vercel.js";
 import { useGlobalContext } from "../contexts/GlobalContext";
 
 import { useTheme } from "next-themes";
@@ -50,7 +51,7 @@ const Login = () => {
       setIsLoading(true);
 
       try {
-        const res = await axios.post("/user/signin", form);
+        const res = await axiosvercel.post("/user/signin", form);
         const result = res.data;
         localStorage.setItem("user", JSON.stringify({ ...result }));
         setUser(JSON.parse(localStorage.getItem("user")));
@@ -62,7 +63,9 @@ const Login = () => {
         setServerMsg(
           error.response.data.message || "Server error please try again later"
         );
-        toast.error(error.response.data.message || "Server error please try again later");
+        toast.error(
+          error.response.data.message || "Server error please try again later"
+        );
       }
     } else {
       setErrors(validationErrors);
@@ -74,7 +77,8 @@ const Login = () => {
     setIsLoading(true);
 
     window.location.href =
-      "https://sidd-template-react-server.vercel.app/auth/google";
+      "https://gen-up-nexus-server-v2.vercel.app/auth/google?sourceLink=" +
+      encodeURIComponent(window.location.href);
   };
   //Google Auth Redirect
   const queryParams = new URLSearchParams(window.location.search);
@@ -166,7 +170,7 @@ const Login = () => {
           variant="shadow"
           isLoading={isLoading}
           startContent={<ImGoogle />}
-          disabled
+          // disabled
         >
           Sign in with Google
         </Button>
