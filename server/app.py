@@ -11,7 +11,7 @@ from flask_jwt_extended import JWTManager, create_access_token
 from middleware.authUser import auth_user
 from datetime import timedelta 
 from controllers.demo import get_initial_data
-from controllers.mindmap import saveMindmap, getMindmap, deleteMindmap, getMindmapByid, saveMindmapById
+from controllers.mindmap import saveMindmap, getMindmap, deleteMindmap, getMindmapByid, saveMindmapById, saveGeneratedData
 import json
 from bson import ObjectId
 from dotenv import load_dotenv
@@ -163,6 +163,7 @@ def tree():
         # return temp 
 
 @app.route('/tree/demo', methods=["POST"])
+@auth_user
 def treeDemo():
     if request.method == 'POST':
         data = request.get_json()
@@ -222,28 +223,36 @@ Topic is: ''' + query)
         # return temp 
 
 @app.route('/mindmap/generate/data', methods=["POST"])
+# @auth_user
 def generateData():
     if request.method == 'POST':
         data = request.get_json()
         topic = data.get('topic')
         description = data.get('description')
         category = data.get('category')
-        print(topic)
-        print(description)
-        print(category)
-        response = model.generate_content('''I will provide you a topic. You need to generate its detailed explanation also provide its links to the related topics and subtopics and respond with html format with tailiwindcss styling, wrapped under a single<div></div>.
-                            
-        - keep the background tranparent.
-        - Title should be in text-2xl font-bold.
-        - Subtitle should be in text-lg font-semibold.
-        - make sure the content is well structured and easy to read.
-        - make sure the link text style is in text-aqua.    
-        Topic: ''' + topic)                                 
+        nodeId = data.get('nodeId')
+        mapId = data.get('mapId')
+        # userId = request.userId
+
+        # try: 
+        #     mindMap = savedMindmap.find_one({"_id": ObjectId(mapId)})
+            
+        #     if mindMap["userId"] != userId:
+        #         return jsonify({"message": "Unauthorized"}), 401
+            
+        # except Exception as e:
+        #     print(e) 
+        #     return jsonify({"error": "An error occurred"}), 500
+
+        response = model.generate_content('''I will provide you a topic & related description. You need to generate its detailed explanation, also provide its links to the related topics and respond in markdown. 
+        - make sure the content is well structured and easy to read.  
+        Topic: ''' + topic + '\n\n' + '''Description: ''' + description)                                 
         print(response.text)
         json_data = response.text
-        modified_json_data = json_data[8:-3]
 
-        return jsonify({'success': True, 'data': modified_json_data})                                  
+        saveGeneratedData(mapId, nodeId, json_data, savedMindmap)
+
+        return jsonify({'success': True, 'data': json_data})                                  
 
 def res(user_id):
     avg_text = 0        
@@ -271,7 +280,6 @@ def res(user_id):
     user_chats[user_id]['test_results'] = {'avg_text': avg_text, 'avg_code': avg_code}
 
     return True
-
 
 @app.route('/interview', methods=["POST", "GET"])
 def interview():

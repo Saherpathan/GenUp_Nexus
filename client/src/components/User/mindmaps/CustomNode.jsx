@@ -16,29 +16,54 @@ import axios from "../../../axios.js";
 import { toast } from "react-hot-toast";
 import Loader from "../../../components/Loader";
 import "./overview.css";
+import Markdown from "https://esm.sh/react-markdown@9";
+import { RiAiGenerate } from "react-icons/ri";
+import { HiSpeakerWave } from "react-icons/hi2";
+import { useGlobalContext } from "../../../contexts/GlobalContext";
+import TextToSpeech from "./TextToSpeech.jsx";
 
-function CustomNode({ data }) {
+function CustomNode({ id, data }) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [isLoaded, setIsLoaded] = useState(false);
   const [genData, setGenData] = useState(null);
+  const { user } = useGlobalContext();
+
+  const handleClick = () => {
+    onOpen();
+    if (data?.GenData) {
+      console.log("GenData is present");
+      setGenData(data.GenData);
+    } else {
+      generateData();
+    }
+  };
 
   const generateData = async () => {
-    onOpen();
     try {
+      setIsLoaded(true);
+      const currentUrl = window.location.href;
+      const segments = currentUrl.split("/");
+      const mapid = segments[segments.length - 1];
+
       const initialData = {
         topic: data?.label,
         description: data?.description,
         category: data?.category,
+        nodeId: id,
+        mapId: mapid,
       };
       const res = await axios.post("/mindmap/generate/data", initialData);
       console.log(res);
 
       setGenData(res.data.data);
+      data.GenData = res.data.data;
       // console.log(res.data.data);
-      document.getElementById("data").innerHTML = res.data.data;
-      setIsLoaded(true);
+      // document.getElementById("data").innerHTML = res.data.data;
+      setIsLoaded(false);
+      // toast("Make sure to save this info 💾")
     } catch (err) {
       console.error(err);
+      setIsLoaded(false);
       toast.error("Server error please try again later");
     }
   };
@@ -50,7 +75,7 @@ function CustomNode({ data }) {
           <div className="cloud gradient">
             <div className="text-yellow-300 ">{data?.icon}</div>
           </div>
-          <div onClick={generateData} className="wrapper gradient">
+          <div onClick={handleClick} className="wrapper gradient">
             <div className="inner">
               <div className="body">
                 <div>
@@ -79,7 +104,7 @@ function CustomNode({ data }) {
               </ModalHeader>
               <ModalBody>
                 {data?.description}
-                {!genData && (
+                {isLoaded && (
                   <Loader
                     json="https://lottie.host/9e62675c-18a1-4136-8cb1-6628107f253f/SgGe48PPix.json"
                     width="200px"
@@ -89,17 +114,27 @@ function CustomNode({ data }) {
 
                 {/* {genData && ( */}
                 <ScrollShadow className="w-full h-[400px]">
-                  <div className="" id="data"></div>
+                  <Markdown>{genData}</Markdown>
                 </ScrollShadow>
                 {/* )} */}
               </ModalBody>
               <ModalFooter>
-                {/* <Button color="danger" variant="light" onPress={onClose}>
-                  Close
-                </Button>
-                <Button color="primary" onPress={onClose}>
-                  Action
-                </Button> */}
+                {genData && (
+                  <>
+                    <TextToSpeech text={genData} />
+                    <Tooltip content="Regenerate Info ✨">
+                      <Button
+                        // isIconOnly
+                        onClick={generateData}
+                        className=""
+                        color="primary"
+                        variant="faded"
+                      >
+                        Regenerate Info <RiAiGenerate />
+                      </Button>
+                    </Tooltip>
+                  </>
+                )}
               </ModalFooter>
             </>
           )}

@@ -45,6 +45,26 @@ def saveMindmapById(data, userId, savedMindmap):
         print(e) 
         return jsonify({"error": "An error occurred"}), 500
 
+def saveGeneratedData(mapId, nodeId, json_data, savedMindmap):
+    try:
+        mindMap = savedMindmap.find_one({"_id": ObjectId(mapId)})
+
+        # if mindMap["userId"] != userId:
+        #     return jsonify({"message": "Unauthorized"}), 401
+        
+        initialNode = mindMap["data"]["initialNodes"]
+
+        for node in initialNode:
+            if node["id"] == nodeId:
+                node["data"]["GenData"] = json_data
+
+        # print(initialNode);
+        savedMindmap.update_one({"_id": ObjectId(mapId)}, {"$set": {"data.initialNodes": initialNode}})
+        return jsonify({"message": "Data Added!"}), 200
+
+    except Exception as e:
+        print(e) 
+        return jsonify({"error": "An error occurred"}), 500
 
 
 def getMindmap(userId, savedMindmap):

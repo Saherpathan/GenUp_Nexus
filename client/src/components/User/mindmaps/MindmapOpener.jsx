@@ -32,6 +32,8 @@ import { TfiInfoAlt } from "react-icons/tfi";
 import { useTheme } from "next-themes";
 import { Tour } from "antd";
 import io from "socket.io-client";
+import { LuMousePointer2 } from "react-icons/lu";
+import { TbPointerStar } from "react-icons/tb";
 
 const imageWidth = 1024;
 const imageHeight = 768;
@@ -69,6 +71,7 @@ const MindmapOpener = () => {
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const socketRef = useRef(null);
   const [remotePointers, setRemotePointers] = useState({});
+  const [remoteActivity, setRemoteActivity] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -211,6 +214,7 @@ const MindmapOpener = () => {
   };
 
   // Tour
+  const ref0 = useRef(null);
   const ref1 = useRef(null);
   const ref2 = useRef(null);
   const ref3 = useRef(null);
@@ -218,8 +222,22 @@ const MindmapOpener = () => {
   const ref5 = useRef(null);
   const ref6 = useRef(null);
   const ref7 = useRef(null);
+
   const [open, setOpen] = useState(false);
+
   const steps = [
+    {
+      title: "Mindmap Remote Activity",
+      description: "See others users activity on this mindmap",
+      cover: (
+        <img
+          alt="tour.png"
+          src="https://kit8.net/wp-content/uploads/2020/12/Remote_collaboration@2x.png"
+          className="h-[300px]"
+        />
+      ),
+      target: () => ref0.current,
+    },
     {
       title: "Download Mindmap",
       description: "Download your mindmap as an image.",
@@ -359,6 +377,18 @@ const MindmapOpener = () => {
                   <TfiInfoAlt />
                 </Button>
               </Tooltip>
+              <Tooltip content="Mindmap Remote Activity">
+                <Button
+                  isIconOnly
+                  onClick={() => setRemoteActivity((prevState) => !prevState)}
+                  className="flex m-2"
+                  color="success"
+                  variant="shadow"
+                  ref={ref0}
+                >
+                  {!remoteActivity ? <LuMousePointer2 /> : <TbPointerStar />}
+                </Button>
+              </Tooltip>
               <Tooltip content="Download">
                 <Button
                   isIconOnly
@@ -483,23 +513,24 @@ const MindmapOpener = () => {
         )}
 
         <Tour open={open} onClose={() => setOpen(false)} steps={steps} />
-        {Object.keys(remotePointers).map((pointerId) => (
-          <div
-            key={pointerId}
-            style={{
-              position: "absolute",
-              left: remotePointers[pointerId].x,
-              top: remotePointers[pointerId].y,
-            }}
-          >
-            {/* Render remote pointer */}
-            <FollowPointer
-              title={remotePointers[pointerId].name}
-              colorr={remotePointers[pointerId].color}
-              pic={remotePointers[pointerId].dp}
-            />
-          </div>
-        ))}
+        {remoteActivity &&
+          Object.keys(remotePointers).map((pointerId) => (
+            <div
+              key={pointerId}
+              style={{
+                position: "absolute",
+                left: remotePointers[pointerId].x,
+                top: remotePointers[pointerId].y,
+              }}
+            >
+              {/* Render remote pointer */}
+              <FollowPointer
+                title={remotePointers[pointerId].name}
+                colorr={remotePointers[pointerId].color}
+                pic={remotePointers[pointerId].dp}
+              />
+            </div>
+          ))}
       </Layout>
     </div>
   );
