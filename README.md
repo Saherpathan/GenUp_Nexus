@@ -1,7 +1,10 @@
 <br/>
 <p align="center">
   <a href="https://github.com/Saherpathan/GenUp_Nexus">
-    <img src="logo.png" alt="Logo" width="80" height="80">
+    <img src="https://github.com/Saherpathan/GenUp_Nexus/assets/80739877/c1034295-10cc-4426-8c3e-48950c7d1b15" alt="Logo" width="300" height="300">
+<!--     ![GenUp_logo](https://github.com/Saherpathan/GenUp_Nexus/assets/80739877/69517749-8898-4877-95ac-7b75b78572ec) -->
+<!-- ![INDUSTRY PROJECT](https://github.com/Saherpathan/GenUp_Nexus/assets/80739877/c1034295-10cc-4426-8c3e-48950c7d1b15)
+ -->
   </a>
 
   <h3 align="center">GenUp Nexus</h3>
