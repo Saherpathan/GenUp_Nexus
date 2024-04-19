@@ -18,6 +18,7 @@ import { Link } from "react-router-dom";
 import { useGlobalContext } from "../../../contexts/GlobalContext";
 import SpeechRecognition, { useSpeechRecognition } from "react-speech-recognition";
 import { FaMicrophone } from "react-icons/fa";
+import {Breadcrumbs, BreadcrumbItem} from "@nextui-org/react";
 
 const Interview = () => {
     const { user } = useGlobalContext();
@@ -251,7 +252,15 @@ const Interview = () => {
                 />
             ) : null}
             <div className="flex justify-between m-5 text-2xl text-center">
-                Mock Interview
+                <div className='flex flex-row gap-10 align-middle items-center'>
+                    <p className='font-bold'>Mock Interview</p>
+                    <Breadcrumbs>
+                        <BreadcrumbItem>{companyName}</BreadcrumbItem>
+                        <BreadcrumbItem>{position}</BreadcrumbItem>
+                        <BreadcrumbItem>{round}</BreadcrumbItem>
+                        <BreadcrumbItem>{difficultyLevel}</BreadcrumbItem>
+                    </Breadcrumbs>
+                </div>
                 <Switch
                 defaultSelected
                 size="lg"
@@ -378,6 +387,24 @@ const Interview = () => {
                                         <Button size='sm' onClick={() => {setReveal(false);}} startContent={<Icon icon="ph:arrow-left-bold" style={{color:`${theme==='light' ? `black` : `light`}`, fontSize:'16px'}} className="flex-shrink-0 text-2xl pointer-events-none text-default-400" />} variant='light'>Back</Button>
                                     </div>
                                     <Select
+                                        value={companyName}
+                                        onChange={(e) => setCompanyName(e.target.value)}
+                                        endContent={
+                                            <Icon icon="mingcute:suitcase-fill" className="flex-shrink-0 text-2xl pointer-events-none text-default-400" />
+                                            
+                                        }
+                                        label="Company"
+                                        placeholder="Select your Company"
+                                        labelPlacement='outside'
+                                        variant="bordered"
+                                    >
+                                        {companyNames.map((companyNames) => (
+                                            <SelectItem key={companyNames.value} value={companyNames.value}>
+                                            {companyNames.label}
+                                            </SelectItem>
+                                        ))}
+                                    </Select>
+                                    <Select
                                         value={position}
                                         onChange={(e) => setPosition(e.target.value)}
                                         autoFocus
@@ -428,24 +455,6 @@ const Interview = () => {
                                         {difficultyLevelI.map((difficultyLevelI) => (
                                             <SelectItem key={difficultyLevelI.value} value={difficultyLevelI.value}>
                                             {difficultyLevelI.label}
-                                            </SelectItem>
-                                        ))}
-                                    </Select>
-                                    <Select
-                                        value={companyName}
-                                        onChange={(e) => setCompanyName(e.target.value)}
-                                        endContent={
-                                            <Icon icon="mingcute:suitcase-fill" className="flex-shrink-0 text-2xl pointer-events-none text-default-400" />
-                                            
-                                        }
-                                        label="Company"
-                                        placeholder="Select your Company"
-                                        labelPlacement='outside'
-                                        variant="bordered"
-                                    >
-                                        {companyNames.map((companyNames) => (
-                                            <SelectItem key={companyNames.value} value={companyNames.value}>
-                                            {companyNames.label}
                                             </SelectItem>
                                         ))}
                                     </Select>

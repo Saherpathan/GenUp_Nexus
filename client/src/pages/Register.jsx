@@ -5,7 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "../axios.js";
 import axiosvercel from "../axios-vercel.js";
 import { useGlobalContext } from "../contexts/GlobalContext";
-
+import {Card, CardHeader, CardBody, CardFooter} from "@nextui-org/react";
 import { useTheme } from "next-themes";
 import { Switch, Input, Button } from "@nextui-org/react";
 import { MoonIcon } from "../components/MoonIcon";
@@ -13,6 +13,11 @@ import { SunIcon } from "../components/SunIcon";
 import { ImGoogle } from "react-icons/im";
 import { toast } from "react-hot-toast";
 import Background from "../components/Background/Background.jsx";
+import { Meteors } from "../components/Meteors/Meteors.jsx";
+import { MailIcon } from "./MailIcon.jsx";
+import { EyeSlashFilledIcon } from "./EyeSlashFilledIcon.jsx";
+import { EyeFilledIcon } from "./EyeFilledIcon.jsx";
+import { Icon } from "@iconify/react";
 
 const initialForm = {
   name: "",
@@ -96,115 +101,43 @@ const Register = () => {
       setIsLoading(false);
       navigateTo("/user");
     }, []);
-  }
+  };
+
+  const [isVisible, setIsVisible] = useState(false);
+
+  const toggleVisibility = () => setIsVisible(!isVisible);
 
   return (
-    <div className="">
-      <Background />
+    <Card className="h-full rounded-none">
+      <Meteors />
       {isLoading ? <Loader width="500px" height="250px" /> : null}
-      <div className="flex justify-between m-5 text-2xl text-center">
-        Register
-        <Switch
-          defaultSelected
-          size="lg"
-          color="primary"
-          thumbIcon={({ isSelected, className }) =>
-            !isSelected ? (
-              <SunIcon className={className} />
-            ) : (
-              <MoonIcon className={className} />
-            )
-          }
-          onClick={() => {
-            if (theme === "light") {
-              setTheme("dark");
-            } else if (theme === "dark") {
-              setTheme("light");
-            }
-          }}
-        />
-      </div>
-      <form onSubmit={handleSumbmit}>
-        <Input
-          type="name"
-          label="Name"
-          name="name"
-          id="name"
-          value={form.name}
-          onChange={handleChange}
-          isInvalid={errors.name ? true : false}
-          isRequired
-          className="m-2 w-[300px]"
-        />
-        {errors.name && <div className="m-2 text-red-500">{errors.name}</div>}
-        <Input
-          type="email"
-          label="Email"
-          name="email"
-          id="email"
-          value={form.email}
-          onChange={handleChange}
-          isInvalid={errors.email ? true : false}
-          isRequired
-          className="m-2 w-[300px]"
-        />
-        {errors.email && <div className="m-2 text-red-500">{errors.email}</div>}
-        <Input
-          type="password"
-          label="Password"
-          name="password"
-          id="password"
-          value={form.password}
-          onChange={handleChange}
-          isInvalid={errors.password ? true : false}
-          isRequired
-          className="m-2 w-[300px]"
-        />
-        {errors.password && (
-          <div className="p-1 m-2 text-red-500">{errors.password}</div>
-        )}
-        <Input
-          type="password"
-          label="Confirm Password"
-          name="confirmPassword"
-          id="confirmPassword"
-          value={form.confirmPassword}
-          onChange={handleChange}
-          isInvalid={errors.confirmPassword ? true : false}
-          isRequired
-          className="m-2 w-[300px]"
-        />
-        {errors.confirmPassword && (
-          <div className="p-1 m-2 text-red-500">{errors.confirmPassword}</div>
-        )}
-        <Button
-          type="submit"
-          className="flex m-2 "
-          color="primary"
-          variant="shadow"
-          isLoading={isLoading}
-        >
-          Sign up
-        </Button>
-
-        {serverMsg && <div className="p-1 m-2 text-red-500">{serverMsg}</div>}
-      </form>
-
-      <Button
-        onClick={googleSignin}
-        className="flex m-2"
-        color="primary"
-        variant="shadow"
-        isLoading={isLoading}
-        startContent={<ImGoogle />}
-        // disabled
-      >
-        Sign in with Google
-      </Button>
-      <Link to="/login" className="p-2 m-2 text-primary">
-        Login ?
-      </Link>
-    </div>
+      <CardBody className="flex justify-center items-center align-middle">
+        <Card className="w-[400px] h-full backdrop-blur-[3px] bg-transparent">
+          <CardBody>
+            <p className="text-[32px] font-extrabold text-center w-full">Register</p><br />
+            <form onSubmit={handleSumbmit} className="flex flex-col justify-center align-middle items-center">
+              <Input placeholder="Enter your name..." color="primary" labelPlacement="outside" startContent={<Icon icon={'wpf:name'} fontSize={'24px'} />} type="name" label="Name" name="name" id="name" value={form.name} onChange={handleChange} isInvalid={errors.name ? true : false} isRequired className="m-2 w-[300px]" />
+              {errors.name && <div className="m-2 text-red-500 text-[12px]">{errors.name}</div>}
+              <Input placeholder="Enter your email..." color="primary" labelPlacement="outside" startContent={<MailIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />} type="email" label="Email" name="email" id="email" value={form.email} onChange={handleChange} isInvalid={errors.email ? true : false} isRequired className="m-2 w-[300px]" />
+              {errors.email && <div className="m-2 text-red-500 text-[12px]">{errors.email}</div>}
+              <Input placeholder="Set new password..." color="primary" labelPlacement="outside" startContent={ <button className="focus:outline-none" type="button" onClick={toggleVisibility}> {isVisible ? ( <EyeSlashFilledIcon className="text-2xl text-default-400 pointer-events-none" /> ) : ( <EyeFilledIcon className="text-2xl text-default-400 pointer-events-none" /> )} </button> } type="password" label="Password" name="password" id="password" value={form.password} onChange={handleChange} isInvalid={errors.password ? true : false} isRequired className="m-2 w-[300px]" />
+              {errors.password && ( <div className="p-1 m-2 text-red-500 text-[12px]">{errors.password}</div> )}
+              <Input placeholder="Repeat password..." color="primary" labelPlacement="outside" startContent={ <EyeFilledIcon className="text-2xl text-default-400 pointer-events-none" /> } type="password" label="Confirm Password" name="confirmPassword" id="confirmPassword" value={form.confirmPassword} onChange={handleChange} isInvalid={errors.confirmPassword ? true : false} isRequired className="m-2 w-[300px]" />
+              {errors.confirmPassword && ( <div className="p-1 m-2 text-red-500 text-[12px]">{errors.confirmPassword}</div> )}<br />
+              <Button type="submit" className="flex m-2 " color="primary" variant="shadow" isLoading={isLoading} >
+                Sign up
+              </Button>
+              {serverMsg && <div className="p-1 m-2 text-red-500 text-[12px]">{serverMsg}</div>}
+            </form>
+          </CardBody>
+          <CardFooter className="flex flex-col justify-center align-middle items-center">
+            <Button onClick={googleSignin} className="flex m-2" color="secondary" variant="shadow" isLoading={isLoading} startContent={<ImGoogle />} >
+              Sign in with Google
+            </Button>
+          </CardFooter>
+        </Card>
+      </CardBody>
+    </Card>
   );
 };
 

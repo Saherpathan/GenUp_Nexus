@@ -17,6 +17,7 @@
     -webkit-text-fill-color: transparent;
 }
 
+@media screen and (min-width: 480px) {
 *::-webkit-scrollbar {
     height: 10px;
     width: 10px;
@@ -46,3 +47,4 @@
   *::-webkit-scrollbar-thumb:active {
     background-color: #C7C7C7;
   }
+}

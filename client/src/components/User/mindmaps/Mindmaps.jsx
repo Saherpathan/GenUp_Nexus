@@ -35,9 +35,13 @@ import { toPng } from "html-to-image";
 import CustomNode from "./CustomNode";
 import Background2 from "../../Background/Background";
 import "./overview.css";
-
+import { IoOpenOutline } from 'react-icons/io5';
 import { Tour } from "antd";
 import { TfiInfoAlt } from "react-icons/tfi";
+import { Link } from "react-router-dom";
+import { Icon } from "@iconify/react";
+import BackgroundGradient from "../../CardBackgroundGradient/CardBackgroundGradient.jsx";
+import { HeroHighlight } from "../../HeroHighlight/HeroHighlight.jsx";
 
 const initialForm = {
   query: "",
@@ -76,11 +80,13 @@ const Mindmaps = () => {
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [objectId, setObjectId] = useState(null);
   const [isDisabledSave, setIsDisabledSave] = useState(false);
+  const [mindmapHistory, setMindmapHistory] = useState(null);
+  const [displayHistory, setDisplayHistory] = useState(false);
 
   useEffect(() => {
     setNodes(initialNodes);
     setEdges(initialEdges);
-    console.log(nodes);
+    fetchHistory();
   }, [initialNodes]);
 
   const handleChange = (e) => {
@@ -111,24 +117,9 @@ const Mindmaps = () => {
       setIsDisabledSave(false);
       setIsLoading(false);
       toast.success("Mindmap Created Successfully!");
+      setMoveDisplay(true);
       const timer = setTimeout(() => {
-        if (theme === 'dark') {
-          document.getElementsByClassName("react-flow__attribution")[0].remove();
-          document.getElementsByClassName('react-flow__minimap')[0].style.borderRadius = '21px';
-          document.getElementsByClassName('react-flow__minimap')[0].childNodes[0].style.borderRadius = '12px';
-          document.getElementsByClassName('react-flow__minimap')[0].childNodes[0].style.background = '#1c1c1c';
-          for (var i = 0 ; i <= 10; i++) {
-            document.getElementsByClassName('react-flow__minimap-node')[i].style.fill = 'purple';
-          }
-        }
-        else {
-          document.getElementsByClassName("react-flow__attribution")[0].remove();
-          document.getElementsByClassName('react-flow__minimap')[0].style.borderRadius = '21px';
-          document.getElementsByClassName('react-flow__minimap')[0].childNodes[0].style.borderRadius = '12px';
-          for (var i = 0 ; i <= 10; i++) {
-            document.getElementsByClassName('react-flow__minimap-node')[i].style.fill = 'purple';
-          }
-        }
+        document.getElementsByClassName("react-flow__attribution")[0].remove();
       }, 500);
       return () => clearTimeout(timer);
     } catch (error) {
@@ -286,9 +277,22 @@ const Mindmaps = () => {
     },
   ];
 
+  const fetchHistory = async () => {
+    try {
+      const res = await axios.get("/mindmap/history/get");
+      setMindmapHistory(res.data.data);
+      console.log(res.data.data);
+    } catch (err) {
+      console.error(err);
+      toast.error( "Server error please try again later");
+    }
+  };
+
+  const [moveDisplay, setMoveDisplay] = useState(false);
+  
   return (
     <div>
-      <Background2 />
+      {/* <Background2 /> */}
       <Layout>
         {isLoading ? (
           <Loader
@@ -297,83 +301,77 @@ const Mindmaps = () => {
             height="250px"
           />
         ) : null}
-        <div ref={ref8} className="absolute w-[350px] h-[170px]"></div>
-
-        <div className="flex justify-between z-50 relative">
-          <div className="flex flex-col justify-between align-middle items-center">
-            <div className="flex justify-between m-5 text-2xl text-center">
-              Mindmaps
-            </div>
-            <Input
-              type="text"
-              label="What you want to learn ?"
-              name="query"
-              id="query"
-              value={form.query}
-              onChange={handleChange}
-              isRequired
-              className="m-3 w-[300px]"
-            />
-            <Button
-              onClick={handleSumbmit}
-              className="flex mx-3 my-2"
-              color="primary"
-              variant="shadow"
-              isLoading={isLoading}
-              isDisabled={form.query === ""}
-            >
-              Get
-            </Button>
-          </div>
+        <div ref={ref8} className="absolute w-[350px] h-[200px]"></div>
+        
+        <div className="flex flex-col gap-3 pl-2">
+          {moveDisplay ? (
+            <Tooltip color="primary" content={'Expand'} placement="right">
+              <Button className="z-20 relative" isIconOnly color="primary" variant="shadow" onClick={() => {setMoveDisplay(false);}}>
+                <Icon icon={'ic:round-arrow-right'} fontSize={'32px'} />
+              </Button>
+            </Tooltip>
+          ) : (
+            <>
+              <Card className="w-[300px] h-auto pb-5 z-20 relative">
+                <CardBody className="gap-3">
+                  <div className="flex justify-between text-2xl font-bold">
+                    Mindmaps
+                    <Tooltip color="primary" content={'Collapse'} placement="right">
+                      <Button size="sm" isIconOnly color="primary" variant="shadow" onClick={() => {setMoveDisplay(true);}}>
+                        <Icon icon={'ic:round-arrow-left'} fontSize={'32px'} />
+                      </Button>
+                    </Tooltip>
+                  </div>
+                  <Input type="text" label="What you want to learn ?" name="query" id="query" value={form.query} onChange={handleChange} isRequired />
+                  <Button onClick={handleSumbmit} className="flex mx-3 my-2" color="primary" variant="shadow" isLoading={isLoading} isDisabled={form.query === ""} >
+                    Generate
+                  </Button>
+                </CardBody>
+              </Card>
+              <Card className="w-[300px] h-auto pb-5 z-20 relative">
+                <CardBody className="flex flex-col gap-3">
+                  <div className="font-bold">Previous Mindmaps</div>
+                  {mindmapHistory?.map((object, index) => (
+                    <Card className="p-2">
+                    <div className="flex flex-row justify-between align-middle items-center">
+                      <div className="flex gap-3">
+                        <p>{object.data.initialNodes[0].data.icon}</p>
+                        <p className="font-bold">{object.data.initialNodes[0].data.label}</p>
+                      </div>
+                      <Link as="button" translateZ={20} target='blank' to={`/mindmap/save/${object._id}`} state={object}>
+                        <Button isIconOnly color="warning" variant="shadow">
+                          <IoOpenOutline />
+                        </Button>
+                      </Link>
+                    </div>
+                  </Card>
+                  ))}
+                  <Link className="flex text-sm flex-row gap-2 align-middle items-center" to={'/mindmap/personal'}>See all Mindmaps <Icon icon={'ph:arrow-right-bold'} fontSize={'16px'} /></Link>
+                </CardBody>
+              </Card>
+            </>
+          )}
+        </div>
+        <div className="flex justify-between absolute right-0 top-[75px] z-20">
           {initialNodes.length > 1 && (
             <div className="flex md:gap-2">
               <Tooltip content="How this page works?">
-                <Button
-                  isIconOnly
-                  onClick={() => setOpen(true)}
-                  className="flex m-2"
-                  color="default"
-                  variant="shadow"
-                >
+                <Button isIconOnly onClick={() => setOpen(true)} className="flex m-2" color="default" variant="shadow" >
                   <TfiInfoAlt />
                 </Button>
               </Tooltip>
               <Tooltip content="Download">
-                <Button
-                  isIconOnly
-                  onClick={handleDownload}
-                  className="flex m-2"
-                  color="warning"
-                  variant="shadow"
-                  isLoading={isDownLoad}
-                  ref={ref1}
-                >
+                <Button isIconOnly onClick={handleDownload} className="flex m-2" color="warning" variant="shadow" isLoading={isDownLoad} ref={ref1} >
                   <FiDownload />
                 </Button>
               </Tooltip>
               <Tooltip content={"Save"}>
-                <Button
-                  isIconOnly
-                  onClick={handleSave}
-                  className="flex m-2"
-                  color="secondary"
-                  variant="shadow"
-                  isLoading={isSaveLoad}
-                  ref={ref2}
-                >
+                <Button isIconOnly onClick={handleSave} className="flex m-2" color="secondary" variant="shadow" isLoading={isSaveLoad} ref={ref2} >
                   <IoSaveOutline />
                 </Button>
               </Tooltip>
               <Tooltip content="Share">
-                <Button
-                  isIconOnly
-                  onClick={handleShare}
-                  className="flex m-2"
-                  color="primary"
-                  variant="shadow"
-                  isLoading={isShareLoad}
-                  ref={ref3}
-                >
+                <Button isIconOnly onClick={handleShare} className="flex m-2" color="primary" variant="shadow" isLoading={isShareLoad} ref={ref3} >
                   <HiOutlineShare />
                 </Button>
               </Tooltip>
@@ -381,8 +379,8 @@ const Mindmaps = () => {
           )}
         </div>
 
-        {initialNodes.length > 1 && (
-          <div className="w-full md:h-[67vh] h-[65vh]" ref={ref7}>
+        {initialNodes.length > 1 ? (
+          <div className="w-full h-[100dvh] absolute top-0" ref={ref7}>
             <ReactFlow
               nodes={nodes}
               edges={edges}
@@ -439,6 +437,8 @@ const Mindmaps = () => {
               </svg>
             </ReactFlow>
           </div>
+        ) : (
+          <HeroHighlight className={'h-[100dvh] absolute top-0 flex flex-col justify-center align-middle items-center'}></HeroHighlight>
         )}
 
         <Tour open={open} onClose={() => setOpen(false)} steps={steps} />

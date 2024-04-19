@@ -34,7 +34,8 @@ import { Tour } from "antd";
 import io from "socket.io-client";
 import { LuMousePointer2 } from "react-icons/lu";
 import { TbPointerStar } from "react-icons/tb";
-import Background2 from "../../Background/Background.jsx";
+import { HeroHighlight } from "../../HeroHighlight/HeroHighlight.jsx";
+
 const imageWidth = 1024;
 const imageHeight = 768;
 
@@ -92,23 +93,7 @@ const MindmapOpener = () => {
         // setNodes(initialNodes);
         // setEdges(initialEdges);
         const timer = setTimeout(() => {
-          if (theme === 'dark') {
-            document.getElementsByClassName("react-flow__attribution")[0].remove();
-            document.getElementsByClassName('react-flow__minimap')[0].style.borderRadius = '21px';
-            document.getElementsByClassName('react-flow__minimap')[0].childNodes[0].style.borderRadius = '12px';
-            document.getElementsByClassName('react-flow__minimap')[0].childNodes[0].style.background = '#1c1c1c';
-            for (var i = 0 ; i <= 10; i++) {
-              document.getElementsByClassName('react-flow__minimap-node')[i].style.fill = 'purple';
-            }
-          }
-          else {
-            document.getElementsByClassName("react-flow__attribution")[0].remove();
-            document.getElementsByClassName('react-flow__minimap')[0].style.borderRadius = '21px';
-            document.getElementsByClassName('react-flow__minimap')[0].childNodes[0].style.borderRadius = '12px';
-            for (var i = 0 ; i <= 10; i++) {
-              document.getElementsByClassName('react-flow__minimap-node')[i].style.fill = 'purple';
-            }
-          }
+          document.getElementsByClassName("react-flow__attribution")[0].remove();
         }, 500);
         return () => clearTimeout(timer);
       } catch (err) {
@@ -369,7 +354,6 @@ const MindmapOpener = () => {
   return (
     <div>
       <Layout>
-        <Background2 />
         {isLoading ? (
           <Loader
             json="https://lottie.host/2639b394-c2db-4afd-a6ad-00e8dde8a240/OAhwCbq88U.json"
@@ -378,16 +362,16 @@ const MindmapOpener = () => {
           />
         ) : null}
 
-        <div className="flex justify-between mt-5 z-50 relative">
-          <div className="m-5 text-2xl">
-            Mindmap{" "}
-            {initialNodes.length > 1 && (
-              <span>: {initialNodes[0]?.data?.label}</span>
-            )}
-          </div>
+        <div className="m-5 text-2xl z-20 relative font-bold">
+          Mindmap{" "}
           {initialNodes.length > 1 && (
-            <div className="flex flex-wrap md:gap-2">
-              <Tooltip content="How this page works?">
+            <span>: {initialNodes[0]?.data?.label}</span>
+          )}
+        </div>
+        <div className="absolute top-50% right-2 z-20 flex flex-col gap-1 md:gap-2">
+          {initialNodes.length > 1 && (
+            <>
+              <Tooltip color="default" placement="left" content="How this page works?">
                 <Button
                   isIconOnly
                   onClick={() => setOpen(true)}
@@ -398,7 +382,7 @@ const MindmapOpener = () => {
                   <TfiInfoAlt />
                 </Button>
               </Tooltip>
-              <Tooltip content="Mindmap Remote Activity">
+              <Tooltip color="success" placement="left" content="Mindmap Remote Activity">
                 <Button
                   isIconOnly
                   onClick={() => setRemoteActivity((prevState) => !prevState)}
@@ -410,7 +394,7 @@ const MindmapOpener = () => {
                   {!remoteActivity ? <LuMousePointer2 /> : <TbPointerStar />}
                 </Button>
               </Tooltip>
-              <Tooltip content="Download">
+              <Tooltip color="warning" placement="left" content="Download">
                 <Button
                   isIconOnly
                   onClick={handleDownload}
@@ -423,7 +407,7 @@ const MindmapOpener = () => {
                   <FiDownload />
                 </Button>
               </Tooltip>
-              <Tooltip content={user ? "Save" : "Login to save."}>
+              <Tooltip color="secondary" placement="left" content={user ? "Save" : "Login to save."}>
                 <Button
                   isIconOnly
                   onClick={handleSave}
@@ -436,7 +420,7 @@ const MindmapOpener = () => {
                   <IoSaveOutline />
                 </Button>
               </Tooltip>
-              <Tooltip content="Share">
+              <Tooltip color="primary" placement="left" content="Share">
                 <Button
                   isIconOnly
                   onClick={handleShare}
@@ -450,7 +434,7 @@ const MindmapOpener = () => {
                 </Button>
               </Tooltip>
               {mindmaps?.data?.userId === user?.result?.userId && (
-                <Tooltip content="Delete">
+                <Tooltip color="danger" placement="left" content="Delete">
                   <Button
                     isIconOnly
                     onClick={handleDelete}
@@ -464,14 +448,13 @@ const MindmapOpener = () => {
                   </Button>
                 </Tooltip>
               )}
-            </div>
+            </>
           )}
         </div>
-        
-        {initialNodes.length > 1 && (
+        {initialNodes.length > 1 ? (
           <div
             // style={{ width: "100vw", height: "81vh" }}
-            className="w-full h-[68vh] md:h-[80vh]"
+            className="absolute top-0 w-full h-[100dvh]"
             ref={ref7}
             onMouseMove={handlePointerMove}
           >
@@ -531,6 +514,8 @@ const MindmapOpener = () => {
               </svg>
             </ReactFlow>
           </div>
+        ) : (
+          <HeroHighlight className={'h-[100dvh] absolute top-0 flex flex-col justify-center align-middle items-center'}></HeroHighlight>
         )}
 
         <Tour open={open} onClose={() => setOpen(false)} steps={steps} />

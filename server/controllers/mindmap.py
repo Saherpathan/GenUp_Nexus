@@ -81,6 +81,20 @@ def getMindmap(userId, savedMindmap):
         print(e)  
         return jsonify({"error": "An error occurred"}), 500
     
+def getMindmapHistory(userId, savedMindmap):
+    try:
+        results = savedMindmap.find({"userId": userId}).limit(3)
+        mindmaps = [{"_id": str(result["_id"]), "data": result["data"]} for result in results]
+
+        if mindmaps:
+            # Convert ObjectId to string for JSON serialization
+            return json_util.dumps({"data": mindmaps}), 200
+        else:
+            return jsonify({"msg": "No Mindmap stored"}), 404
+    except Exception as e:
+        print(e)  
+        return jsonify({"error": "An error occurred"}), 500
+    
 def getMindmapByid(id, savedMindmap):
     try:
         object_id = ObjectId(id)
