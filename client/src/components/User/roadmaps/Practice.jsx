@@ -7,7 +7,6 @@ import {Card, CardHeader, CardBody, CardFooter} from "@nextui-org/react";
 import {Pagination, PaginationItem, PaginationCursor} from "@nextui-org/react";
 import { Icon } from '@iconify/react';
 import toast from 'react-hot-toast';
-import {CircularProgress, Chip} from "@nextui-org/react";
 import { Meteors } from "../../Meteors/Meteors.jsx";
 import {Breadcrumbs, BreadcrumbItem} from "@nextui-org/react";
 
