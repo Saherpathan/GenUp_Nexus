@@ -18,10 +18,11 @@ import { Link } from "react-router-dom";
 import { useGlobalContext } from "../../../contexts/GlobalContext";
 import SpeechRecognition, { useSpeechRecognition } from "react-speech-recognition";
 import { FaMicrophone } from "react-icons/fa";
+import {Breadcrumbs, BreadcrumbItem} from "@nextui-org/react";
 
 const Interview = () => {
     const { user } = useGlobalContext();
-    const [userId, setUserID] = useState(null);
+    const [userId, setUserId] = useState(null);
     const [interviewHistory, setInterviewHistory] = useState([]);
     const [start, setStart] = useState(true);
     const [position, setPosition] = useState('');
@@ -47,7 +48,7 @@ const Interview = () => {
     const { transcript, interimTranscript, finalTranscript, resetTranscript, listening } = useSpeechRecognition();
 
     useEffect(() => {
-        setUserID(user.result.user_id);
+        setUserId(user.result.userId);
         modal1Disclosure.onOpen();
         setCodeTheme(`vs-${theme}`);
         getInterviewHistory();
@@ -74,7 +75,7 @@ const Interview = () => {
                 },
                 body: JSON.stringify({
                     "type": 1,
-                    "user_id": user.result.user_id
+                    "user_id": user.result.userId
                 }),
             });
     
@@ -106,6 +107,7 @@ const Interview = () => {
     }
 
     const startInterview = async () => {
+        setStart(false);
         try {
         const response = await fetch( 'https://parthcodes-test-flask-deploy.hf.space/interview', {
             method: 'POST',
@@ -170,6 +172,10 @@ const Interview = () => {
                 setNext(true);
                 speak("Thank you for your time!!");
                 SpeechRecognition.stopListening();
+                const timer = setTimeout(() => {
+                   modal2Disclosure.onOpen();
+                }, 5000);
+                return () => clearTimeout(timer);
               }
               else if (data.success) {
                   console.log(JSON.parse(data.data));
@@ -233,7 +239,6 @@ const Interview = () => {
             }
         });
         console.log('event Added');
-        setStart(false);
     };
 
     return (
@@ -247,7 +252,15 @@ const Interview = () => {
                 />
             ) : null}
             <div className="flex justify-between m-5 text-2xl text-center">
-                Mock Interview
+                <div className='flex flex-row gap-10 align-middle items-center'>
+                    <p className='font-bold'>Mock Interview</p>
+                    <Breadcrumbs>
+                        <BreadcrumbItem>{companyName}</BreadcrumbItem>
+                        <BreadcrumbItem>{position}</BreadcrumbItem>
+                        <BreadcrumbItem>{round}</BreadcrumbItem>
+                        <BreadcrumbItem>{difficultyLevel}</BreadcrumbItem>
+                    </Breadcrumbs>
+                </div>
                 <Switch
                 defaultSelected
                 size="lg"
@@ -374,6 +387,24 @@ const Interview = () => {
                                         <Button size='sm' onClick={() => {setReveal(false);}} startContent={<Icon icon="ph:arrow-left-bold" style={{color:`${theme==='light' ? `black` : `light`}`, fontSize:'16px'}} className="flex-shrink-0 text-2xl pointer-events-none text-default-400" />} variant='light'>Back</Button>
                                     </div>
                                     <Select
+                                        value={companyName}
+                                        onChange={(e) => setCompanyName(e.target.value)}
+                                        endContent={
+                                            <Icon icon="mingcute:suitcase-fill" className="flex-shrink-0 text-2xl pointer-events-none text-default-400" />
+                                            
+                                        }
+                                        label="Company"
+                                        placeholder="Select your Company"
+                                        labelPlacement='outside'
+                                        variant="bordered"
+                                    >
+                                        {companyNames.map((companyNames) => (
+                                            <SelectItem key={companyNames.value} value={companyNames.value}>
+                                            {companyNames.label}
+                                            </SelectItem>
+                                        ))}
+                                    </Select>
+                                    <Select
                                         value={position}
                                         onChange={(e) => setPosition(e.target.value)}
                                         autoFocus
@@ -427,26 +458,8 @@ const Interview = () => {
                                             </SelectItem>
                                         ))}
                                     </Select>
-                                    <Select
-                                        value={companyName}
-                                        onChange={(e) => setCompanyName(e.target.value)}
-                                        endContent={
-                                            <Icon icon="mingcute:suitcase-fill" className="flex-shrink-0 text-2xl pointer-events-none text-default-400" />
-                                            
-                                        }
-                                        label="Company"
-                                        placeholder="Select your Company"
-                                        labelPlacement='outside'
-                                        variant="bordered"
-                                    >
-                                        {companyNames.map((companyNames) => (
-                                            <SelectItem key={companyNames.value} value={companyNames.value}>
-                                            {companyNames.label}
-                                            </SelectItem>
-                                        ))}
-                                    </Select>
                                     <div className="flex justify-center px-1 py-2 text-center align-items-center">
-                                        <Button color="primary" onPress={onClose} onClick={starter} >
+                                        <Button color="primary" onPress={() => {onClose(); starter();}} >
                                             Start Interview
                                         </Button>
                                     </div>
@@ -490,7 +503,7 @@ const Interview = () => {
                         </CardFooter>
                     </Card>
                 </div>
-                {end || start? (
+                {end || start ? (
                     <Card className='w-full h-[300px] p-10 flex align-middle justify-center items-center'>
                         {start ? 'Start the interview by starting the recording.' : 'Submit the interview by stoping the recording!'}
                     </Card>

@@ -49,7 +49,7 @@ const Results = () => {
                     },
                     body: JSON.stringify({
                         "type": 2,
-                        "user_id": user.result.user_id,
+                        "user_id": user.result.userId,
                         "_id": id
                     }),
                 });
@@ -351,8 +351,8 @@ const Results = () => {
                                                 label: "tracking-wider font-medium text-default-600",
                                                 value: "text-foreground/60",
                                             }}
-                                            label={(resultData.test_results.avg_code * 10).toFixed(0) >= 50 ? "Good" : "Bad"}
-                                            value={(resultData.test_results.avg_code * 10).toFixed(0)}
+                                            label={(resultData.test_results.avg_code * 20).toFixed(0) >= 50 ? "Good" : "Bad"}
+                                            value={(resultData.test_results.avg_code * 20).toFixed(0)}
                                             showValueLabel={true}
                                         />
                                     ) : (

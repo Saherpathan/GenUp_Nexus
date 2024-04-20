@@ -3,6 +3,7 @@ import ProtectedRoute from "./contexts/ProtectedRoute";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 
 import Login from "./pages/Login";
+import Auth from "./pages/Auth";
 import Home from "./pages/Home";
 import Test from "./pages/Test";
 import Register from "./pages/Register";
@@ -10,6 +11,7 @@ import Landing from "./components/Landing/Landing";
 import Mindmaps from "./components/User/mindmaps/Mindmaps";
 import Interview from "./components/User/interview/Interview";
 import Roadmaps from "./components/User/roadmaps/Roadmaps";
+import SavedRoadmaps from "./components/User/roadmaps/SavedRoadmaps";
 import SavedMindmaps from "./components/User/mindmaps/SavedMindmaps";
 import MindmapOpener from "./components/User/mindmaps/MindmapOpener";
 import Results from "./components/User/interview/Results";
@@ -21,34 +23,25 @@ function App() {
   return (
     <NextThemesProvider attribute="class" defaultTheme="dark">
       <Routes>
+        <Route path="/" element={<Landing />} />                            {/* Hero Page */}
+        <Route path="/auth" element={<Auth />} />                           {/* Login and Registeration combined */}
+        
         <Route element={<ProtectedRoute />}>
-          <Route path="/user" element={<Home />} />
-          <Route path="/test" element={<Test />} />
-          <Route
-            path="/mindmap"
-            element={
-              <ReactFlowProvider>
-                <Mindmaps />
-              </ReactFlowProvider>
-            }
-          />
-          <Route path="/interview" element={<Interview />} />
-          <Route path="/interview/results/:id" element={<Results />} />
-          <Route path="/roadmap" element={<Roadmaps />} />
-          <Route path="/mindmap/personal" element={<SavedMindmaps />} />
+          <Route path="/user" element={<Home />} />                         {/* Main User Dashboard */ }
+
+          <Route path="/interview" element={<Interview />} />               {/* Main Interview Interface */}
+          <Route path="/interview/results/:id" element={<Results />} />     {/* Interview Results */}
+
+          <Route path="/roadmap" element={<Roadmaps />} />                  {/* Generating a Roadmap */}
+          <Route path="/roadmap/:id" element={<SavedRoadmaps />} />         {/* Following a Roadmap */}
+
+          <Route path="/mindmap" element={ <ReactFlowProvider> <Mindmaps /> </ReactFlowProvider> } />                 {/* Generating a Mindmap */}
+          <Route path="/mindmap/save/:id" element={ <ReactFlowProvider> <MindmapOpener /> </ReactFlowProvider> } />   {/* Viewing saved Mindmap */}
+          <Route path="/mindmap/personal" element={<SavedMindmaps />} />                                              {/* List of saved Mindmaps */}
         </Route>
         
-        <Route path="/" element={<Landing />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route
-          path="/mindmap/save/:id"
-          element={
-            <ReactFlowProvider>
-              <MindmapOpener />
-            </ReactFlowProvider>
-          }
-        />
+        {/* <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} /> */}
       </Routes>
     </NextThemesProvider>
   );

@@ -1,599 +1,348 @@
-import React from "react";
-import { Layout } from "../../Layout";
-import Background from "../../Background/Background";
-import {Popover, PopoverTrigger, PopoverContent, Button, ScrollShadow, Card} from "@nextui-org/react";
-import { Icon } from "@iconify/react";
-import path from '../../../assets/pppointed.svg';
-import botPoint from '../../../assets/botpoint.png';
-import botCheer from '../../../assets/botcheer.png';
-import membot1 from '../../../assets/membot1.png';
-import membot2 from '../../../assets/membot2.png';
-import membot3 from '../../../assets/membot3.png';
-import membot4 from '../../../assets/membot4.png';
-import membot5 from '../../../assets/membot5.png';
-import membot6 from '../../../assets/membot6.png';
+import React, {useState, useEffect} from 'react'
+import { Layout } from '../../Layout'
+import Background from '../../Background/Background'
+import { toast } from "react-hot-toast";
+import { IconBrandGithub, IconBrandGoogle } from "@tabler/icons-react";
+import {Button, Image} from "@nextui-org/react";
+import {Card, CardHeader, CardBody, CardFooter} from "@nextui-org/react";
+import {Select, SelectSection, SelectItem} from "@nextui-org/react";
+import {positions, companyNames, timesWeek} from "./data";
+import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure} from "@nextui-org/react";
+import { AnimatePresence, motion } from "framer-motion";
+import { Icon } from '@iconify/react';
+import { CanvasRevealEffect } from '../../CanvasRevealEffect/CanvasRevealEffect';
+import { Meteors } from "../../Meteors/Meteors.jsx";
+import {Pagination} from "@nextui-org/react";
 import { useTheme } from "next-themes";
+import gemini from '../../../assets/gemini.png';
+import webDev1 from '../../../assets/web_dev1.png';
+import webDev2 from '../../../assets/web_dev2.png';
+import axios from "../../../axios.js";
+import { Link } from 'react-router-dom';
+import { IconSquareRoundedX } from "@tabler/icons-react";
+import { MultiStepLoader } from '../../MultiStepLoader/MultiStepLoader.jsx';
+import {Breadcrumbs, BreadcrumbItem} from "@nextui-org/react";
 
-const data = [
-  {
-    "week1": {
-      "title": "Introduction to Web Development",
-      "description": "Basic concepts and tools for web development.",
-      "data": {
-        "day1": {
-          "heading": "HTML Basics",
-          "description": "Learn the basic structure of HTML and how to create elements.",
-          "links": ["https://www.w3schools.com/html/", "https://developer.mozilla.org/en-US/docs/Web/HTML"],
-          "isComplete": true
-        },
-        "day2": {
-          "heading": "CSS Basics",
-          "description": "Explore CSS syntax, selectors, and basic styling techniques.",
-          "links": ["https://www.w3schools.com/css/", "https://developer.mozilla.org/en-US/docs/Web/CSS"],
-          "isComplete": true
-        },
-        "day3": {
-          "heading": "Introduction to JavaScript",
-          "description": "Get started with JavaScript fundamentals such as variables, data types, and operators.",
-          "links": ["https://www.javascript.com/", "https://developer.mozilla.org/en-US/docs/Web/JavaScript"],
-          "isComplete": true
-        },
-        "day4": {
-          "heading": "Setting Up Development Environment",
-          "description": "Install and configure necessary development tools such as code editors and web browsers.",
-          "links": ["https://code.visualstudio.com/", "https://www.google.com/chrome/"],
-          "isComplete": true
-        },
-        "day5": {
-          "heading": "Building Your First Web Page",
-          "description": "Apply HTML, CSS, and JavaScript to build a simple web page.",
-          "links": [],
-          "isComplete": true
-        },
-        "day6": {
-          "heading": "Project Work and Review",
-          "description": "Work on a small project to reinforce learning and review the week's topics.",
-          "links": [],
-          "isComplete": true
-        },
-        "day7": {
-          "heading": "Rest Day",
-          "description": "Take a break and recharge for the upcoming week.",
-          "links": [],
-          "isComplete": true
-        }
-      }
-    }
-  },
-  {
-    "week2": {
-      "title": "Frontend Development Essentials",
-      "description": "Focus on frontend technologies and frameworks.",
-      "data": {
-        "day1": {
-          "heading": "Intermediate HTML",
-          "description": "Dive deeper into HTML by learning about forms, tables, and semantic markup.",
-          "links": ["https://www.w3schools.com/html/html_forms.asp", "https://developer.mozilla.org/en-US/docs/Web/HTML/Element"],
-          "isComplete": true
-        },
-        "day2": {
-          "heading": "Intermediate CSS",
-          "description": "Learn advanced CSS techniques like flexbox, grid layout, and CSS preprocessors.",
-          "links": ["https://css-tricks.com/snippets/css/a-guide-to-flexbox/", "https://sass-lang.com/"],
-          "isComplete": true
-        },
-        "day3": {
-          "heading": "DOM Manipulation with JavaScript",
-          "description": "Understand how to manipulate the Document Object Model (DOM) using JavaScript.",
-          "links": ["https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model/Introduction"]
-        },
-        "day4": {
-          "heading": "Responsive Web Design",
-          "description": "Learn techniques to create responsive layouts that adapt to different screen sizes.",
-          "links": ["https://www.w3schools.com/css/css_rwd_intro.asp", "https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Responsive/responsive_design_building_blocks"]
-        },
-        "day5": {
-          "heading": "Introduction to Bootstrap",
-          "description": "Explore the Bootstrap framework for building responsive and mobile-first websites.",
-          "links": ["https://getbootstrap.com/docs/5.1/getting-started/introduction/", "https://www.tutorialrepublic.com/twitter-bootstrap-tutorial/"]
-        },
-        "day6": {
-          "heading": "Project Work and Review",
-          "description": "Apply the concepts learned during the week to a practical project and review previous topics.",
-          "links": []
-        },
-        "day7": {
-          "heading": "Rest Day",
-          "description": "Take a break and recharge for the upcoming week.",
-          "links": []
-        }
-      }
-    }
-  },
-  {
-    "week3": {
-      "title": "Backend Development Fundamentals",
-      "description": "Understanding server-side development.",
-      "data": {
-        "day1": {
-          "heading": "Introduction to Node.js",
-          "description": "Learn about Node.js and its role in server-side development.",
-          "links": ["https://nodejs.org/en/", "https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs/Introduction"]
-        },
-        "day2": {
-          "heading": "Working with Express.js",
-          "description": "Explore the Express.js framework for building web applications and APIs.",
-          "links": ["https://expressjs.com/", "https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs"]
-        },
-        "day3": {
-          "heading": "RESTful APIs",
-          "description": "Understand the principles of RESTful API design and implementation.",
-          "links": ["https://restfulapi.net/", "https://developer.mozilla.org/en-US/docs/Glossary/REST"]
-        },
-        "day4": {
-          "heading": "Database Basics (SQL/NoSQL)",
-          "description": "Learn about different types of databases including SQL and NoSQL.",
-          "links": ["https://www.w3schools.com/sql/", "https://www.mongodb.com/nosql-explained"]
-        },
-        "day5": {
-          "heading": "CRUD Operations with MongoDB",
-          "description": "Practice creating, reading, updating, and deleting data in MongoDB.",
-          "links": ["https://docs.mongodb.com/guides/", "https://www.tutorialspoint.com/mongodb/index.htm"]
-        },
-        "day6": {
-          "heading": "Project Work and Review",
-          "description": "Apply backend development concepts to a project and review previous topics.",
-          "links": []
-        },
-        "day7": {
-          "heading": "Rest Day",
-          "description": "Take a break and recharge for the upcoming week.",
-          "links": []
-        }
-      }
-    }
-  },
-  {
-    "week4": {
-      "title": "Full Stack Development",
-      "description": "Integrating frontend and backend development.",
-      "data": {
-        "day1": {
-          "heading": "Connecting Frontend to Backend",
-          "description": "Learn techniques to connect frontend and backend components.",
-          "links": ["https://www.sitepoint.com/how-to-connect-your-flask-app-with-a-mongodb-database/"]
-        },
-        "day2": {
-          "heading": "User Authentication",
-          "description": "Implement user authentication and authorization in web applications.",
-          "links": ["https://auth0.com/docs/authentication", "https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs/Authentication"]
-        },
-        "day3": {
-          "heading": "State Management (Redux)",
-          "description": "Understand Redux for managing application state in React applications.",
-          "links": ["https://redux.js.org/introduction/getting-started", "https://react-redux.js.org/introduction/quick-start"]
-        },
-        "day4": {
-          "heading": "Deploying Applications",
-          "description": "Explore various methods for deploying web applications to production servers.",
-          "links": ["https://www.heroku.com/", "https://aws.amazon.com/getting-started/projects/deploy-nodejs-web-app/"]
-        },
-        "day5": {
-          "heading": "Project Work and Review",
-          "description": "Work on a full-stack project integrating frontend and backend components, and review previous topics.",
-          "links": []
-        },
-        "day6": {
-          "heading": "Project Work and Review",
-          "description": "Continue working on the full-stack project and review previous topics.",
-          "links": []
-        },
-        "day7": {
-          "heading": "Project Work and Review",
-          "description": "Finish the full-stack project and review previous topics in preparation for further learning.",
-          "links": []
-        }
-      }
-    }
-  },
-  {
-    "week4": {
-      "title": "Full Stack Development",
-      "description": "Integrating frontend and backend development.",
-      "data": {
-        "day1": {
-          "heading": "Connecting Frontend to Backend",
-          "description": "Learn techniques to connect frontend and backend components.",
-          "links": ["https://www.sitepoint.com/how-to-connect-your-flask-app-with-a-mongodb-database/"]
-        },
-        "day2": {
-          "heading": "User Authentication",
-          "description": "Implement user authentication and authorization in web applications.",
-          "links": ["https://auth0.com/docs/authentication", "https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs/Authentication"]
-        },
-        "day3": {
-          "heading": "State Management (Redux)",
-          "description": "Understand Redux for managing application state in React applications.",
-          "links": ["https://redux.js.org/introduction/getting-started", "https://react-redux.js.org/introduction/quick-start"]
-        },
-        "day4": {
-          "heading": "Deploying Applications",
-          "description": "Explore various methods for deploying web applications to production servers.",
-          "links": ["https://www.heroku.com/", "https://aws.amazon.com/getting-started/projects/deploy-nodejs-web-app/"]
-        },
-        "day5": {
-          "heading": "Project Work and Review",
-          "description": "Work on a full-stack project integrating frontend and backend components, and review previous topics.",
-          "links": []
-        },
-        "day6": {
-          "heading": "Project Work and Review",
-          "description": "Continue working on the full-stack project and review previous topics.",
-          "links": []
-        },
-        "day7": {
-          "heading": "Project Work and Review",
-          "description": "Finish the full-stack project and review previous topics in preparation for further learning.",
-          "links": []
-        }
-      }
-    }
-  }
-];
-
-const Roadmaps = () => {
-  const { theme } = useTheme();
-  const botImages = [membot1, membot2, membot3, membot4, membot5, membot6];
-
-  const randomBot = () => {
-    const randomIndex = Math.floor(Math.random() * botImages.length);
-    return botImages[randomIndex];
-  };
+const Card2 = ({ title, icon, bgColor, children }) => {
+  const [hovered, setHovered] = useState(false);
 
   return (
-    <div>
-      <Layout>
-        <Background />
-        <div className="flex justify-between m-5 text-2xl text-center">
-          Roadmaps
+    <div
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      className={`${bgColor} bg-opacity-60 group/canvas-card flex items-center justify-center w-full relative h-full rounded-2xl overflow-clip`}
+    >
+      <AnimatePresence>
+        {hovered && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="h-full w-full absolute inset-0"
+          >
+            {children}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div className="relative z-20">
+        <div className="text-center group-hover/canvas-card:-translate-y-4 group-hover/canvas-card:opacity-0 transition duration-200 w-full  mx-auto flex items-center justify-center">
+          {icon}
         </div>
-        <div className="flex">
-          {!data[0].week1.data.day1.isComplete && (
-            <Card className="starter flex flex-col justify-around align-middle items-center h-[350px] rounded-lg p-3">
-              <img src={botPoint} alt="AiBot" height={'300px'} width={'200px'} />
-              <p className="text-small text-center">Start your Journey from here...</p>
-            </Card>
-          )}
-          <ScrollShadow size={100} hideScrollBar offset={100} className="max-w-full max-h-[350px] pl-20" orientation="horizontal" >
-            <div style={{width: `${(data.length * 380)+310}px`}} className={`flex flex-row gap-0 py-5 justify-center align-middle items-start w-[${data.length * 400}px] sm:w-[${data.length * 400}px]`}>
-              {data.map((week, index) => (
-                <>
-                  {(index % 2) === 0 ? (
-                    <div key={index} style={{ backgroundImage: `url(${path})`, backgroundSize: 'auto', backgroundRepeat: 'no-repeat', backgroundPosition: 'center' }} className="relative h-[300px] w-[300px] m-auto overflow-visible flex align-middle justify-center items-center bg-transparent">
-                      <Popover size="sm" placement={'top'} color="primary" className="ml-3 w-[180px]">
-                        <PopoverTrigger>
-                          <div className="absolute top-[-20px] left-[-100px] rounded-full">
-                            <div className="relative inline-flex h-12 overflow-hidden rounded-full p-[2px]">
-                              <span className="absolute inset-[-1000%] animate-[spin_2s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#E2CBFF_0%,#393BB2_50%,#E2CBFF_100%)]" />
-                              <span className={`inline-flex h-full w-full cursor-pointer items-center justify-center rounded-full ${theme === 'light' ? 'bg-gray-200 text-slate-900' : 'bg-slate-950 text-white'} px-3 text-sm font-medium backdrop-blur-3xl`}>
-                                <button className="relative">
-                                  <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full" />
-                                  <div className={`px-8 py-2 ${theme === 'light' ? 'bg-gray-200 text-slate-900 border-none' : 'bg-black text-white'} rounded-full  relative group transition duration-200  hover:bg-transparent`}>
-                                    Week {index + 1}
-                                  </div>
-                                </button>
-                              </span>
-                            </div>
-                          </div>
-                        </PopoverTrigger>
-                        <PopoverContent>
-                          <div className="px-1 py-2">
-                            <div className="text-small font-bold">{Object.values(week)[0].title}</div>
-                            <div className="text-tiny">{Object.values(week)[0].description}</div>
-                          </div>
-                        </PopoverContent>
-                      </Popover>
-                      <Popover size="sm" placement={'right-end'} color="primary" className="ml-3 w-[180px]">
-                        <PopoverTrigger>
-                          <div className={`absolute top-0 left-12 rounded-full h-[40px] w-[40px] ${Object.values(week)[0].data.day1.isComplete ? 'bg-green-500' : 'bg-slate-300' }`}></div>
-                        </PopoverTrigger>
-                        <PopoverContent>
-                          <div className="px-1 py-2">
-                            <div className="text-small font-bold">Day 1</div>
-                            <div className="text-tiny">{Object.values(Object.values(week)[0].data.day1.heading)}</div>
-                          </div>
-                        </PopoverContent>
-                      </Popover>
-                      <Popover size="sm" placement={'right-end'} color="primary" className="ml-3 w-[180px]">
-                        <PopoverTrigger>
-                        <div className={`absolute top-9 left-[5.5rem] rounded-full h-[40px] w-[40px] ${Object.values(week)[0].data.day2.isComplete ? 'bg-green-500' : 'bg-slate-300' }`}></div>
-                        </PopoverTrigger>
-                        <PopoverContent>
-                          <div className="px-1 py-2">
-                            <div className="text-small font-bold">Day 2</div>
-                            <div className="text-tiny">{Object.values(Object.values(week)[0].data.day2.heading)}</div>
-                          </div>
-                        </PopoverContent>
-                      </Popover>
-                      <Popover size="sm" placement={'right-end'} color="primary" className="ml-3 w-[180px]">
-                        <PopoverTrigger>
-                          <div className={`absolute top-20 left-28 rounded-full h-[40px] w-[40px] ${Object.values(week)[0].data.day3.isComplete ? 'bg-green-500' : 'bg-slate-300' }`}></div>
-                        </PopoverTrigger>
-                        <PopoverContent>
-                          <div className="px-1 py-2">
-                            <div className="text-small font-bold">Day 3</div>
-                            <div className="text-tiny">{Object.values(Object.values(week)[0].data.day3.heading)}</div>
-                          </div>
-                        </PopoverContent>
-                      </Popover>
-                      <Popover size="sm" placement={'right-end'} color="primary" className="ml-3 w-[180px]">
-                        <PopoverTrigger>
-                          <div className={`absolute rounded-full h-[40px] w-[40px] ${Object.values(week)[0].data.day4.isComplete ? 'bg-green-500' : 'bg-slate-300' } flex justify-center items-center`}><Icon icon={'line-md:my-location-loop'} fontSize={'18px'} color="black"/></div>
-                        </PopoverTrigger>
-                        <PopoverContent>
-                          <div className="px-1 py-2">
-                            <div className="text-small font-bold">Day 4</div>
-                            <div className="text-tiny">{Object.values(Object.values(week)[0].data.day4.heading)}</div><br />
-                            <div className="text-tiny"> ✨ Your're half way there.</div>
-                          </div>
-                        </PopoverContent>
-                      </Popover>
-                      <Popover size="sm" placement={'right-end'} color="primary" className="ml-3 w-[180px]">
-                        <PopoverTrigger>
-                          <div className={`absolute bottom-20 right-28 rounded-full h-[40px] w-[40px] ${Object.values(week)[0].data.day5.isComplete ? 'bg-green-500' : 'bg-slate-300' }`}></div>
-                        </PopoverTrigger>
-                        <PopoverContent>
-                          <div className="px-1 py-2">
-                            <div className="text-small font-bold">Day 5</div>
-                            <div className="text-tiny">{Object.values(Object.values(week)[0].data.day5.heading)}</div>
-                          </div>
-                        </PopoverContent>
-                      </Popover>
-                      <Popover size="sm" placement={'right-end'} color="primary" className="ml-3 w-[180px]">
-                        <PopoverTrigger>
-                          <div className={`absolute bottom-9 right-[5.5rem] rounded-full h-[40px] w-[40px] ${Object.values(week)[0].data.day6.isComplete ? 'bg-green-500' : 'bg-slate-300' }`}></div>
-                        </PopoverTrigger>
-                        <PopoverContent>
-                          <div className="px-1 py-2">
-                            <div className="text-small font-bold">Day 6</div>
-                            <div className="text-tiny">{Object.values(Object.values(week)[0].data.day6.heading)}</div>
-                          </div>
-                        </PopoverContent>
-                      </Popover>
-                      <Popover size="sm" placement={'right-end'} color="primary" className="ml-3 w-[180px]">
-                        <PopoverTrigger>
-                          <div className={`absolute bottom-0 right-12 rounded-full h-[40px] w-[40px] ${Object.values(week)[0].data.day7.isComplete ? 'bg-green-500' : 'bg-slate-300' }`}></div>
-                        </PopoverTrigger>
-                        <PopoverContent>
-                          <div className="px-1 py-2">
-                            <div className="text-small font-bold">Day 7</div>
-                            <div className="text-tiny">{Object.values(Object.values(week)[0].data.day7.heading)}</div>
-                          </div>
-                        </PopoverContent>
-                      </Popover>
-                      <div className="absolute bottom-0 left-[-100px]">
-                        <img src={randomBot()} alt="membot-random" height={'200px'} width={'150px'} />
-                      </div>
-                    </div>
-                  ) : (
-                    <div key={index} style={{ backgroundImage: `url(${path})`, transform:'scaleY(-1)', backgroundSize: 'auto', backgroundRepeat: 'no-repeat', backgroundPosition: 'center' }} className="relative h-[300px] w-[300px] m-auto overflow-visible flex align-middle justify-center items-center bg-transparent">
-                      <Popover size="sm" placement={'bottom'} color="primary" className="ml-3 w-[180px]">
-                        <PopoverTrigger>
-                          <div className="absolute top-[-20px] left-[-100px] !scale-y-[-1] rounded-full">
-                            <div className="relative inline-flex h-12 overflow-hidden rounded-full p-[2px]">
-                              <span className="absolute inset-[-1000%] animate-[spin_2s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#E2CBFF_0%,#393BB2_50%,#E2CBFF_100%)]" />
-                              <span className={`inline-flex h-full w-full cursor-pointer items-center justify-center rounded-full ${theme === 'light' ? 'bg-gray-200 text-slate-900' : 'bg-slate-950 text-white'} px-3 text-sm font-medium backdrop-blur-3xl`}>
-                                <button className="relative">
-                                  <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full" />
-                                  <div className={`px-8 py-2 ${theme === 'light' ? 'bg-gray-200 text-slate-900 border-none' : 'bg-black text-white'} rounded-full  relative group transition duration-200  hover:bg-transparent`}>
-                                    Week {index + 1}
-                                  </div>
-                                </button>
-                              </span>
-                            </div>
-                          </div>
-                        </PopoverTrigger>
-                        <PopoverContent>
-                          <div className="px-1 py-2">
-                            <div className="text-small font-bold">{Object.values(week)[0].title}</div>
-                            <div className="text-tiny">{Object.values(week)[0].description}</div>
-                          </div>
-                        </PopoverContent>
-                      </Popover>
-                      <Popover size="sm" placement={'right-end'} color="primary" className="ml-3 w-[180px]">
-                        <PopoverTrigger>
-                          <div className={`absolute top-0 left-12 rounded-full h-[40px] w-[40px] ${Object.values(week)[0].data.day1.isComplete ? 'bg-green-500' : 'bg-slate-300' }`}></div>
-                        </PopoverTrigger>
-                        <PopoverContent>
-                          <div className="px-1 py-2">
-                            <div className="text-small font-bold">Day 1</div>
-                            <div className="text-tiny">{Object.values(Object.values(week)[0].data.day1.heading)}</div>
-                          </div>
-                        </PopoverContent>
-                      </Popover>
-                      <Popover size="sm" placement={'right-end'} color="primary" className="ml-3 w-[180px]">
-                        <PopoverTrigger>
-                        <div className={`absolute top-9 left-[5.5rem] rounded-full h-[40px] w-[40px] ${Object.values(week)[0].data.day2.isComplete ? 'bg-green-500' : 'bg-slate-300' }`}></div>
-                        </PopoverTrigger>
-                        <PopoverContent>
-                          <div className="px-1 py-2">
-                            <div className="text-small font-bold">Day 2</div>
-                            <div className="text-tiny">{Object.values(Object.values(week)[0].data.day2.heading)}</div>
-                          </div>
-                        </PopoverContent>
-                      </Popover>
-                      <Popover size="sm" placement={'right-end'} color="primary" className="ml-3 w-[180px]">
-                        <PopoverTrigger>
-                          <div className={`absolute top-20 left-28 rounded-full h-[40px] w-[40px] ${Object.values(week)[0].data.day3.isComplete ? 'bg-green-500' : 'bg-slate-300' }`}></div>
-                        </PopoverTrigger>
-                        <PopoverContent>
-                          <div className="px-1 py-2">
-                            <div className="text-small font-bold">Day 3</div>
-                            <div className="text-tiny">{Object.values(Object.values(week)[0].data.day3.heading)}</div>
-                          </div>
-                        </PopoverContent>
-                      </Popover>
-                      <Popover size="sm" placement={'right-end'} color="primary" className="ml-3 w-[180px]">
-                        <PopoverTrigger>
-                          <div className={`absolute rounded-full h-[40px] w-[40px] ${Object.values(week)[0].data.day4.isComplete ? 'bg-green-500' : 'bg-slate-300' } flex justify-center items-center`}><Icon icon={'line-md:my-location-loop'} fontSize={'18px'} color="black"/></div>
-                        </PopoverTrigger>
-                        <PopoverContent>
-                          <div className="px-1 py-2">
-                            <div className="text-small font-bold">Day 4</div>
-                            <div className="text-tiny">{Object.values(Object.values(week)[0].data.day4.heading)}</div><br />
-                            <div className="text-tiny"> ✨ Your're half way there.</div>
-                          </div>
-                        </PopoverContent>
-                      </Popover>
-                      <Popover size="sm" placement={'right-end'} color="primary" className="ml-3 w-[180px]">
-                        <PopoverTrigger>
-                          <div className={`absolute bottom-20 right-28 rounded-full h-[40px] w-[40px] ${Object.values(week)[0].data.day5.isComplete ? 'bg-green-500' : 'bg-slate-300' }`}></div>
-                        </PopoverTrigger>
-                        <PopoverContent>
-                          <div className="px-1 py-2">
-                            <div className="text-small font-bold">Day 5</div>
-                            <div className="text-tiny">{Object.values(Object.values(week)[0].data.day5.heading)}</div>
-                          </div>
-                        </PopoverContent>
-                      </Popover>
-                      <Popover size="sm" placement={'right-end'} color="primary" className="ml-3 w-[180px]">
-                        <PopoverTrigger>
-                          <div className={`absolute bottom-9 right-[5.5rem] rounded-full h-[40px] w-[40px] ${Object.values(week)[0].data.day6.isComplete ? 'bg-green-500' : 'bg-slate-300' }`}></div>
-                        </PopoverTrigger>
-                        <PopoverContent>
-                          <div className="px-1 py-2">
-                            <div className="text-small font-bold">Day 6</div>
-                            <div className="text-tiny">{Object.values(Object.values(week)[0].data.day6.heading)}</div>
-                          </div>
-                        </PopoverContent>
-                      </Popover>
-                      <Popover size="sm" placement={'right-end'} color="primary" className="ml-3 w-[180px]">
-                        <PopoverTrigger>
-                          <div className={`absolute bottom-0 right-12 rounded-full h-[40px] w-[40px] ${Object.values(week)[0].data.day7.isComplete ? 'bg-green-500' : 'bg-slate-300' }`}></div>
-                        </PopoverTrigger>
-                        <PopoverContent>
-                          <div className="px-1 py-2">
-                            <div className="text-small font-bold">Day 7</div>
-                            <div className="text-tiny">{Object.values(Object.values(week)[0].data.day7.heading)}</div>
-                          </div>
-                        </PopoverContent>
-                      </Popover>
-                      <div className="absolute bottom-0 left-[-100px] scale-y-[-1]">
-                        <img src={randomBot()} alt="membot-random" height={'200px'} width={'150px'} />
-                      </div>
-                    </div>
-                  )}
-                </>
-              ))}
-              <div className="relative h-[300px] w-[100px] m-auto overflow-visible flex align-middle justify-center items-center bg-transparent">
-                <Popover size="sm" placement={'top'} color="primary" className="ml-3 w-[180px]">
-                  <PopoverTrigger>
-                    <div className="absolute bottom-[-20px] left-[-100px] rounded-full">
-                      <button className="relative inline-flex h-12 overflow-hidden rounded-full p-[2px]">
-                        <span className="absolute inset-[-1000%] animate-[spin_2s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#E2CBFF_0%,#393BB2_50%,#E2CBFF_100%)]" />
-                        <span className={`inline-flex h-full w-full cursor-pointer items-center justify-center rounded-full ${theme === 'light' ? 'bg-gray-200 text-slate-900' : 'bg-slate-950 text-white'} px-3 text-sm font-medium backdrop-blur-3xl`}>
-                          <button className="relative">
-                            <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full" />
-                            <div className={`px-8 py-2 ${theme === 'light' ? 'bg-gray-200 text-slate-900 border-none' : 'bg-black text-white'} rounded-full  relative group transition duration-200  hover:bg-transparent`}>
-                              AI Interviews
-                            </div>
-                          </button>
-                        </span>
-                      </button>
-                    </div>
-                  </PopoverTrigger>
-                  <PopoverContent>
-                    <div className="px-1 py-2">
-                      <div className="text-small font-bold">AI Mock Interview</div>
-                      <div className="text-tiny">Test the skills that you aquired using AI powered Mock Interviews.</div>
-                    </div>
-                  </PopoverContent>
-                </Popover>
-              </div>
-            </div>
-          </ScrollShadow>
-          {data[data.length - 1][Object.keys(data[data.length - 1])[Object.keys(data[data.length - 1]).length - 1]].data.day7.isComplete && (
-            <Card className="ender flex flex-col justify-around align-middle items-center h-[350px] rounded-lg p-3">
-              <img src={botCheer} alt="AiBot" height={'250px'} width={'150px'} />
-              <p className="text-small text-center">Congo! you have completed your journey.</p>
-            </Card>
-          )}
-        </div>
-      </Layout>
+        <h2 className="dark:text-white text-xl opacity-0 group-hover/canvas-card:opacity-100 relative z-10 text-black mt-4  font-bold group-hover/canvas-card:text-white group-hover/canvas-card:-translate-y-2 transition duration-200">
+          {title}
+        </h2>
+      </div>
     </div>
   );
 };
 
-export default Roadmaps;
+const Card3 = ({ title, icon, bgColor, children }) => {
+  const [hovered, setHovered] = useState(false);
 
+  return (
+    <div
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      className={`${bgColor} bg-opacity-60 group/canvas-card flex items-center justify-center w-full relative h-[150px] rounded-2xl overflow-clip m-0`}
+    >
+      <AnimatePresence>
+        {hovered && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="h-full w-full absolute inset-0"
+          >
+            {children}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-          {/* Small Screen */}
-          {/* <div style={{ backgroundImage: `url(${path})`, backgroundSize: 'auto', backgroundRepeat: 'no-repeat', backgroundPosition: 'center' }} className="relative h-[200px] w-[200px] m-auto overflow-visible flex align-middle justify-center items-center bg-transparent">
-            <div className="absolute top-[-0px] left-0 rounded-full h-[10px] w-[10px] bg-slate-300"></div>
-            <div className="absolute top-2 left-10 rounded-full h-[10px] w-[10px] bg-slate-300"></div>
-            <div className="absolute top-10 left-[4.5rem] rounded-full h-[10px] w-[10px] bg-slate-50"></div>
-            <div className="absolute top-[4.5rem] left-[5.5rem] rounded-full h-[10px] w-[10px] bg-slate-50"></div>
-            <div className="absolute rounded-full h-[10px] w-[10px] bg-slate-50 flex justify-center items-center">
-              <Popover size="sm" placement={'right-end'} color="primary" className="ml-3 w-[180px]">
-                <PopoverTrigger>
-                  <Icon icon={'line-md:my-location-loop'} fontSize={'18px'} color="black"/>
-                </PopoverTrigger>
-                <PopoverContent>
-                  <div className="px-1 py-2">
-                    <div className="text-small font-bold">Weekly MidJourney</div>
-                    <div className="text-tiny">You are midway to your weeky journey!</div>
-                  </div>
-                </PopoverContent>
-              </Popover>
-            </div>
-            <div className="absolute bottom-[-0px] right-0 rounded-full h-[10px] w-[10px] bg-slate-50"></div>
-            <div className="absolute bottom-2 right-10 rounded-full h-[10px] w-[10px] bg-slate-50"></div>
-            <div className="absolute bottom-10 right-[4.5rem] rounded-full h-[10px] w-[10px] bg-slate-50"></div>
-            <div className="absolute bottom-[4.5rem] right-[5.5rem] rounded-full h-[10px] w-[10px] bg-slate-50"></div>
-          </div>
+      <div className="relative z-20 justify-center text-center">
+        <div className="text-center group-hover/canvas-card:-translate-y-4 group-hover/canvas-card:opacity-0 transition duration-200 w-full  mx-auto flex items-center justify-center">
+          {icon}
+        </div>
+        <h2 className="absolute top-[50%] w-full m-auto dark:text-white text-xl opacity-0 group-hover/canvas-card:opacity-100  z-10 text-black mt-4  font-bold group-hover/canvas-card:text-white group-hover/canvas-card:-translate-y-2 transition duration-200">
+          {title}
+        </h2>
+      </div>
+    </div>
+  );
+};
 
-          <div style={{ backgroundImage: `url(${path})`, backgroundSize: 'auto', backgroundRepeat: 'no-repeat', backgroundPosition: 'center' }} className="relative h-[300px] w-[300px] m-auto overflow-visible flex align-middle justify-center items-center bg-transparent">
-            <Popover size="sm" placement={'right-end'} color="primary" className="ml-3 w-[180px]">
-              <PopoverTrigger>
-                <div className="absolute top-[-20px] left-[-100px] rounded-full">
-                  <button className="relative inline-flex h-12 overflow-hidden rounded-full p-[2px]">
-                    <span className="absolute inset-[-1000%] animate-[spin_2s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#E2CBFF_0%,#393BB2_50%,#E2CBFF_100%)]" />
-                    <span className="inline-flex h-full w-full cursor-pointer items-center justify-center rounded-full bg-slate-950 px-3 text-sm font-medium text-white backdrop-blur-3xl">
-                      <button className="relative">
-                        <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full" />
-                        <div className="px-8 py-2  bg-black rounded-[6px]  relative group transition duration-200 text-white hover:bg-transparent">
-                          Week 1
-                        </div>
-                      </button>
-                    </span>
-                  </button>
-                </div>
-              </PopoverTrigger>
-              <PopoverContent>
-                <div className="px-1 py-2">
-                  <div className="text-small font-bold">Weekly MidJourney</div>
-                  <div className="text-tiny">You are midway to your weeky journey!</div>
-                </div>
-              </PopoverContent>
-            </Popover>
-            <div className="absolute top-2 left-12 rounded-full h-[40px] w-[40px] bg-slate-50"></div>
-            <div className="absolute top-10 left-[5.5rem] rounded-full h-[40px] w-[40px] bg-slate-50"></div>
-            <div className="absolute top-20 left-28 rounded-full h-[40px] w-[40px] bg-slate-50"></div>
-            <div className="absolute rounded-full h-[40px] w-[40px] bg-slate-50 flex justify-center items-center">
-              <Popover size="sm" placement={'right-end'} color="primary" className="ml-3 w-[180px]">
-                <PopoverTrigger>
-                  <Icon icon={'line-md:my-location-loop'} fontSize={'18px'} color="black"/>
-                </PopoverTrigger>
-                <PopoverContent>
-                  <div className="px-1 py-2">
-                    <div className="text-small font-bold">Weekly MidJourney</div>
-                    <div className="text-tiny">You are midway to your weeky journey!</div>
-                  </div>
-                </PopoverContent>
-              </Popover>
-            </div>
-            <div className="absolute bottom-20 right-28 rounded-full h-[40px] w-[40px] bg-slate-50"></div>
-            <div className="absolute bottom-10 right-[5.5rem] rounded-full h-[40px] w-[40px] bg-slate-50"></div>
-            <div className="absolute bottom-2 right-12 rounded-full h-[40px] w-[40px] bg-slate-50"></div>
-            <div className="absolute bottom-[-10px] right-0 rounded-full h-[40px] w-[40px] bg-slate-50"></div>
-          </div> */}
+const loadingStates = [
+	{
+		text: "Starting Generation"
+	},
+  {
+    text: "Generated Content",
+  },
+  {
+    text: "Integrated Youtube",
+  },
+  {
+    text: "Merged References",
+  },
+];
+
+const iconList = [webDev1, webDev2, webDev1];
+
+const Roadmaps = () => {
+  const { theme } = useTheme();
+	const [position, setPosition] = useState(null);
+	const [time, setTime] = useState(null);
+	const [company, setCompany] = useState(null);
+  const {isOpen, onOpen, onOpenChange} = useDisclosure();
+  const [currentPage, setCurrentPage] = useState(1);
+	const [roadmapHistory, setRoadmapHistory] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+	useEffect(() => {
+    fetchHistory();
+  }, []);
+
+	const fetchHistory = async () => {
+    try {
+      const res = await axios.get("/roadmap/history");
+      setRoadmapHistory(res.data.data);
+      console.log(res.data.data);
+    } catch (err) {
+      console.error(err);
+      toast.error( "Server error please try again later");
+    }
+  };
+
+	const generateRoadmap = async() => {
+		setLoading(true);
+		if (position && time && company) {
+			try {
+				const res = await axios.post("/roadmap", {
+						"type": 1,
+						"user_id": "66089385bffb63bd33fbf865",
+						"todayData": {
+							"day": 11,
+							"month": 4,
+							"year": 2024,
+							"dayOfWeek": "Thursday"
+						},
+						"position" : position,
+						"time": time,
+						"company": company
+				});
+				// setRoadmapHistory(res.data.data.data);
+				console.log(res.data);
+			} catch (err) {
+				console.error(err);
+				toast.error( "Server error please try again later");
+			}
+		}
+		else {
+			console.error("Fill all details!!");
+			toast.error("Fill all the details first");
+		}
+	};
+
+  return (
+    <div>
+			<Background />
+			<Layout>
+				<div className="flex justify-between m-5 text-sm text-center">
+				</div>
+				<div className='flex flex-col gap-5 p-5'>
+					<div onClick={onOpen} className='flex flex-col cursor-pointer hover:shadow-md hover:shadow-teal-400 transition-all rounded-2xl'>
+						<Card3 
+							title={'Generate a Roadmap'} 
+							icon={ <><Image src={gemini} width={300}/><Icon icon={'streamline:arrow-roadmap'} fontSize={'64px'} color='#fc03f8' /></> }
+							bgColor={'bg-blue-600 bg-opacity-100'}
+							className={'h-full'}>
+							<CanvasRevealEffect animationSpeed={5} dotSize={2} containerClassName='bg-blue-600' />
+						</Card3>
+					</div>
+					<Modal backdrop={'blur'} size={'5xl'} isOpen={isOpen} onOpenChange={onOpenChange} className="p-0">
+						<ModalContent className="p-0">
+							{(onClose) => (
+								<>
+									<ModalBody>
+										<Meteors />
+										<div className='flex flex-row h-[80dvh] gap-2'>
+											<div className='flex flex-col w-[50%]'>
+												<Card2 
+													title={`${
+														currentPage === 1 ? 'Personalization 1'
+															: currentPage === 2 ? 'Personalization 2'
+															: currentPage === 3 ? 'Personalization 3' : ''
+													}`} 
+													icon={
+														currentPage === 1 ? <Icon icon={'streamline:arrow-roadmap'} fontSize={'48px'} />
+														: currentPage === 2 ? <Icon icon={'streamline:arrow-roadmap'} fontSize={'52px'} />
+														: currentPage === 3 ? <Icon icon={'streamline:arrow-roadmap'} fontSize={'58px'} /> : null
+													}
+													bgColor={`${
+														currentPage === 1 ? 'bg-violet-600' 
+														: currentPage === 2 ? 'bg-blue-600'
+														: currentPage === 3 ? 'bg-green-600' : '' 
+													}`} >
+													<CanvasRevealEffect animationSpeed={2} dotSize={2} containerClassName={`${ currentPage === 1 ? 'bg-violet-600' : currentPage === 2 ? 'bg-blue-600' : currentPage === 3 ? 'bg-green-600' : '' }  bg-opacity-50`} />
+												</Card2>
+											</div>
+											<div className='flex flex-col w-[50%] justify-between align-middle items-start'>
+												<Card className={`relative shadow-xl ${theme === 'light' ? 'bg-slate-200' : 'bg-slate-950' } w-full px-4 py-8 h-full overflow-hidden rounded-2xl flex flex-col justify-start align-middle items-start gap-5`}>
+													<Meteors number={20} />
+													<Breadcrumbs>
+														<BreadcrumbItem startContent={<Icon icon={'mdi:company'} />} onClick={() => setCurrentPage(1)} isCurrent={currentPage === 1}>{company}</BreadcrumbItem>
+														<BreadcrumbItem startContent={<Icon icon={'iconoir:position'} />} onClick={() => setCurrentPage(2)} isCurrent={currentPage === 2}>{position}</BreadcrumbItem>
+														<BreadcrumbItem startContent={<Icon icon={'mingcute:time-fill'} />} onClick={() => setCurrentPage(3)} isCurrent={currentPage === 3}>{time} weeks</BreadcrumbItem>
+													</Breadcrumbs>
+													{(() => {
+														switch (currentPage) {
+															case 1:
+																return (
+																	<CardBody className="gap-5">
+																		<Card className="w-full">
+																			<CardHeader className="flex gap-3 justify-center text-[24px] text-blue-800"><Icon icon={'mdi:company'} /><b>Company</b></CardHeader>
+																			<CardBody className="flex align-middle items-center p-5 justify-center">
+																				<Select color="primary" placeholder="Select a postion" className="max-w-xs" value={company} onChange={(e) => setCompany(e.target.value)}>
+																					{companyNames.map((companyKey) => (
+																						<SelectItem key={companyKey.value} value={companyKey.value}>
+																							{companyKey.label}
+																						</SelectItem>
+																					))}
+																				</Select>
+																			</CardBody>
+																		</Card>
+																		<Card className="w-full">
+																			<CardBody className="flex flex-col gap-3 text-slate-400">
+																				<b className='text-md'>Note:</b>
+																				<p className='text-[12px]'><b>1.</b> The relevance of company is given a less relevance as the main goal is to acquire a skill for a position.</p>
+																				<p className='text-[12px]'><b>2.</b> The generated roadmaps includes a generalized overview of concepts for learning that skill.</p>
+																			</CardBody>
+																		</Card>
+																	</CardBody>
+																)
+															case 2:
+																return (
+																	<CardBody className="gap-5">
+																		<Card className="w-full">
+																			<CardHeader className="flex gap-3 justify-center text-[24px] text-blue-800"><Icon icon={'iconoir:position'} /><b>Position</b></CardHeader>
+																			<CardBody className="flex align-middle items-center p-5 justify-center">
+																				<Select color="primary" placeholder="Select a postion" className="max-w-xs" value={position} onChange={(e) => setPosition(e.target.value)} >
+																					{positions.map((positionsKey) => (
+																						<SelectItem key={positionsKey.value} value={positionsKey.value}>
+																							{positionsKey.label}
+																						</SelectItem>
+																					))}
+																				</Select>
+																			</CardBody>
+																		</Card>
+																		<Card className="w-full">
+																			<CardBody className="flex flex-col gap-3 text-slate-400">
+																				<b className='text-md'>Note:</b>
+																				<p className='text-[12px]'><b>1.</b> The position refers to the goal or the skills that you are trying to acquire.</p>
+																				<p className='text-[12px]'><b>2.</b> The generated roadmaps may include non-essential skills for that position.</p>
+																				<p className='text-[12px]'><b>3.</b> The roadmap can be modified according to your need as well.</p>
+																			</CardBody>
+																		</Card>
+																	</CardBody>
+																)
+															case 3:
+																return (
+																	<CardBody className="gap-5">
+																		<Card className="w-full">
+																			<CardHeader className="flex gap-3 justify-center text-[24px] text-blue-800"><Icon icon={'mingcute:time-fill'} /><b>Time</b></CardHeader>
+																			<CardBody className="flex align-middle items-center p-5 justify-center">
+																				<Select color="primary" placeholder="Select a postion" className="max-w-xs" value={time} onChange={(e) => setTime(e.target.value)}>
+																					{timesWeek.map((weekTime) => (
+																						<SelectItem key={weekTime.value} value={weekTime.value}>
+																							{weekTime.label}
+																						</SelectItem>
+																					))}
+																				</Select>
+																			</CardBody>
+																		</Card>
+																		<Card className="w-full">
+																			<CardBody className="flex flex-col gap-3 text-slate-400">
+																				<b className='text-md'>Note:</b>
+																				<p className='text-[12px]'><b>1.</b> The time required may or may not be enough for acquiring all the required skills.</p>
+																			</CardBody>
+																		</Card>
+																		<div className='flex justify-center'><Button onClick={generateRoadmap} variant='shadow' color='primary' size='lg' startContent={<Image src={gemini} width={'30px'} />}><p className='text-[20px] font-bold'>Generate</p></Button></div>
+																	</CardBody>
+																)
+															default:
+																return null
+														}
+													})()}
+													<CardFooter className="flex flex-row justify-between">
+														<Button size='sm' isDisabled={currentPage === 1 ? true : false} onPress={() => setCurrentPage((prev) => (prev > 1 ? prev - 1 : prev))} variant="flat" color="secondary" startContent={<Icon icon={'mingcute:arrow-left-fill'} fontSize={'18px'} />}>Previous</Button>
+														<Pagination total={3} color="secondary" page={currentPage} onChange={setCurrentPage} />
+														<Button size='sm' isDisabled={currentPage === 3 ? true : false}  onPress={() => setCurrentPage((prev) => (prev < 3 ? prev + 1 : prev))} variant="flat" color="primary" endContent={<Icon icon={'mingcute:arrow-right-fill'} fontSize={'18px'} />}>Next</Button>
+													</CardFooter>
+												</Card>
+											</div>
+										</div>
+										{/* <div className='absolute bottom-0 left-[50%] translate-x-[-50%] z-10 p-2 px-5 bg-gradient-to-t from-black to-transperent rounded-3xl shadow-lg shadow-black mb-2'>
+											<Pagination total={3} color="secondary" page={currentPage} onChange={setCurrentPage} />
+										</div> */}
+									</ModalBody>
+								</>
+							)}
+						</ModalContent>
+					</Modal>
+					
+					<Card className={`${theme === 'light' ? 'bg-slate-200' : 'bg-slate-900'} p-2`}>
+						<CardHeader>
+							<b className='text-[18px]'>Recent Roadmaps</b>
+						</CardHeader>
+						<div className="bg-gradient-to-r from-transparent via-neutral-300 dark:via-neutral-700 to-transparent my-2 h-[1px] w-full" />
+						<CardBody className='flex flex-row gap-5 p-3'>
+							{roadmapHistory && (
+								<>
+									{roadmapHistory.map((roadmap, index) => (
+										<Card isFooterBlurred radius="lg" className="border-none bg-gradient-to-t from-pink-500 to-yellow-500 hover:shadow-md hover:shadow-teal-400 transition-all" >
+											<Image alt="Woman listing to music" className="object-cover" height={250} src={iconList[index]} width={250} style={{padding: '2rem'}} />
+											<CardFooter className="justify-between before:bg-white/10 border-white/20 border-1 overflow-hidden py-1 absolute before:rounded-xl rounded-large bottom-1 w-[calc(100%_-_8px)] shadow-small ml-1 z-10">
+												<p className="text-tiny text-white/80">{roadmap.title}</p>
+												<Link to={`/roadmap/${roadmap._id}`} target='blank'>
+													<Button endContent={<Icon icon={'mingcute:arrow-right-fill'} />} className="text-tiny text-white bg-black/20" variant="flat" color="default" radius="lg" size="sm">
+														View
+													</Button>
+												</Link>
+											</CardFooter>
+										</Card>
+									))}
+								</>
+							)}
+						</CardBody>
+					</Card>
+				</div>
+			</Layout>
+			<MultiStepLoader loadingStates={loadingStates} loading={loading} duration={30000} loop={false} />
+			{loading && (
+        <button className="fixed top-4 right-4 text-black dark:text-white z-[120]" onClick={() => setLoading(false)} >
+          <IconSquareRoundedX className="h-10 w-10" />
+        </button>
+      )}
+    </div>
+  )
+}
+
+export default Roadmaps
