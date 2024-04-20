@@ -725,382 +725,6 @@ def roadmap():
                 elif new_response.text[0] == '`':
                     roadmap_list.append(json.loads(new_response.text[7:-3]))
 
-            # return jsonify({'success': True, 'data': roadmap_list})
-
-            # roadmap_list = [
-            #     {
-            #         "week1": {
-            #         "data": {
-            #             "day1": {
-            #             "description": "You will learn the basics of HTML, including the different tags and attributes.",
-            #             "heading": "Day 1: Introduction to HTML",
-            #             "links": [
-            #                 "https://www.w3schools.com/html/",
-            #                 "https://developer.mozilla.org/en-US/docs/Glossary/HTML"
-            #             ]
-            #             },
-            #             "day2": {
-            #             "description": "You will learn the basics of CSS, including the different properties and selectors.",
-            #             "heading": "Day 2: Introduction to CSS",
-            #             "links": [
-            #                 "https://www.w3schools.com/css/",
-            #                 "https://developer.mozilla.org/en-US/docs/Glossary/CSS"
-            #             ]
-            #             },
-            #             "day3": {
-            #             "description": "You will learn the basics of JavaScript, including the different data types and operators.",
-            #             "heading": "Day 3: Introduction to JavaScript",
-            #             "links": [
-            #                 "https://www.w3schools.com/js/",
-            #                 "https://developer.mozilla.org/en-US/docs/Glossary/JavaScript"
-            #             ]
-            #             },
-            #             "day4": {
-            #             "description": "You will build a simple website using HTML, CSS, and JavaScript.",
-            #             "heading": "Day 4: Building a Simple Website",
-            #             "links": [
-            #                 "https://www.w3schools.com/html/html_examples.asp",
-            #                 "https://www.w3schools.com/css/css_examples.asp",
-            #                 "https://www.w3schools.com/js/js_examples.asp"
-            #             ]
-            #             },
-            #             "day5": {
-            #             "description": "You will learn how to debug your website and fix any errors.",
-            #             "heading": "Day 5: Debugging Your Website",
-            #             "links": [
-            #                 "https://www.w3schools.com/html/html_debug.asp",
-            #                 "https://www.w3schools.com/css/css_debug.asp",
-            #                 "https://www.w3schools.com/js/js_debug.asp"
-            #             ]
-            #             },
-            #             "day6": {
-            #             "description": "You will learn how to deploy your website to a web server.",
-            #             "heading": "Day 6: Deploying Your Website",
-            #             "links": [
-            #                 "https://www.w3schools.com/html/html_website.asp",
-            #                 "https://www.w3schools.com/css/css_website.asp",
-            #                 "https://www.w3schools.com/js/js_website.asp"
-            #             ]
-            #             },
-            #             "day7": {
-            #             "description": "You will review what you have learnt this week and take an assessment to test your understanding.",
-            #             "heading": "Day 7: Review and Assessment",
-            #             "links": [
-                            
-            #             ]
-            #             }
-            #         },
-            #         "description": "In this week, you will learn the basics of web development, including HTML, CSS, and JavaScript.",
-            #         "title": "Getting Started with Web Development"
-            #         }
-            #     },
-            #     {
-            #         "week2": {
-            #         "data": {
-            #             "day1": {
-            #             "description": "You will learn how to make your website responsive so that it looks good on all devices.",
-            #             "heading": "Day 1: Responsive Design",
-            #             "links": [
-            #                 "https://www.w3schools.com/css/css_rwd_intro.asp",
-            #                 "https://developer.mozilla.org/en-US/docs/Glossary/Responsive_web_design"
-            #             ]
-            #             },
-            #             "day2": {
-            #             "description": "You will learn how to make your website accessible to people with disabilities.",
-            #             "heading": "Day 2: Accessibility",
-            #             "links": [
-            #                 "https://www.w3.org/WAI/fundamentals/accessibility-intro/",
-            #                 "https://developer.mozilla.org/en-US/docs/Glossary/Accessibility"
-            #             ]
-            #             },
-            #             "day3": {
-            #             "description": "You will learn about advanced HTML5 features, such as the canvas element and the video element.",
-            #             "heading": "Day 3: Advanced HTML5 Features",
-            #             "links": [
-            #                 "https://www.w3schools.com/html/html5_intro.asp",
-            #                 "https://developer.mozilla.org/en-US/docs/Glossary/HTML5"
-            #             ]
-            #             },
-            #             "day4": {
-            #             "description": "You will learn about advanced CSS3 features, such as the flexbox layout and the grid layout.",
-            #             "heading": "Day 4: Advanced CSS3 Features",
-            #             "links": [
-            #                 "https://www.w3schools.com/css/css3_intro.asp",
-            #                 "https://developer.mozilla.org/en-US/docs/Glossary/CSS3"
-            #             ]
-            #             },
-            #             "day5": {
-            #             "description": "You will build a more complex website using HTML, CSS, and JavaScript.",
-            #             "heading": "Day 5: Building a More Complex Website",
-            #             "links": [
-            #                 "https://www.w3schools.com/html/html_examples.asp",
-            #                 "https://www.w3schools.com/css/css_examples.asp",
-            #                 "https://www.w3schools.com/js/js_examples.asp"
-            #             ]
-            #             },
-            #             "day6": {
-            #             "description": "You will learn how to debug your website and fix any errors.",
-            #             "heading": "Day 6: Debugging Your Website",
-            #             "links": [
-            #                 "https://www.w3schools.com/html/html_debug.asp",
-            #                 "https://www.w3schools.com/css/css_debug.asp",
-            #                 "https://www.w3schools.com/js/js_debug.asp"
-            #             ]
-            #             },
-            #             "day7": {
-            #             "description": "You will review what you have learnt this week and take an assessment to test your understanding.",
-            #             "heading": "Day 7: Review and Assessment",
-            #             "links": [
-                            
-            #             ]
-            #             }
-            #         },
-            #         "description": "In this week, you will learn more advanced HTML and CSS techniques, including responsive design and accessibility.",
-            #         "title": "Advanced HTML and CSS"
-            #         }
-            #     },
-            #     {
-            #         "week3": {
-            #         "data": {
-            #             "day1": {
-            #             "description": "You will learn the basics of JavaScript, including the different data types and operators.",
-            #             "heading": "Day 1: Introduction to JavaScript",
-            #             "links": [
-            #                 "https://www.w3schools.com/js/",
-            #                 "https://developer.mozilla.org/en-US/docs/Glossary/JavaScript"
-            #             ]
-            #             },
-            #             "day2": {
-            #             "description": "You will learn about control flow in JavaScript, including the different types of loops and conditional statements.",
-            #             "heading": "Day 2: Control Flow",
-            #             "links": [
-            #                 "https://www.w3schools.com/js/js_control.asp",
-            #                 "https://developer.mozilla.org/en-US/docs/Glossary/Control_flow"
-            #             ]
-            #             },
-            #             "day3": {
-            #             "description": "You will learn about functions in JavaScript, including how to define and call them.",
-            #             "heading": "Day 3: Functions",
-            #             "links": [
-            #                 "https://www.w3schools.com/js/js_functions.asp",
-            #                 "https://developer.mozilla.org/en-US/docs/Glossary/Function"
-            #             ]
-            #             },
-            #             "day4": {
-            #             "description": "You will learn about arrays and objects in JavaScript, including how to create and use them.",
-            #             "heading": "Day 4: Arrays and Objects",
-            #             "links": [
-            #                 "https://www.w3schools.com/js/js_arrays.asp",
-            #                 "https://www.w3schools.com/js/js_objects.asp",
-            #                 "https://developer.mozilla.org/en-US/docs/Glossary/Array",
-            #                 "https://developer.mozilla.org/en-US/docs/Glossary/Object"
-            #             ]
-            #             },
-            #             "day5": {
-            #             "description": "You will build a simple JavaScript application using the concepts you have learnt this week.",
-            #             "heading": "Day 5: Building a Simple JavaScript Application",
-            #             "links": [
-            #                 "https://www.w3schools.com/js/js_examples.asp"
-            #             ]
-            #             },
-            #             "day6": {
-            #             "description": "You will learn how to debug your JavaScript application and fix any errors.",
-            #             "heading": "Day 6: Debugging Your JavaScript Application",
-            #             "links": [
-            #                 "https://www.w3schools.com/js/js_debug.asp"
-            #             ]
-            #             },
-            #             "day7": {
-            #             "description": "You will review what you have learnt this week and take an assessment to test your understanding.",
-            #             "heading": "Day 7: Review and Assessment",
-            #             "links": [
-                            
-            #             ]
-            #             }
-            #         },
-            #         "description": "In this week, you will learn the basics of JavaScript, including the different data types, operators, and control flow.",
-            #         "title": "Introduction to JavaScript"
-            #         }
-            #     },
-            #     {
-            #         "week4": {
-            #         "data": {
-            #             "day1": {
-            #             "description": "You will learn how to handle events in JavaScript, such as clicks, mouse movements, and keyboard presses.",
-            #             "heading": "Day 1: Event Handling",
-            #             "links": [
-            #                 "https://www.w3schools.com/js/js_events.asp",
-            #                 "https://developer.mozilla.org/en-US/docs/Glossary/Event"
-            #             ]
-            #             },
-            #             "day2": {
-            #             "description": "You will learn about AJAX and how to use it to communicate with a server without reloading the page.",
-            #             "heading": "Day 2: AJAX",
-            #             "links": [
-            #                 "https://www.w3schools.com/xml/ajax_intro.asp",
-            #                 "https://developer.mozilla.org/en-US/docs/Glossary/AJAX"
-            #             ]
-            #             },
-            #             "day3": {
-            #             "description": "You will learn about JSON and how to use it to exchange data between a server and a web page.",
-            #             "heading": "Day 3: JSON",
-            #             "links": [
-            #                 "https://www.w3schools.com/json/",
-            #                 "https://developer.mozilla.org/en-US/docs/Glossary/JSON"
-            #             ]
-            #             },
-            #             "day4": {
-            #             "description": "You will learn about jQuery and how to use it to simplify JavaScript development.",
-            #             "heading": "Day 4: jQuery",
-            #             "links": [
-            #                 "https://jquery.com/",
-            #                 "https://developer.mozilla.org/en-US/docs/Glossary/jQuery"
-            #             ]
-            #             },
-            #             "day5": {
-            #             "description": "You will build a more complex JavaScript application using the concepts you have learnt this week.",
-            #             "heading": "Day 5: Building a More Complex JavaScript Application",
-            #             "links": [
-                            
-            #             ]
-            #             },
-            #             "day6": {
-            #             "description": "You will learn how to debug your JavaScript application and fix any errors.",
-            #             "heading": "Day 6: Debugging Your JavaScript Application",
-            #             "links": [
-                            
-            #             ]
-            #             },
-            #             "day7": {
-            #             "description": "You will review what you have learnt this week and take an assessment to test your understanding.",
-            #             "heading": "Day 7: Review and Assessment",
-            #             "links": [
-                            
-            #             ]
-            #             }
-            #         },
-            #         "description": "In this week, you will learn more advanced JavaScript and jQuery techniques, including event handling, AJAX, and JSON.",
-            #         "title": "Advanced JavaScript and jQuery"
-            #         }
-            #     },
-            #     {
-            #         "week5": {
-            #         "data": {
-            #             "day1": {
-            #             "description": "You will learn the basics of Node.js, including how to install it and create a simple script.",
-            #             "heading": "Day 1: Introduction to Node.js",
-            #             "links": [
-            #                 "https://nodejs.org/",
-            #                 "https://developer.mozilla.org/en-US/docs/Glossary/Node.js"
-            #             ]
-            #             },
-            #             "day2": {
-            #             "description": "You will learn the basics of Express.js, including how to install it and create a simple web server.",
-            #             "heading": "Day 2: Introduction to Express.js",
-            #             "links": [
-            #                 "https://expressjs.com/",
-            #                 "https://developer.mozilla.org/en-US/docs/Glossary/Express.js"
-            #             ]
-            #             },
-            #             "day3": {
-            #             "description": "You will build a simple web server using Node.js and Express.js.",
-            #             "heading": "Day 3: Building a Simple Web Server",
-            #             "links": [
-                            
-            #             ]
-            #             },
-            #             "day4": {
-            #             "description": "You will learn how to handle HTTP requests and responses in Node.js and Express.js.",
-            #             "heading": "Day 4: Handling HTTP Requests and Responses",
-            #             "links": [
-                            
-            #             ]
-            #             },
-            #             "day5": {
-            #             "description": "You will learn how to use middleware in Node.js and Express.js.",
-            #             "heading": "Day 5: Using Middleware",
-            #             "links": [
-                            
-            #             ]
-            #             },
-            #             "day6": {
-            #             "description": "You will learn how to debug your Node.js application and fix any errors.",
-            #             "heading": "Day 6: Debugging Your Node.js Application",
-            #             "links": [
-                            
-            #             ]
-            #             },
-            #             "day7": {
-            #             "description": "You will review what you have learnt this week and take an assessment to test your understanding.",
-            #             "heading": "Day 7: Review and Assessment",
-            #             "links": [
-                            
-            #             ]
-            #             }
-            #         },
-            #         "description": "In this week, you will learn the basics of Node.js and Express.js, including how to create and run a web server.",
-            #         "title": "Introduction to Node.js and Express.js"
-            #         }
-            #     },
-            #     {
-            #         "week6": {
-            #         "data": {
-            #             "day1": {
-            #             "description": "You will learn how to use databases in Node.js and Express.js.",
-            #             "heading": "Day 1: Using Databases",
-            #             "links": [
-                            
-            #             ]
-            #             },
-            #             "day2": {
-            #             "description": "You will learn how to implement authentication in Node.js and Express.js.",
-            #             "heading": "Day 2: Authentication",
-            #             "links": [
-                            
-            #             ]
-            #             },
-            #             "day3": {
-            #             "description": "You will learn how to deploy your Node.js and Express.js application to a web server.",
-            #             "heading": "Day 3: Deployment",
-            #             "links": [
-                            
-            #             ]
-            #             },
-            #             "day4": {
-            #             "description": "You will build a more complex Node.js application using the concepts you have learnt this week.",
-            #             "heading": "Day 4: Building a More Complex Node.js Application",
-            #             "links": [
-                            
-            #             ]
-            #             },
-            #             "day5": {
-            #             "description": "You will learn how to debug your Node.js application and fix any errors.",
-            #             "heading": "Day 5: Debugging Your Node.js Application",
-            #             "links": [
-                            
-            #             ]
-            #             },
-            #             "day6": {
-            #             "description": "You will review what you have learnt this week and take an assessment to test your understanding.",
-            #             "heading": "Day 6: Review and Assessment",
-            #             "links": [
-                            
-            #             ]
-            #             },
-            #             "day7": {
-            #             "description": "You will work on a project to apply the skills you have learnt this week.",
-            #             "heading": "Day 7: Project",
-            #             "links": [
-                            
-            #             ]
-            #             }
-            #         },
-            #         "description": "In this week, you will learn more advanced Node.js and Express.js techniques, including how to use databases, authentication, and deployment.",
-            #         "title": "Advanced Node.js and Express.js"
-            #         }
-            #     }
-            # ]
-
             roads_data = roadmap_list
 
             print(roads_data)
@@ -1165,7 +789,7 @@ def roadmap():
             # Get roadmap data
             roadmap_data = roadmap_collection.find_one({"_id": ObjectId(data.get("_id")), "userId": user_id})
             if roadmap_data:
-                return jsonify({'success': True, 'roadmapData': {'data': roadmap_data['data']}, 'activeDays': roadmap_data['activeDays']})
+                return jsonify({'success': True, 'roadmapData': {'data': roadmap_data['data']}, 'activeDays': roadmap_data['activeDays'], 'practice': roadmap_data['practice'], 'title': roadmap_data['title']})
             else:
                 return jsonify({'success': False})
             
@@ -1185,166 +809,9 @@ def roadmapGetHistory():
     except Exception as e:
         print(e)  
         return jsonify({"error": "An error occurred"}), 500
-#     temp = {
-#     "data": [
-#         {
-#             "_id": "660c5b64fdb7f30b85660850",
-#             "activeDays": [
-#                 {
-#                     "day": 2,
-#                     "month": 4,
-#                     "year": 2024,
-#                     "dayOfWeek": "Tuesday"
-#                 },
-#                 {
-#                     "day": 1,
-#                     "month": 4,
-#                     "year": 2024,
-#                     "dayOfWeek": "Monday"
-#                 },
-#                 {
-#                     "day": 31,
-#                     "month": 3,
-#                     "year": 2024,
-#                     "dayOfWeek": "Sunday"
-#                 },
-#                 {
-#                     "day": 30,
-#                     "month": 3,
-#                     "year": 2024,
-#                     "dayOfWeek": "Saturday"
-#                 },
-#                 {
-#                     "day": 29,
-#                     "month": 3,
-#                     "year": 2024,
-#                     "dayOfWeek": "Friday"
-#                 },
-#                 {
-#                     "day": 28,
-#                     "month": 3,
-#                     "year": 2024,
-#                     "dayOfWeek": "Thursday"
-#                 },
-#                 {
-#                     "day": 27,
-#                     "month": 3,
-#                     "year": 2024,
-#                     "dayOfWeek": "Wednesday"
-#                 },
-#                 {
-#                     "day": 23,
-#                     "month": 3,
-#                     "year": 2024,
-#                     "dayOfWeek": "Saturday"
-#                 },
-#                 {
-#                     "day": 22,
-#                     "month": 3,
-#                     "year": 2024,
-#                     "dayOfWeek": "Friday"
-#                 },
-#                 {
-#                     "day": 21,
-#                     "month": 3,
-#                     "year": 2024,
-#                     "dayOfWeek": "Thursday"
-#                 },
-#                 {
-#                     "day": 20,
-#                     "month": 3,
-#                     "year": 2024,
-#                     "dayOfWeek": "Wednesday"
-#                 },
-#                 {
-#                     "day": 19,
-#                     "month": 3,
-#                     "year": 2024,
-#                     "dayOfWeek": "Tuesday"
-#                 },
-#                 {
-#                     "day": 18,
-#                     "month": 3,
-#                     "year": 2024,
-#                     "dayOfWeek": "Monday"
-#                 },
-#                 {
-#                     "day": 13,
-#                     "month": 3,
-#                     "year": 2024,
-#                     "dayOfWeek": "Wednesday"
-#                 },
-#                 {
-#                     "day": 12,
-#                     "month": 3,
-#                     "year": 2024,
-#                     "dayOfWeek": "Tuesday"
-#                 },
-#                 {
-#                     "day": 11,
-#                     "month": 3,
-#                     "year": 2024,
-#                     "dayOfWeek": "Monday"
-#                 },
-#                 {
-#                     "day": 3,
-#                     "month": 3,
-#                     "year": 2024,
-#                     "dayOfWeek": "Sunday"
-#                 },
-#                 {
-#                     "day": 2,
-#                     "month": 3,
-#                     "year": 2024,
-#                     "dayOfWeek": "Saturday"
-#                 },
-#                 {
-#                     "day": 3,
-#                     "month": 4,
-#                     "year": 2024,
-#                     "dayOfWeek": "Wednesday"
-#                 },
-#                 {
-#                     "day": 4,
-#                     "month": 4,
-#                     "year": 2024,
-#                     "dayOfWeek": "Thursday"
-#                 },
-#                 {
-#                     "day": 5,
-#                     "month": 4,
-#                     "year": 2024,
-#                     "dayOfWeek": "Friday"
-#                 },
-#                 {
-#                     "day": 8,
-#                     "month": 4,
-#                     "year": 2024,
-#                     "dayOfWeek": "Monday"
-#                 }
-#             ],
-#             "title": "Web Development"
-#         },
-#         {
-#             "_id": "6614f7df70efff259d69cc6b",
-#             "activeDays": [
-#                 {
-#                     "day": 9,
-#                     "month": 4,
-#                     "year": 2024,
-#                     "dayOfWeek": "Tuesday"
-#                 }
-#             ],
-#             "title": "Web Development 2"
-#         }
-#     ]
-# }
-#     return json_util.dumps({"data": temp}), 200
-    
 
 
 @app.route('/roadmapmodder', methods=['POST'])
-@auth_user
 def roadmapmodder():
     if request.method == 'POST':
         data = request.get_json()
@@ -1418,10 +885,14 @@ def roadmapmodder():
             temp_data = roadmap_collection.find_one({"_id": ObjectId(obj_id)})
             temp_data['data'][week_num-1][week_field]['data'][day_field]['youtube'][video_index]['viewed'] = True
 
+            print("Meow")
+
             roadmap_collection.update_one(
                 {"_id": ObjectId(obj_id)},
                 {"$set": { "data": temp_data['data'] }}
             )
+            
+            print("Meow")
             
             if temp_data['activeDays'][len(temp_data['activeDays'])-1]['day'] != day_data['day'] or temp_data['activeDays'][len(temp_data['activeDays'])-1]['month'] != day_data['month'] or temp_data['activeDays'][len(temp_data['active_days'])-1]['year'] != day_data['year']:
                 temp_data['activeDays'].append(day_data)
@@ -1429,6 +900,9 @@ def roadmapmodder():
                     {"_id": ObjectId(obj_id)},
                     {"$set": { "activeDays": temp_data['activeDays'] }}
                 )
+            
+            
+            print("Meow")
 
             return jsonify({'success': True})
 
@@ -1489,5 +963,125 @@ def roadmapmodder():
         return jsonify({'success': True})
 
 
-if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
+@app.route('/problemgenerator', methods=['POST'])
+def problemgenerator():
+    if request.method == 'POST':
+        data = request.get_json()
+        user_id = data.get('user_id')
+        obj_id = data.get('_id')
+        week_day = int(data.get('weekDay'))
+
+        if data.get('type') == 1:
+            query = data.get('query') 
+
+            prompt = '''
+                Generate 5 Multiple Choice Questions with single correct answers and 4 options in the following format:
+                [{"question": "What is that?", "options": {"1": "Option1", "2": "Option2", "3": "Option3", "4": "Option4"}, "answer" : {"3": "Option3"}, "explaination": "This is explaination."}, ... , {"question": "What is that?", "options": {"0": "Option1", "1": "Option2", "3": "Option3", "4": "Option4"}, "answer" : {"3": "Option3"}, "explaination": "This is explaination."}]
+
+                - Topic for questions is : ''' + query + '''
+                - It is required that the response should be an list of objects. Don't include any other verbose explanations and don't include the markdown syntax anywhere.
+            '''
+
+            response = model.generate_content(prompt)
+
+            if response.text[0] == '[':
+                retro = json.loads(response.text)
+                for ele in retro:
+                    ele["solved"] = False
+                
+                roadmap_collection.update_one(
+                    {"_id": ObjectId(obj_id)},
+                    {"$set": { f"practice.{str(week_day)}": retro }}
+                )
+                
+                problems_data = roadmap_collection.find_one({"_id": ObjectId(data.get("_id")), "userId": user_id}, {"_id": 1, "practice": 1})
+                
+                return jsonify({"success": True, "practice": problems_data['practice'] }), 200
+            
+            elif response.text[0] == '`':
+                retro = json.loads(response.text[7:-3])
+                for ele in retro:
+                    ele["solved"] = False
+                
+                roadmap_collection.update_one(
+                    {"_id": ObjectId(obj_id)},
+                    {"$set": {  f"practice.{str(week_day)}": retro }}
+                )
+
+                problems_data = roadmap_collection.find_one({"_id": ObjectId(data.get("_id")), "userId": user_id}, {"_id": 1, "practice": 1})
+                
+                return jsonify({"success": True, "practice": problems_data['practice'] }), 200
+            
+            print(response.text)
+            return jsonify({"success": False}), 500
+
+        elif data.get('type') == 2:
+            query = data.get('query') 
+
+            prompt = '''
+                Generate 5 Multiple Choice Questions with single correct answers and 4 options in the following format:
+                [{"question": "What is that?", "options": {"1": "Option1", "2": "Option2", "3": "Option3", "4": "Option4"}, "answer" : {"3": "Option3"}, "explaination": "This is explaination."}, ... , {"question": "What is that?", "options": {"0": "Option1", "1": "Option2", "3": "Option3", "4": "Option4"}, "answer" : {"3": "Option3"}, "explaination": "This is explaination."}]
+
+                - Topic for questions is : ''' + query + '''
+                - It is required that the response should be an list of objects. Don't include any other verbose explanations and don't include the markdown syntax anywhere.
+            '''
+
+            response = model.generate_content(prompt)
+            
+            if response.text[0] == '[':
+                temp_data = roadmap_collection.find_one({"_id": ObjectId(obj_id)})
+                retro = json.loads(response.text)
+                for ele in retro:
+                    ele["solved"] = False
+                
+                temp_data['practice'][str(week_day)] += retro
+                roadmap_collection.update_one(
+                    {"_id": ObjectId(obj_id)},
+                    {"$set": { "practice": temp_data['practice'] }}
+                )
+
+                problems_data = roadmap_collection.find_one({"_id": ObjectId(data.get("_id")), "userId": user_id}, {"_id": 1, "practice": 1})
+                
+                return jsonify({"success": True, "practice": problems_data['practice'] }), 200
+            
+            elif response.text[0] == '`':
+                temp_data = roadmap_collection.find_one({"_id": ObjectId(obj_id)})
+                retro = json.loads(response.text[7:-3])
+                for ele in retro:
+                    ele["solved"] = False
+                
+                temp_data['practice'][str(week_day)] += retro
+                roadmap_collection.update_one(
+                    {"_id": ObjectId(obj_id)},
+                    {"$set": { "practice": temp_data['practice'] }}
+                )
+
+                problems_data = roadmap_collection.find_one({"_id": ObjectId(data.get("_id")), "userId": user_id}, {"_id": 1, "practice": 1})
+                
+                return jsonify({"success": True, "practice": problems_data['practice'] }), 200
+            
+            print(response.text)
+            return jsonify({"success": False}), 500
+
+
+@app.route('/problemhandler', methods=['POST'])
+def problemhandler():
+    if request.method == 'POST':
+        data = request.get_json()
+        obj_id = data.get('_id')
+        week_day = data.get('weekDay')
+        indexer = data.get('index')
+
+        temp = f"practice.{week_day}.{indexer}.solved"
+        print(temp)
+
+        test = roadmap_collection.update_one(
+            {"_id": ObjectId(obj_id)},
+            {"$set": { temp : True }}
+        )
+        print(test)
+        return jsonify({"success": True}), 200
+
+
+# if __name__ == '__main__':
+#     app.run(debug=True, host='0.0.0.0')
