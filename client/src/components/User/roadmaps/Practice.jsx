@@ -9,6 +9,7 @@ import { Icon } from '@iconify/react';
 import toast from 'react-hot-toast';
 import { Meteors } from "../../Meteors/Meteors.jsx";
 import {Breadcrumbs, BreadcrumbItem} from "@nextui-org/react";
+import {Code} from "@nextui-org/react";
 
 export const CustomRadio = (props) => {
   const {children, ...otherProps} = props;
@@ -152,7 +153,7 @@ const Practice = ({questions, title, weekNum, dayNum}) => {
                   <Card className={`h-full ${theme === 'light' ? 'bg-slate-300' :'bg-slate-900'} p-5`}>
                     <Meteors />
                     <form typeof='submit'>
-                      <CardBody className='flex flex-col gap-10'>
+                      <CardBody className='flex flex-col gap-3'>
                         <RadioGroup isRequired isDisabled={problems[currentPage-1].solved} defaultValue={`${problems[currentPage-1].solved && Object.keys(problems[currentPage-1].answer)[0]}`} label="Answer" description="Choose one correct answer from the above options.">
                           {Object.entries(problems[currentPage-1].options).map(([key, value]) => (
                             <CustomRadio color={`${problems[currentPage-1].solved ? 'success' : error ? 'danger' : 'primary'}`} className={`${problems[currentPage-1].solved ? "data-[selected=true]:border-success" : error ? 'data-[selected=true]:border-danger' : "data-[selected=true]:border-primary"}`} key={key} id={`option${key}`} description="" value={key} onChange={() => {setError(false); setCurrIndex(currentPage-1); setCurrKey(key); setCurrValue(value);}}>
@@ -160,6 +161,11 @@ const Practice = ({questions, title, weekNum, dayNum}) => {
                             </CustomRadio>
                           ))}
                         </RadioGroup>
+                        {problems[currentPage-1].solved && (
+                          <div className='bg-green-500 bg-opacity-40 p-2 rounded-lg text-[12px]'>
+                            <b>Explanation: </b><br />{problems[currentPage-1].explaination}
+                          </div>
+                        )}
                         <div className='flex justify-center align-middle items-center'><Button isDisabled={problems[currentPage-1].solved} isLoading={loading} onClick={() => handleSumbit(currIndex, currKey, currValue)} color='primary' variant='shadow'>Submit</Button></div>
                       </CardBody>
                     </form>
