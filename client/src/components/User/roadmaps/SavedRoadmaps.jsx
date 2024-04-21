@@ -54,6 +54,7 @@ const SavedRoadmaps = () => {
   const [dayProgress, setDayProgress] = useState(0);
   const [displayPractice, setDisplayPractice] = useState(false);
   const [questions, setQuestions] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const endRef = useRef(null);
 
@@ -712,6 +713,7 @@ const SavedRoadmaps = () => {
   }, []);
 
   const generateProblems = async() => {
+    setLoading(true);
     const weekData = roadMapData[weekNum - 1];
     const weekKey = `week${weekNum}`;
     const week = weekData[weekKey];
@@ -737,6 +739,7 @@ const SavedRoadmaps = () => {
           if (data.success) {
               console.log(data);
               setQuestions(data.practice);
+              setLoading(false);
           } else {
               setError(data.error);
           }
@@ -749,6 +752,7 @@ const SavedRoadmaps = () => {
   };
 
   const generateMore = async() => {
+    setLoading(true);
     const weekData = roadMapData[weekNum - 1];
     const weekKey = `week${weekNum}`;
     const week = weekData[weekKey];
@@ -774,6 +778,7 @@ const SavedRoadmaps = () => {
           if (data.success) {
               console.log(data);
               setQuestions(data.practice);
+              setLoading(false);
           } else {
               setError(data.error);
           }
@@ -1072,7 +1077,7 @@ const SavedRoadmaps = () => {
                       <CardBody onClick={() => {setDisplayPractice(!displayPractice); scrollToBottom();}} >
                         <p className="flex justify-center align-middle items-center font-bold text-lg text-white">Practice Problems</p>
                         {getProgress() === null ? (
-                          <div className='flex justify-center'><Button onClick={generateProblems} variant='shadow' color='primary' size='lg' startContent={<Image src={gemini} width={'30px'} />}><p className='text-[20px] font-bold'>Generate</p></Button></div>
+                          <div className='flex justify-center'><Button isLoading={loading} onClick={generateProblems} variant='shadow' color='primary' size='lg' startContent={<Image src={gemini} width={'30px'} />}><p className='text-[20px] font-bold'>Generate</p></Button></div>
                         ) : (
                           <div className="flex justify-between">
                             <div className="w-full">
@@ -1088,7 +1093,7 @@ const SavedRoadmaps = () => {
                                 <Progress className="py-3" size={'small'} type="line" percent={parseInt(getProgress())} />
                               </ConfigProvider>
                             </div>
-                            <Tooltip showArrow={true} color="secondary" placement="bottom" size="lg" content="Generate More"><div className='flex justify-center'><Button onClick={generateMore} variant='shadow' color='primary' size='md' isIconOnly startContent={<Icon icon={'ic:round-more'} />}></Button></div></Tooltip>
+                            <Tooltip showArrow={true} color="secondary" placement="bottom" size="lg" content="Generate More"><div className='flex justify-center'><Button isLoading={loading} onClick={generateMore} variant='shadow' color='primary' size='md' isIconOnly startContent={<Icon icon={'ic:round-more'} />}></Button></div></Tooltip>
                           </div>
                         )}
                       </CardBody>

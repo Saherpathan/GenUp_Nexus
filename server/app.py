@@ -788,8 +788,16 @@ def roadmap():
         elif data.get('type') == 2:
             # Get roadmap data
             roadmap_data = roadmap_collection.find_one({"_id": ObjectId(data.get("_id")), "userId": user_id})
+            
+            practice_temp = roadmap_data['practice']            # Modify to remove answer and explanation
+            for key in practice_temp.values():
+                for question in key:
+                    if not question.get('solved', False):
+                        question.pop('answer', None)
+                        question.pop('explaination', None)
+
             if roadmap_data:
-                return jsonify({'success': True, 'roadmapData': {'data': roadmap_data['data']}, 'activeDays': roadmap_data['activeDays'], 'practice': roadmap_data['practice'], 'title': roadmap_data['title']})
+                return jsonify({'success': True, 'roadmapData': {'data': roadmap_data['data']}, 'activeDays': roadmap_data['activeDays'], 'practice': practice_temp, 'title': roadmap_data['title']})
             else:
                 return jsonify({'success': False})
             
@@ -1071,16 +1079,25 @@ def problemhandler():
         obj_id = data.get('_id')
         week_day = data.get('weekDay')
         indexer = data.get('index')
+        keyer = data.get('key')
 
-        temp = f"practice.{week_day}.{indexer}.solved"
-        print(temp)
+        temp1 = f"practice.{week_day}"
+        temp2 = f"practice.{week_day}.{indexer}.solved"
 
-        test = roadmap_collection.update_one(
+        test = roadmap_collection.find_one(
             {"_id": ObjectId(obj_id)},
-            {"$set": { temp : True }}
+            {temp1: 1}
         )
-        print(test)
-        return jsonify({"success": True}), 200
+
+        notor = [int(key) for key in test['practice'][str(week_day)][int(indexer)]['answer'].keys()][0]
+        if notor == int(keyer):
+            roadmap_collection.update_one(
+                {"_id": ObjectId(obj_id)},
+                {"$set": { temp2 : True }}
+            )
+            return jsonify({"success": True, "answer": {notor: test['practice'][str(week_day)][int(indexer)]['answer'][f"{notor}"]}, "explaination": test['practice'][str(week_day)][int(indexer)]['explaination']}), 200
+        else:
+            return jsonify({"success": False}), 200
 
 
 # if __name__ == '__main__':

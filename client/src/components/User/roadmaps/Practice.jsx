@@ -56,46 +56,43 @@ const Practice = ({questions, title, weekNum, dayNum}) => {
   const handleSumbit = async(index, key, value) => {
     setLoading(true);
     console.log(index, key, value);
-    console.log(Object.keys(problems[index].answer)[0] === key)
-    if (Object.keys(problems[index].answer)[0] === key) {
-      try {
-        const response = await fetch('https://parthcodes-test-flask-deploy.hf.space/problemhandler', {
-            method: 'POST',
-            headers: {
-            'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                "_id": id,
-                "weekDay": (weekNum*10)+dayNum,
-                "index": index,
-                "key": key
-            }),
-        });
-    
-        if (response.ok) {
-          const data = await response.json();
-          if (data.success) {
-              console.log("Correct"); 
-              problems[index].solved = true;
-              setCurrentPage((prev) => (prev < 10 ? prev + 1 : prev));
-              toast.success("Problem Solved");
-              setLoading(false);
-              setCurrIndex(null);
-              setCurrKey(null);
-              setCurrValue(null);
-              setProblems(problems);
-          } else {
-            toast.error("Incorrect Answer");
-          }
+    try {
+      const response = await fetch('https://parthcodes-test-flask-deploy.hf.space/problemhandler', {
+          method: 'POST',
+          headers: {
+          'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+              "_id": id,
+              "weekDay": (weekNum*10)+dayNum,
+              "index": index,
+              "key": key
+          }),
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+            console.log("Correct"); 
+            console.log(data.answer);
+            problems[index].solved = true;
+            problems[index].answer = {key: value};
+            problems[index].explaination = data.explaination;
+            setCurrentPage((prev) => (prev < problems.length ? prev + 1 : prev));
+            toast.success("Problem Solved");
+            setLoading(false);
+            setCurrIndex(null);
+            setCurrKey(null);
+            setCurrValue(null);
+            setProblems(problems);
+        } else {
+          setError(true);
+          toast.error("Incorrect Answer");
+          setLoading(false);
         }
-      } catch (error) {
-        console.log(error)
       }
-    }
-    else {
-      setError(true);
-      toast.error("Incorrect Answer");
-      setLoading(false);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -176,7 +173,7 @@ const Practice = ({questions, title, weekNum, dayNum}) => {
           <CardFooter className="flex flex-row justify-between p-5">
             <Button size='md' isDisabled={currentPage === 1 ? true : false} onPress={() => setCurrentPage((prev) => (prev > 1 ? prev - 1 : prev))} variant="flat" color="secondary" startContent={<Icon icon={'mingcute:arrow-left-fill'} fontSize={'18px'} />}>Previous</Button>
             <Pagination size='md' total={problems.length} color="secondary" page={currentPage} onChange={setCurrentPage} />
-            <Button size='md' isDisabled={!problems[currentPage-1].solved || currentPage === 10 ? true : false}  onPress={() => setCurrentPage((prev) => (prev < 10 ? prev + 1 : prev))} variant="flat" color="primary" endContent={<Icon icon={'mingcute:arrow-right-fill'} fontSize={'18px'} />}>Next</Button>
+            <Button size='md' isDisabled={!problems[currentPage-1].solved || currentPage === problems.length ? true : false}  onPress={() => setCurrentPage((prev) => (prev < problems.length ? prev + 1 : prev))} variant="flat" color="primary" endContent={<Icon icon={'mingcute:arrow-right-fill'} fontSize={'18px'} />}>Next</Button>
           </CardFooter>
         </Card>
       )}
