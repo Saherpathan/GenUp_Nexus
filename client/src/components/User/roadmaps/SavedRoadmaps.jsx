@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams } from 'react-router-dom';
 import { Layout } from "../../Layout.jsx";
 import Background from "../../Background/Background.jsx";
@@ -25,6 +25,8 @@ import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure}
 import { ThreeDCard } from "../../3DCard/ThreeDCard.jsx";
 import { Progress, ConfigProvider } from 'antd';
 import toast from "react-hot-toast";
+import Practice from "./Practice.jsx";
+import gemini from '../../../assets/gemini.png';
 
 const monthNames = [
   'January', 'February', 'March', 'April', 'May', 'June',
@@ -35,6 +37,7 @@ const SavedRoadmaps = () => {
   const { theme } = useTheme();
   const { id } = useParams();
   const botImages = [membot1, membot2, membot3, membot4, membot5, membot6];
+  const [roadMapTitle, setRoadMapTitle] = useState(null);
   const [roadMapData, setRoadMapData] = useState(null);
   const [activeDays, setActiveDays] = useState([]);
   const [activeDaysMod, setActiveDaysMod] = useState(null);
@@ -49,6 +52,11 @@ const SavedRoadmaps = () => {
   const [layout, setLayout] = useState(1);
   const [weekProgress, setWeekProgress] = useState(0);
   const [dayProgress, setDayProgress] = useState(0);
+  const [displayPractice, setDisplayPractice] = useState(false);
+  const [questions, setQuestions] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const endRef = useRef(null);
 
   const iconComponents = [
     PiNumberSquareOneFill,
@@ -653,6 +661,19 @@ const SavedRoadmaps = () => {
     );
   };
 
+  const getProgress = () => {
+    var solved = 0;
+    if (questions[(weekNum*10)+dayNum]) {
+      questions[(weekNum*10)+dayNum]?.map((question, index) => {
+        if (question.solved) { solved++; }
+      })
+      return solved*100/(questions[(weekNum*10)+dayNum].length);
+    }
+    else {
+      return null;
+    }
+  };
+
   useEffect(() => {
     setUserID(user.result.user_id);
     const getRoadMap = async () => {
@@ -673,9 +694,11 @@ const SavedRoadmaps = () => {
             const data = await response.json();
             if (data.success) {
                 console.log(data);
+                setRoadMapTitle(data.title);
                 setRoadMapData(data.roadmapData.data);
                 setActiveDays(data.activeDays);
                 setActiveDaysMod(daysActive(data.activeDays));
+                setQuestions(data.practice);
             } else {
                 setError(data.error);
             }
@@ -688,6 +711,90 @@ const SavedRoadmaps = () => {
     }
     getRoadMap();
   }, []);
+
+  const generateProblems = async() => {
+    setLoading(true);
+    const weekData = roadMapData[weekNum - 1];
+    const weekKey = `week${weekNum}`;
+    const week = weekData[weekKey];
+    const dayKey = `day${dayNum}`;
+    const day = week.data[dayKey];
+    try {
+      const response = await fetch( 'https://parthcodes-test-flask-deploy.hf.space/problemgenerator', {
+          method: 'POST',
+          headers: {
+          'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+              "type": 1,
+              "_id": id,
+              "user_id": user.result.userId,
+              "weekDay": (weekNum*10)+dayNum,
+              "query": day.heading
+          }),
+      });
+  
+      if (response.ok) {
+          const data = await response.json();
+          if (data.success) {
+              console.log(data);
+              setQuestions(data.practice);
+              setLoading(false);
+          } else {
+              setError(data.error);
+          }
+      } else {
+          setError('Cannot connect to server right now !!');
+      }
+    } catch (error) {
+        setError('We are experiencing heavy traffic !!');
+    }
+  };
+
+  const generateMore = async() => {
+    setLoading(true);
+    const weekData = roadMapData[weekNum - 1];
+    const weekKey = `week${weekNum}`;
+    const week = weekData[weekKey];
+    const dayKey = `day${dayNum}`;
+    const day = week.data[dayKey];
+    try {
+      const response = await fetch( 'https://parthcodes-test-flask-deploy.hf.space/problemgenerator', {
+          method: 'POST',
+          headers: {
+          'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+              "type": 2,
+              "_id": id,
+              "user_id": user.result.userId,
+              "weekDay": (weekNum*10)+dayNum,
+              "query": day.heading
+          }),
+      });
+  
+      if (response.ok) {
+          const data = await response.json();
+          if (data.success) {
+              console.log(data);
+              setQuestions(data.practice);
+              setLoading(false);
+          } else {
+              setError(data.error);
+          }
+      } else {
+          setError('Cannot connect to server right now !!');
+      }
+    } catch (error) {
+        setError('We are experiencing heavy traffic !!');
+    }
+  };
+
+  const scrollToBottom = () => {
+    setTimeout(() => {
+      endRef.current.scrollIntoView({ behavior: 'smooth' });
+    }, 200); 
+  };
 
   return (
     <div>
@@ -910,10 +1017,11 @@ const SavedRoadmaps = () => {
               )}
             </div><br /><br />
             {info && (
+              <>
               <div className="h-[100dvh] flex flex-col p-1">
                 <div className="breadcrumbs">
                   <Breadcrumbs radius="full" variant="solid" size={'md'}>
-                      <BreadcrumbItem>{roadMapData[0].week1.title}</BreadcrumbItem>
+                      <BreadcrumbItem>{roadMapTitle}</BreadcrumbItem>
                       <BreadcrumbItem>
                         <Dropdown backdrop="blur">
                           <DropdownTrigger>
@@ -965,6 +1073,31 @@ const SavedRoadmaps = () => {
                 <div className="flex flex-row justify-center w-full p-1 pt-0">
                   <div className="flex flex-col gap-3 p-3 w-[30%]">
                     <DisplayWeekData weekNum={weekNum}></DisplayWeekData>
+                    <Card className="w-full h-[100px] cursor-pointer bg-gradient-to-br from-teal-400 via-violet-600 to-indigo-600">
+                      <CardBody onClick={() => {setDisplayPractice(!displayPractice); scrollToBottom();}} >
+                        <p className="flex justify-center align-middle items-center font-bold text-lg text-white">Practice Problems</p>
+                        {getProgress() === null ? (
+                          <div className='flex justify-center'><Button isLoading={loading} onClick={generateProblems} variant='shadow' color='primary' size='lg' startContent={<Image src={gemini} width={'30px'} />}><p className='text-[20px] font-bold'>Generate</p></Button></div>
+                        ) : (
+                          <div className="flex justify-between">
+                            <div className="w-full">
+                              <ConfigProvider
+                                theme={{
+                                    components: {
+                                        Progress: {
+                                            colorText: `${theme === 'light' ? 'black' : 'white'}`,
+                                            remainingColor: `${theme === 'light' ? 'rgb(240, 240, 240)' : 'rgb(60, 60, 60)'}`,
+                                        },
+                                    },
+                                }}>
+                                <Progress className="py-3" size={'small'} type="line" percent={parseInt(getProgress())} />
+                              </ConfigProvider>
+                            </div>
+                            <Tooltip showArrow={true} color="secondary" placement="bottom" size="lg" content="Generate More"><div className='flex justify-center'><Button isLoading={loading} onClick={generateMore} variant='shadow' color='primary' size='md' isIconOnly startContent={<Icon icon={'ic:round-more'} />}></Button></div></Tooltip>
+                          </div>
+                        )}
+                      </CardBody>
+                    </Card>
                   </div>
                   <div className="flex flex-col w-[75%] pt-2">
                     <div className="flex w-full h-[120px] mb-1">
@@ -1024,6 +1157,12 @@ const SavedRoadmaps = () => {
                   </div>
                 </div>
               </div>
+              {displayPractice && questions[(weekNum*10)+dayNum] && (
+                <div ref={endRef} className="h-[100dvh] flex flex-col p-1">
+                  <Practice questions={questions} title={roadMapTitle} weekNum={weekNum} dayNum={dayNum} />
+                </div>
+              )}
+              </>
             )}
           </>
         )}
