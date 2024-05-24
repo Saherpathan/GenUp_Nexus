@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, render_template, request
 from flask_cors import CORS
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
@@ -14,7 +14,11 @@ from controllers.demo import get_initial_data
 from controllers.mindmap import saveMindmap, getMindmap, getMindmapHistory, deleteMindmap, getMindmapByid, saveMindmapById, saveGeneratedData
 import json
 from bson import ObjectId, json_util
+from email.message import EmailMessage
+import smtplib
+import ssl
 from dotenv import load_dotenv
+import random
 import os
 import re
 import requests
@@ -44,6 +48,7 @@ users_collection = db["users"]
 interviews_collection = db["interviews"]
 savedMindmap = db["savedMindmap"]
 roadmap_collection = db['roadmaps']
+otps_collection = db['otps']
 
 # Send a ping to confirm a successful connection
 try:
@@ -83,9 +88,7 @@ safety_settings = [
   },
 ]
 
-model = genai.GenerativeModel('gemini-1.0-pro',
-                              generation_config=generation_config,
-                              safety_settings=safety_settings)
+model = genai.GenerativeModel('gemini-1.0-pro', generation_config=generation_config, safety_settings=safety_settings)
 
 # Caches to reduce no of queries to MongoDB...
 user_id_ping = {'current': 0}
@@ -374,7 +377,10 @@ def interview():
                                              Position : '''+ position + '''
                                              Round: '''+ round + '''
                                              Difficullty Level : '''+ difficulty_level + '''
-                                             Company Interview : ''' + company_name)
+                                             Company Interview : ''' + company_name + '''
+                                        
+                                        - It is required that the response should be an object. Don't include any other verbose explanations and don't include the markdown syntax anywhere.''')
+                print(response.text)
                 print(response.text)
                 temp = json.loads(response.text)
                 user_chats[user_id]['qa'] = [{'question': temp['question']}]
@@ -528,12 +534,11 @@ def useridping():
 
 
 # User Routes
-@app.route('/user/signup', methods=['POST'])
-def signup():
+@app.route('/user/verifymail', methods=['POST'])
+def verifymail():
     data = request.json
     name = data.get('name')
     email = data.get('email')
-    password = data.get('password')
 
     if not email:
         return jsonify({"error": "Invalid email"}), 400
@@ -542,23 +547,61 @@ def signup():
 
     if existing_user:
         return jsonify({"message": "User already exists"}), 404
-
-    hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
-
-    result = users_collection.insert_one({
-        "name": name,
-        "email": email,
-        "password": hashed_password
-    })
-
-    print(result)
-
-    expires = timedelta(days=7)
-    access_token = create_access_token(identity={"email": email, "id": str(result.inserted_id)}, expires_delta=expires)
-
-    res = {"name": name, "email": email, "userId": str(result.inserted_id)}
     
-    return jsonify({"result": res, "token": access_token}), 201
+    msg = EmailMessage()
+
+    otp = str(random.randint(100000, 999999))
+    msg["Subject"] = "GenUP Nexus Verification"
+    msg["From"] = "GenUP Nexus Team"
+    msg["To"] = email
+
+    html_content = render_template('email.html', name=name, otp=otp)
+    msg.set_content(html_content, subtype='html')
+
+    context = ssl.create_default_context()
+
+    with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+        smtp.login('smilecheck100@gmail.com', os.getenv('GMAIL_SSL_KEY'))
+        smtp.send_message(msg)
+
+    otps_collection.insert_one({"email": email, "otp": otp})
+
+    return jsonify({"success": True}), 200
+
+
+@app.route('/user/signup', methods=['POST'])
+def signup():
+    data = request.json
+    print(data)
+    form = data.get('form')
+    name = form['name']
+    email = form['email']
+    password = form['password']
+    otp = data.get('otp')
+
+    if not email:
+        return jsonify({"error": "Invalid email"}), 400
+    
+    stored_otp = otps_collection.find_one({"email": email}, sort=[('_id', -1)])
+
+    if stored_otp['otp'] == otp:
+        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+
+        result = users_collection.insert_one({
+            "name": name,
+            "email": email,
+            "password": hashed_password
+        })
+
+        expires = timedelta(days=7)
+        access_token = create_access_token(identity={"email": email, "id": str(result.inserted_id)}, expires_delta=expires)
+
+        res = {"name": name, "email": email, "userId": str(result.inserted_id)}
+        
+        return jsonify({"result": res, "token": access_token}), 201
+
+    else:
+        return jsonify({"error": "Invalid otp"}), 400
 
 @app.route('/user/signin', methods=['POST'])
 def signin():
