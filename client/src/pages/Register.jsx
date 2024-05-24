@@ -18,6 +18,8 @@ import { MailIcon } from "./MailIcon.jsx";
 import { EyeSlashFilledIcon } from "./EyeSlashFilledIcon.jsx";
 import { EyeFilledIcon } from "./EyeFilledIcon.jsx";
 import { Icon } from "@iconify/react";
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure} from "@nextui-org/modal";
+import OtpForm from "./OTP.jsx";
 
 const initialForm = {
   name: "",
@@ -34,6 +36,12 @@ const Register = () => {
   const [serverMsg, setServerMsg] = useState("");
   const navigateTo = useNavigate();
   const { user, setUser } = useGlobalContext();
+  const {isOpen, onOpen, onOpenChange} = useDisclosure();
+  const [verifiedOtp, setVerifiedOtp] = useState('');
+
+  const handleOtpVerification = (otp) => {
+    setVerifiedOtp(otp);
+  };
 
   useEffect(() => {
     console.log(user);
@@ -49,7 +57,7 @@ const Register = () => {
     setErrors(validationErrors);
   };
 
-  const handleSumbmit = async (e) => {
+  const handleEmailVerification = async (e) => {
     e.preventDefault();
 
     const validationErrors = Validator(form);
@@ -57,7 +65,29 @@ const Register = () => {
       setIsLoading(true);
 
       try {
-        const res = await axiosvercel.post("/user/signup", form);
+        const res = await axios.post("/user/verifymail", { name: form.name, email: form.email });
+        const result = res.data;
+        setIsLoading(false);
+        onOpen();
+      } catch (error) {
+        setIsLoading(false);
+        setServerMsg(
+          error.response.data.message || "Server error please try again later"
+        );
+        toast.error("Server error please try again later");
+      }
+    } else {
+      setErrors(validationErrors);
+    }
+  }
+
+  const handleSumbmit = async () => {
+    const validationErrors = Validator(form);
+    if (Object.keys(validationErrors).length === 0 && verifiedOtp.length === 6) {
+      setIsLoading(true);
+
+      try {
+        const res = await axios.post("/user/signup", {form: form, otp: verifiedOtp});
         const result = res.data;
         localStorage.setItem("user", JSON.stringify({ ...result }));
         setUser(JSON.parse(localStorage.getItem("user")));
@@ -115,7 +145,7 @@ const Register = () => {
         <Card className="w-[400px] h-full backdrop-blur-[3px] bg-transparent">
           <CardBody>
             <p className="text-[32px] font-extrabold text-center w-full">Register</p><br />
-            <form onSubmit={handleSumbmit} className="flex flex-col justify-center align-middle items-center">
+            <form onSubmit={handleEmailVerification} className="flex flex-col justify-center align-middle items-center">
               <Input placeholder="Enter your name..." color="primary" labelPlacement="outside" startContent={<Icon icon={'wpf:name'} fontSize={'24px'} />} type="name" label="Name" name="name" id="name" value={form.name} onChange={handleChange} isInvalid={errors.name ? true : false} isRequired className="m-2 w-[300px]" />
               {errors.name && <div className="m-2 text-red-500 text-[12px]">{errors.name}</div>}
               <Input placeholder="Enter your email..." color="primary" labelPlacement="outside" startContent={<MailIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />} type="email" label="Email" name="email" id="email" value={form.email} onChange={handleChange} isInvalid={errors.email ? true : false} isRequired className="m-2 w-[300px]" />
@@ -124,7 +154,7 @@ const Register = () => {
               {errors.password && ( <div className="p-1 m-2 text-red-500 text-[12px]">{errors.password}</div> )}
               <Input placeholder="Repeat password..." color="primary" labelPlacement="outside" startContent={ <EyeFilledIcon className="text-2xl text-default-400 pointer-events-none" /> } type="password" label="Confirm Password" name="confirmPassword" id="confirmPassword" value={form.confirmPassword} onChange={handleChange} isInvalid={errors.confirmPassword ? true : false} isRequired className="m-2 w-[300px]" />
               {errors.confirmPassword && ( <div className="p-1 m-2 text-red-500 text-[12px]">{errors.confirmPassword}</div> )}<br />
-              <Button type="submit" className="flex m-2 " color="primary" variant="shadow" isLoading={isLoading} >
+              <Button type="submit" className="flex m-2" color="primary" variant="shadow" isLoading={isLoading} >
                 Sign up
               </Button>
               {serverMsg && <div className="p-1 m-2 text-red-500 text-[12px]">{serverMsg}</div>}
@@ -137,6 +167,31 @@ const Register = () => {
           </CardFooter>
         </Card>
       </CardBody>
+      <Modal 
+        backdrop="opaque"
+        isOpen={isOpen} 
+        onOpenChange={onOpenChange}
+        isDismissable={false}
+        isKeyboardDismissDisabled={true}
+        hideCloseButton
+        classNames={{
+          backdrop: "bg-gradient-to-t from-zinc-900 to-zinc-900/10 backdrop-opacity-20"
+        }}
+      >
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1 text-center">Verify Mail</ModalHeader>
+              <ModalBody className="z-[999]">
+                <OtpForm onVerify={handleOtpVerification} />
+              </ModalBody>
+              <ModalFooter className="flex justify-center items-center">
+                <Button isLoading={isLoading} color="primary" variant="shadow" onPress={handleSumbmit}>Submit</Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
     </Card>
   );
 };

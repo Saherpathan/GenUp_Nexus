@@ -63,7 +63,7 @@ const Auth = () => {
 					<div className="form-container sign-in-container">
 							<Login />
 					</div>
-					<div className="overlay-container rounded-xl shadow-xl flex flex-col justify-center align-middle items-center">
+					<div className="overlay-container z-10 rounded-xl shadow-xl flex flex-col justify-center align-middle items-center">
             <Switch className='absolute top-2 right-2 z-50' defaultSelected size="md" color="primary" thumbIcon={({ isSelected, className }) => !isSelected ? ( <SunIcon className={className} /> ) : ( <MoonIcon className={className} /> ) } onClick={() => { if (theme === "light") { setTheme("dark"); setWaveReload(false); const timer = setTimeout(() => {setWaveReload(true);}, 10); return () => clearTimeout(timer); } else if (theme === "dark") { setTheme("light"); setWaveReload(false); const timer = setTimeout(() => {setWaveReload(true);}, 10); return () => clearTimeout(timer); } }} />
             {/* <TextRevealCard className={`relative top-2 z-50 border-none ${theme === 'light' ? ('bg-white') :  ('bg-[#181818]')} p-0 pl-3`} text="GenUP Nexus " revealText="GenUP Nexus" /> */}
             <Sparkles className="w-full h-full absolute opacity-1 z-10" id="tsparticlesfullpage" background="transparent" minSize={0.6} maxSize={1.4} particleDensity={60} particleColor={theme === 'light' ? ('#000') : ('#FFF')} />
