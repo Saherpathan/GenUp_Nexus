@@ -88,7 +88,7 @@ safety_settings = [
   },
 ]
 
-model = genai.GenerativeModel('gemini-1.0-pro', generation_config=generation_config, safety_settings=safety_settings)
+model = genai.GenerativeModel('gemini-1.5-flash', generation_config=generation_config, safety_settings=safety_settings)
 
 # Caches to reduce no of queries to MongoDB...
 user_id_ping = {'current': 0}
@@ -240,13 +240,18 @@ def treeDemo():
 - keep atleast 2 edges "animated":true.
 - Strictly keep the all the nodes with type property value as custom. 
 - to edit edges add style with stroke property and a hexcode value to it(Only use this color: #e92a67, #a853ba, #2a8af6, #e92a67).
+- It is required that the response should be an object. Don't include any other verbose explanations and don't include the markdown syntax anywhere.
                                    
 Topic is: ''' + query)
         
         # response.text(8,)
         print(response.text)
-        json_data = response.text
-        modified_json_data = json_data[8:-3]
+        modified_json_data = {}
+        if response.text[0] == '`':
+            json_data = response.text
+            modified_json_data = json_data[8:-3]
+        elif response.text[0] == '{':
+            modified_json_data = json.loads(response.text)
 
         while True:
             new_object_id = ObjectId()
@@ -380,7 +385,6 @@ def interview():
                                              Company Interview : ''' + company_name + '''
                                         
                                         - It is required that the response should be an object. Don't include any other verbose explanations and don't include the markdown syntax anywhere.''')
-                print(response.text)
                 print(response.text)
                 temp = json.loads(response.text)
                 user_chats[user_id]['qa'] = [{'question': temp['question']}]
@@ -770,36 +774,33 @@ def roadmap():
 
             roads_data = roadmap_list
 
-            print(roads_data)
-
-            time.sleep(60)
-
             # Youtube Integration & links modification
-            API_KEY = os.getenv('YOUTUBE_API_KEY')
-            url = "https://youtube.googleapis.com/youtube/v3/search"
+            # API_KEY = os.getenv('YOUTUBE_API_KEY')
+            # url = "https://youtube.googleapis.com/youtube/v3/search"
             
             for index, ele in enumerate(roads_data):
                 for i in range(0,7):
-                    params = {
-                      "part": "snippet",
-                      "q": ele[f"week{index + 1}"]['data'][f"day{i+1}"]['heading'] + ele[f"week{index + 1}"]['title'],
-                      "key": API_KEY,
-                      "maxResults" : 3
-                    }
+                    # params = {
+                    #   "part": "snippet",
+                    #   "q": ele[f"week{index + 1}"]['data'][f"day{i+1}"]['heading'] + ele[f"week{index + 1}"]['title'],
+                    #   "key": API_KEY,
+                    #   "maxResults" : 3
+                    # }
                 
-                    response = requests.get(url, params=params)
+                    # response = requests.get(url, params=params)
                     
-                    if response.status_code == 200:
-                        video_data = response.json()
+                    # if response.status_code == 200:
+                    #     video_data = response.json()
 
-                        temp1 = []
-                        for vid in video_data['items']:
-                            if vid['id']['kind']=='youtube#playlist':
-                                temp1.append({'viewed': False, 'type': 'playlist', 'playlistId': vid['id']['playlistId'], 'videoTitle': vid['snippet']['title'], 'channelName': vid['snippet']['channelTitle'], 'thumbnail': vid['snippet']['thumbnails']['high']['url']})
-                            elif vid['id']['kind']=='youtube#video':
-                                temp1.append({'viewed': False, 'type': 'video', 'videoId': vid['id']['videoId'], 'videoTitle': vid['snippet']['title'], 'channelName': vid['snippet']['channelTitle'], 'thumbnail': vid['snippet']['thumbnails']['high']['url']})
+                    #     temp1 = []
+                    #     for vid in video_data['items']:
+                    #         if vid['id']['kind']=='youtube#playlist':
+                    #             temp1.append({'viewed': False, 'type': 'playlist', 'playlistId': vid['id']['playlistId'], 'videoTitle': vid['snippet']['title'], 'channelName': vid['snippet']['channelTitle'], 'thumbnail': vid['snippet']['thumbnails']['high']['url']})
+                    #         elif vid['id']['kind']=='youtube#video':
+                    #             temp1.append({'viewed': False, 'type': 'video', 'videoId': vid['id']['videoId'], 'videoTitle': vid['snippet']['title'], 'channelName': vid['snippet']['channelTitle'], 'thumbnail': vid['snippet']['thumbnails']['high']['url']})
 
-                        ele[f"week{index + 1}"]['data'][f"day{i+1}"]['youtube'] = temp1
+                    #     ele[f"week{index + 1}"]['data'][f"day{i+1}"]['youtube'] = temp1
+                        ele[f"week{index + 1}"]['data'][f"day{i+1}"]['youtube'] = []
 
                     # Reference Links
                         temp2 = []
@@ -808,8 +809,8 @@ def roadmap():
 
                         ele[f"week{index + 1}"]['data'][f"day{i+1}"]['links'] = temp2
                     
-                    else:
-                        print("Error:", response.json())
+                    # else:
+                    #     print("Error:", response.json())
                       
             # Save to MongoDB
             roadmap_collection.insert_one({'data': roads_data, 'title': position, 'activeDays': [day_data], 'userId': user_id})
@@ -832,23 +833,24 @@ def roadmap():
             # Get roadmap data
             roadmap_data = roadmap_collection.find_one({"_id": ObjectId(data.get("_id")), "userId": user_id})
             
-            practice_temp = roadmap_data['practice']            # Modify to remove answer and explanation
-            for key in practice_temp.values():
-                for question in key:
-                    if not question.get('solved', False):
-                        question.pop('answer', None)
-                        question.pop('explaination', None)
-
-            if roadmap_data:
+            if "practice" in roadmap_data:
+                practice_temp = roadmap_data['practice']            # Modify to remove answer and explanation
+                for key in practice_temp.values():
+                    for question in key:
+                        if not question.get('solved', False):
+                            question.pop('answer', None)
+                            question.pop('explaination', None)
+                
                 return jsonify({'success': True, 'roadmapData': {'data': roadmap_data['data']}, 'activeDays': roadmap_data['activeDays'], 'practice': practice_temp, 'title': roadmap_data['title']})
-            else:
-                return jsonify({'success': False})
+            
+            return jsonify({'success': True, 'roadmapData': {'data': roadmap_data['data']}, 'activeDays': roadmap_data['activeDays'], 'practice': [], 'title': roadmap_data['title']})
             
 
 @app.route('/roadmap/history', methods=['GET'])
 @auth_user
 def roadmapGetHistory():
     userId = request.userId
+    print(userId)
     try:
         results = roadmap_collection.find({"userId": userId}, {"_id": 1, "title": 1, "activeDays": 1}).limit(5)
         roadmaps = [{"_id": str(result["_id"]), "title": result["title"], "activeDays": result["activeDays"]} for result in results]
@@ -936,14 +938,10 @@ def roadmapmodder():
             temp_data = roadmap_collection.find_one({"_id": ObjectId(obj_id)})
             temp_data['data'][week_num-1][week_field]['data'][day_field]['youtube'][video_index]['viewed'] = True
 
-            print("Meow")
-
             roadmap_collection.update_one(
                 {"_id": ObjectId(obj_id)},
                 {"$set": { "data": temp_data['data'] }}
             )
-            
-            print("Meow")
             
             if temp_data['activeDays'][len(temp_data['activeDays'])-1]['day'] != day_data['day'] or temp_data['activeDays'][len(temp_data['activeDays'])-1]['month'] != day_data['month'] or temp_data['activeDays'][len(temp_data['active_days'])-1]['year'] != day_data['year']:
                 temp_data['activeDays'].append(day_data)
@@ -951,9 +949,6 @@ def roadmapmodder():
                     {"_id": ObjectId(obj_id)},
                     {"$set": { "activeDays": temp_data['activeDays'] }}
                 )
-            
-            
-            print("Meow")
 
             return jsonify({'success': True})
 
@@ -1143,5 +1138,5 @@ def problemhandler():
             return jsonify({"success": False}), 200
 
 
-# if __name__ == '__main__':
-#     app.run(debug=True, host='0.0.0.0')
+if __name__ == '__main__':
+    app.run(debug=True, host='0.0.0.0')

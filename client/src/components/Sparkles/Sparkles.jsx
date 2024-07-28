@@ -4,6 +4,7 @@ import { loadSlim } from "@tsparticles/slim";
 import React from 'react';
 import { cn } from '../cn';
 import { motion, useAnimation } from "framer-motion";
+import { TypewriterEffectSmooth } from "../TypewriterEffect/TypewriterEffect";
 
 const Sparkles = (props) => {
   const {
@@ -38,6 +39,22 @@ const Sparkles = (props) => {
     }
   };
 
+  
+  const words = [
+    {
+      text: "Start",
+    },
+    {
+      text: "learning",
+    },
+    {
+      text: "with",
+    },
+    {
+      text: "GenUP Nexus.",
+      className: "text-blue-500 dark:text-blue-500",
+    },
+  ];
   return (
     <motion.div animate={controls} className={cn("opacity-0", className)}>
       {init && (
@@ -415,6 +432,7 @@ const Sparkles = (props) => {
           }}
         />
       )}
+      <TypewriterEffectSmooth className={`absolute top-2 left-[50%] translate-x-[-50%] z-50 border-none`} words={words} />
     </motion.div>
   );
 };

@@ -18,7 +18,7 @@ const GoogleGeminiEffect = ({
   className,
 }) => {
   return (
-    <div className={cn("sticky top-80", className)}>
+    <div className={cn("sticky top-20", className)}>
       <p className="text-lg font-extrabold md:text-7xl pb-4 text-center bg-clip-text text-transparent bg-gradient-to-b from-neutral-100 to-neutral-300">
         {/* {title || `Build with Aceternity UI`} */}Built with <span className="font-extrabold modded-bg bg-gradient-to-r from-blue-700 to-red-600 text-transparent"> Gemini</span>
       </p>

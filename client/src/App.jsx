@@ -16,9 +16,40 @@ import SavedMindmaps from "./components/User/mindmaps/SavedMindmaps";
 import MindmapOpener from "./components/User/mindmaps/MindmapOpener";
 import Results from "./components/User/interview/Results";
 import { ReactFlowProvider } from "reactflow";
+import genUp from './assets/logo.png';
+import genUp2 from './assets/gen-up.png';
+import { useEffect } from "react";
+import { useState } from "react";
 
 function App() {
   localStorage.setItem("debug", true);
+  useEffect(() => {
+    window.updateUI = (attributes) => {
+      if (attributes.logo) {
+        setDisLogo(attributes.logo);
+        localStorage.setItem('disLogo', attributes.logo);
+        updateFavicon(attributes.logo);
+      }
+    };
+    updateFavicon(localStorage.getItem('disLogo') || 'new');
+  }, []);
+
+  const [disLogo, setDisLogo] = useState(() => {
+    return localStorage.getItem('disLogo') || 'new';
+  });
+
+  const updateFavicon = (faviconUrl) => {
+    const link = document.querySelector("link[rel*='icon']") || document.createElement('link');
+    link.type = 'image/png';
+    link.rel = 'icon';
+    if(faviconUrl === 'old') {
+      link.href = '/gen-up.png';
+    }
+    else {
+      link.href = '/logo.png';
+    }
+    document.getElementsByTagName('head')[0].appendChild(link);
+  };
 
   return (
     <NextThemesProvider attribute="class" defaultTheme="dark">
