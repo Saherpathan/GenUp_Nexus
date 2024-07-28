@@ -20,7 +20,7 @@
       }
     ],
     "display": "standalone",
-    "start_url": "http://localhost:5173/",
+    "start_url": "https://gen-up-nexus.vercel.app/",
     "short_name": "GenUP Nexus",
     "theme_color": "#0a0f1e",
     "background_color": "#000000"
