@@ -1138,5 +1138,5 @@ def problemhandler():
             return jsonify({"success": False}), 200
 
 
-if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
+# if __name__ == '__main__':
+#     app.run(debug=True, host='0.0.0.0')
