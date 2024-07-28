@@ -27,11 +27,15 @@ import {
   CardItemHome,
 } from "../../components/3DCard/3dCard";
 import aiBot from '../../assets/aibot.svg';
-import genUp from '../../assets/gen-up.png';
+import genUp from '../../assets/logo.png';
+import genUp2 from '../../assets/gen-up.png';
 import roadmapIcon from '../../assets/roadmap.png';
 import { Player } from "@lottiefiles/react-lottie-player";
 import { motion } from "framer-motion";
 import { HeroHighlight, Highlight } from "../HeroHighlight/HeroHighlight";
+import { TypewriterEffectSmooth } from '../TypewriterEffect/TypewriterEffect';
+import { useEffect } from 'react';
+import { useState } from 'react';
 
 export const projects = [
   {
@@ -72,12 +76,22 @@ export const projects = [
   }
 ];
 
+const transition = {
+  duration: 0,
+  ease: "linear",
+};
+
 const Landing = () => {
   const { theme, setTheme } = useTheme();
+  useEffect(() => { setTheme('dark'); setDisLogo(localStorage.getItem('disLogo') || 'new'); });
   const ref = useRef(null);
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start start", "end start"],
+  });
+
+  const [disLogo, setDisLogo] = useState(() => {
+    return localStorage.getItem('disLogo') || 'new';
   });
  
   const pathLengthFirst = useTransform(scrollYProgress, [0, 0.8], [0.2, 1.2]);
@@ -86,12 +100,44 @@ const Landing = () => {
   const pathLengthFourth = useTransform(scrollYProgress, [0, 0.8], [0.05, 1.2]);
   const pathLengthFifth = useTransform(scrollYProgress, [0, 0.8], [0, 1.2]);
 
+  const words = [
+    {
+      text: "Start",
+    },
+    {
+      text: "learning",
+    },
+    {
+      text: "with",
+    },
+    {
+      text: "GenUP Nexus.",
+      className: "text-blue-500 dark:text-blue-500",
+    },
+  ];
+
   return (
     <div>
       <Background />
       <div className={`h-[100dvh] w-full bg-opacity-75 bg-black border-none flex flex-col items-center justify-center overflow-hidden rounded-md`}>        
         <HeroHighlight className={'h-[100dvh] flex flex-col justify-center align-middle items-center'}>
-          <Image src={genUp} width={'300px'} className='' />
+          <MouseEnterProvider>
+            <CardContainerHome className="inter-var">
+              <CardBodyHome className="relative group/card w-[40dvw] h-auto rounded-xl p-6 border-none bg-transparent">
+                <CardItemHome translateZ="100" className="w-full mt-4 flex justify-center align-middle items-center relative">
+                  <div className='absolute background-globe h-[150px] w-[150px]'></div>
+                  <div className='w-full h-[250px] rounded-lg flex justify-center align-middle items-center z-10 relative'>
+                    <div className='text-[72px] z-50 relative'>{disLogo === 'new' ? (
+                      <Image src={genUp} width={'300px'}/>
+                    ) : (
+                      <Image src={genUp2} width={'300px'}/>
+                    )}</div>
+                    <div className='absolute background-globe h-[110px] w-[110px]'></div>
+                  </div>
+                </CardItemHome>
+              </CardBodyHome>
+            </CardContainerHome>
+          </MouseEnterProvider>
           <h1 className="md:text-7xl text-3xl lg:text-9xl font-bold text-center text-white relative z-20 text-[24px] modded-bg bg-gradient-to-r from-blue-700 to-red-600 text-transparent">
             GenUP Nexus
           </h1>

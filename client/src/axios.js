@@ -2,7 +2,7 @@ import axios from "axios";
 
 const debug = localStorage.getItem("debug");
 
-const url = "https://testforapi.vercel.app/"; 
+const url = "https://parthcodes-test-flask-deploy.hf.space"; 
 //! For using local Development, use this URL to connect to your local server.
 
 console.log(url);

@@ -65,7 +65,16 @@ const Register = () => {
       setIsLoading(true);
 
       try {
-        const res = await axios.post("/user/verifymail", { name: form.name, email: form.email });
+        // const res = await axios.post("/user/verifymail", { name: form.name, email: form.email });
+        const res = await fetch( 'https://testforapi.vercel.app/user/verifymail', {
+            method: 'POST',
+            headers: {
+            'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              "name": form.name, "email": form.email 
+            }),
+        });
         const result = res.data;
         setIsLoading(false);
         onOpen();
