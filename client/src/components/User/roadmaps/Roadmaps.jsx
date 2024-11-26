@@ -107,12 +107,14 @@ const loadingStates = [
 
 function getTodayDayData() {
     var todayDate = new Date();
-    return {
-      day: todayDate.getDate(),
-      month: todayDate.getMonth()+1,
-      year: todayDate.getFullYear(),
-      dayOfWeek: todayDate.toLocaleDateString('en-US', { weekday: 'long' })
-    };
+	var temp = {
+		day: todayDate.getDate(),
+		month: todayDate.getMonth()+1,
+		year: todayDate.getFullYear(),
+		dayOfWeek: todayDate.toLocaleDateString('en-US', { weekday: 'long' })
+	};
+	console.log(temp);
+    return temp;
   };
 
 const iconList = [webDev1, webDev2, webDev1];
@@ -155,10 +157,12 @@ const Roadmaps = () => {
 						"time": time,
 						"company": company
 				});
-				console.log(res.data);
+				setRoadmapHistory(res.data.data);
+				setLoading(false);
 			} catch (err) {
 				console.error(err);
 				toast.error( "Server error please try again later");
+				setLoading(false);
 			}
 		}
 		else {
@@ -183,7 +187,28 @@ const Roadmaps = () => {
 						<CanvasRevealEffect animationSpeed={5} dotSize={2} containerClassName='bg-blue-600' />
 					</Card3>
 				</div>
-				<Modal backdrop={'blur'} size={'5xl'} isOpen={isOpen} onOpenChange={onOpenChange} className="p-0">
+				<Modal backdrop={'blur'} size={'5xl'} isOpen={isOpen} onOpenChange={onOpenChange} className="p-0"
+					motionProps={{
+						variants: {
+							enter: {
+							y: 0,
+							opacity: 1,
+							transition: {
+								duration: 0.3,
+								ease: "easeOut",
+							},
+							},
+							exit: {
+							y: -20,
+							opacity: 0,
+							transition: {
+								duration: 0.2,
+								ease: "easeIn",
+							},
+							},
+						}
+					}}
+				>
 					<ModalContent className="p-0">
 						{(onClose) => (
 							<>
